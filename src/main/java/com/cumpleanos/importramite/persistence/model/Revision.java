@@ -1,9 +1,6 @@
 package com.cumpleanos.importramite.persistence.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,10 +9,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@ToString
-@Builder
+@Data
 @Document(collection = "revision")
 public class Revision implements Serializable {
     @Serial

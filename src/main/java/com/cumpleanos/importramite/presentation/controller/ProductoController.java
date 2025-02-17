@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("product")
-@RequiredArgsConstructor(onConstructor_ =  @Autowired)
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ProductoController {
     
     private final IProductoService service;

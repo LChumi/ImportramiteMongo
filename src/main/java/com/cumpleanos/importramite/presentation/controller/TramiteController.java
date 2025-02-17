@@ -2,7 +2,6 @@ package com.cumpleanos.importramite.presentation.controller;
 
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.service.interfaces.ITramiteService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("mongo")
-@RequiredArgsConstructor(onConstructor_ =  {@Autowired})
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class TramiteController {
 
     private final ITramiteService service;
@@ -36,7 +35,6 @@ public class TramiteController {
             return ResponseEntity.notFound().build();
         }
         tra.setObservacion(tramite.getObservacion());
-        tra.setFechaCarga(tramite.getFechaCarga());
         tra.setListProductos(tramite.getListProductos());
         return ResponseEntity.ok(service.save(tra));
     }
