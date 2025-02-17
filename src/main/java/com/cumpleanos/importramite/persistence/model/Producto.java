@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 @ToString
 @Builder
 @Document(collection = "PRODUCTO")
-public class Productos implements Serializable {
+public class Producto implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

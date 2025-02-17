@@ -26,5 +26,5 @@ public class Tramite implements Serializable {
     private String id;
     private LocalDate fechaCarga;
     private String observacion;
-    private List<Productos> listProductos;
+    private List<Producto> listProductos;
 }
