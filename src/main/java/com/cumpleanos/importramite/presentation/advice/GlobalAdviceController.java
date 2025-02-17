@@ -11,7 +11,7 @@ public class GlobalAdviceController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
-        log.error(e.getMessage());
+        log.error(e.getMessage(), e);
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }
