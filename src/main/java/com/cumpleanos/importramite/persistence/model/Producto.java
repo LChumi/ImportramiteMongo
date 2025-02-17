@@ -29,4 +29,5 @@ public class Producto implements Serializable {
     private Long bultos;
     private BigDecimal cbm;
     private BigDecimal total;
+    private String idTramite;
 }
