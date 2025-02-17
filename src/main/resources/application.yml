@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: Import-tramite
+
+  data:
+    mongodb:
+      database: icep
+      host: localhost
+      port: 27017
