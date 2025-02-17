@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Builder
-@Document(collection = "REVISION")
+@Document(collection = "revision")
 public class Revision implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

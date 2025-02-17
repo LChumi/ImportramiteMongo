@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @Setter
 @ToString
 @Builder
-@Document(collection = "PRODUCTO")
+@Document(collection = "producto")
 public class Producto implements Serializable {
 
     @Serial

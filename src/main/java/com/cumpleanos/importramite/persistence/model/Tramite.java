@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @ToString
 @Builder
-@Document(collection = "TRAMITE")
+@Document(collection = "tramite")
 public class Tramite implements Serializable {
 
     @Serial
