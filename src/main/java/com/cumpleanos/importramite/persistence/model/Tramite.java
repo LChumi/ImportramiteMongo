@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,4 +26,5 @@ public class Tramite implements Serializable {
     private String id;
     private LocalDate fechaCarga;
     private String observacion;
+    private List<Productos> listProductos;
 }
