@@ -49,13 +49,15 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
 
             if (cantidadPedida != null) {
                 if (cantidadPedida.equals(revision.getCantidad())) {
-                    revision.setEstado(true);
+                    revision.setEstado("COMPLETO");
                 }
                 revision.setCantidadPedida(cantidadPedida);
                 revision.setCantidadDiferencia(Math.abs(revision.getCantidad() - cantidadPedida));
+                revision.setEstado("DIFERENCIAS");
             } else {
                 revision.setCantidadPedida(0L);
                 revision.setCantidadDiferencia(revision.getCantidad());
+                revision.setEstado("NOVEDAD");
             }
 
             repository.save(revision);
