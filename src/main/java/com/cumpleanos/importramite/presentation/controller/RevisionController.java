@@ -54,9 +54,15 @@ public class RevisionController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/revision/updateQuantities/{tramiteId}")
+    @PutMapping("/updateQuantities/{tramiteId}")
     public ResponseEntity<List<Revision>> updateRevisionWithTramiteQuantities(@PathVariable String tramiteId){
         List<Revision> revisionList =  service.updateRevisionWithTramiteQuantities(tramiteId);
         return ResponseEntity.ok(revisionList);
+    }
+
+    @PutMapping("/updateCantidad/{tramiteId}/{barra}")
+    public ResponseEntity<Revision> updateCantidadByBarra(@PathVariable String tramiteId, @PathVariable String barra){
+        Revision updatedRevision = service.updateCantidadByBarra(tramiteId, barra);
+        return ResponseEntity.ok(updatedRevision);
     }
 }
