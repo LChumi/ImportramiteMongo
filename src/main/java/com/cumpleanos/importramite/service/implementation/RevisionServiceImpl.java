@@ -43,11 +43,19 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
                 .collect(Collectors.toMap(Producto::getId, Producto::getBultos));
 
         for (Revision revision : revisions) {
-            Long catidadPedida = tramiteProductMap.get(revision.getBarra());
-            if (catidadPedida.equals(revision.getCantidad())){
-                revision.setEstado(true);
+            Long cantidadPedida = tramiteProductMap.get(revision.getBarra());
+
+            if (cantidadPedida != null) {
+                if (cantidadPedida.equals(revision.getCantidad())) {
+                    revision.setEstado(true);
+                }
+                revision.setCantidadPedida(cantidadPedida);
+                revision.setCantidadDiferencia(Math.abs(revision.getCantidad() - cantidadPedida));
+            } else {
+                revision.setCantidadPedida(0L);
+                revision.setCantidadDiferencia(revision.getCantidad());
             }
-            revision.setCantidadPedida(catidadPedida);
+
             repository.save(revision);
         }
 

@@ -27,5 +27,6 @@ public class Revision implements Serializable {
     private Tramite tramite;
 
     private Long cantidadPedida;
+    private Long cantidadDiferencia;
     private Boolean estado = false;
 }
