@@ -25,4 +25,7 @@ public class Revision implements Serializable {
 
     @DBRef
     private Tramite tramite;
+
+    private Long cantidadPedida;
+    private Boolean estado = false;
 }

@@ -16,6 +16,11 @@ public class RevisionController {
 
     private final IRevisionService service;
 
+    @GetMapping("/tramiteId/{id}")
+    public List<Revision> findByTramite_Id(@PathVariable String id) {
+        return service.findByTramite_Id(id);
+    }
+
     @GetMapping("/listar")
     public ResponseEntity<List<Revision>> listar(){
         return ResponseEntity.ok(service.findAll());
@@ -47,5 +52,11 @@ public class RevisionController {
         }
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/revision/updateQuantities/{tramiteId}")
+    public ResponseEntity<List<Revision>> updateRevisionWithTramiteQuantities(@PathVariable String tramiteId){
+        List<Revision> revisionList =  service.updateRevisionWithTramiteQuantities(tramiteId);
+        return ResponseEntity.ok(revisionList);
     }
 }
