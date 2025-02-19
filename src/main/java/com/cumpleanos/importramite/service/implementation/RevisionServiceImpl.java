@@ -13,6 +13,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -88,6 +89,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             //Crear nueva revision
             revision = new Revision();
             revision.setId(UUID.randomUUID().toString());
+            revision.setFecha(LocalDate.now());
             revision.setBarra(barra);
             revision.setUsuario(usuario);
             revision.setCantidad(1);

@@ -31,7 +31,7 @@ public class FileUtils {
                 .id(getCellValueSafely(row.getCell(0)))
                 .id1(getCellValueSafely(row.getCell(1)))
                 .nombre(getCellValueSafely(row.getCell(2)))
-                .bultos(parseIntegerSafely(getCellValueSafely(row.createCell(3))))
+                .bultos(parseIntegerSafely(getCellValueSafely(row.getCell(3))))
                 .cxb(parseIntegerSafely(getCellValueSafely(row.getCell(4))))
                 .total(parseIntegerSafely(getCellValueSafely(row.getCell(5))))
                 .pvp(parseDoubleSafely(getCellValueSafely(row.getCell(7))))
