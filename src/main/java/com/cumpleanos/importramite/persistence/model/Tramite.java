@@ -1,6 +1,9 @@
 package com.cumpleanos.importramite.persistence.model;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,6 +21,9 @@ public class Tramite implements Serializable {
 
     @Id
     private String id;
+
+    @CreatedDate
+    @Setter(AccessLevel.NONE)
     private LocalDate fechaCarga;
     private String observacion;
     private List<Producto> listProductos;

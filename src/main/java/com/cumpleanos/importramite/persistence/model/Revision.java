@@ -26,17 +26,18 @@ public class Revision implements Serializable {
     @Id
     private String id;
     private String barra;
-    private Long cantidad;
+    private Integer cantidad;
 
-    @Setter(AccessLevel.NONE)
     @CreatedDate
+    @Setter(AccessLevel.NONE)
     private LocalDate fecha;
     private String usuario;
 
     @DBRef
     private Tramite tramite;
 
-    private Long cantidadPedida=0L;
-    private Long cantidadDiferencia =0L;
+    private Integer cantidadPedida=0;
+    private Integer cantidadDiferencia =0;
     private String estado = "SN";
+    private int secuencia;
 }

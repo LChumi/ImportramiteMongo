@@ -36,7 +36,6 @@ public class ProductoController {
         }
         found.setNombre(producto.getNombre());
         found.setBultos(producto.getBultos());
-        found.setCbm(producto.getCbm());
         found.setCxb(producto.getCxb());
         found.setTotal(producto.getTotal());
             return ResponseEntity.ok(service.save(found));

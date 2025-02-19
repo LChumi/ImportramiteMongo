@@ -46,11 +46,11 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         List<Revision> revisions = repository.findByTramite_Id(tramiteId);
 
         //Logica actualizacion de cantidades pedidas
-        Map<String, Long> tramiteProductMap = tramite.getListProductos().stream()
+        Map<String, Integer> tramiteProductMap = tramite.getListProductos().stream()
                 .collect(Collectors.toMap(Producto::getId, Producto::getBultos));
 
         for (Revision revision : revisions) {
-            Long cantidadPedida = tramiteProductMap.get(revision.getBarra());
+            Integer cantidadPedida = tramiteProductMap.get(revision.getBarra());
 
             if (cantidadPedida != null) {
                 if (cantidadPedida.equals(revision.getCantidad())) {
@@ -60,7 +60,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
                 revision.setCantidadDiferencia(Math.abs(revision.getCantidad() - cantidadPedida));
                 revision.setEstado("DIFERENCIAS");
             } else {
-                revision.setCantidadPedida(0L);
+                revision.setCantidadPedida(0);
                 revision.setCantidadDiferencia(revision.getCantidad());
                 revision.setEstado("NOVEDAD");
             }
@@ -90,7 +90,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             revision.setId(UUID.randomUUID().toString());
             revision.setBarra(barra);
             revision.setUsuario(usuario);
-            revision.setCantidad(1L);
+            revision.setCantidad(1);
             revision.setTramite(tramite);
         }else{
             revision.setCantidad(revision.getCantidad() + 1);
