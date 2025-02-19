@@ -33,7 +33,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
 
     @Override
     public List<Revision> findByTramite_Id(String tramiteId) {
-        return repository.findByTramite_Id(tramiteId);
+        return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
     }
 
     /**
@@ -43,31 +43,57 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
      */
     @Override
     public List<Revision> updateRevisionWithTramiteQuantities(String tramiteId) {
-        Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
-        List<Revision> revisions = repository.findByTramite_Id(tramiteId);
+        Tramite tramite = tramiteRepository.findById(tramiteId)
+                .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
+        List<Revision> revisions = repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
 
-        //Logica actualizacion de cantidades pedidas
-        Map<String, Integer> tramiteProductMap = tramite.getListProductos().stream()
-                .collect(Collectors.toMap(Producto::getId, Producto::getBultos));
+        Map<String, Revision> revisionMap = revisions.stream()
+                .collect(Collectors.toMap(Revision::getBarra, rev -> rev));
 
-        for (Revision revision : revisions) {
-            Integer cantidadPedida = tramiteProductMap.get(revision.getBarra());
+        //Mapa de productos en tramite con Id -> bultos
+        Map<String, Producto> tramiteProductMap = tramite.getListProductos().stream()
+                .collect(Collectors.toMap(Producto::getId, prod -> prod));
 
-            if (cantidadPedida != null) {
-                if (cantidadPedida.equals(revision.getCantidad())) {
-                    revision.setEstado("COMPLETO");
-                }
-                revision.setCantidadPedida(cantidadPedida);
-                revision.setCantidadDiferencia(Math.abs(revision.getCantidad() - cantidadPedida));
-                revision.setEstado("DIFERENCIAS");
-            } else {
-                revision.setCantidadPedida(0);
-                revision.setCantidadDiferencia(revision.getCantidad());
+        for (Producto producto : tramite.getListProductos()) {
+            Revision revision = revisionMap.get(producto.getId());
+
+            if (revision == null) {
+                //Si no existe en revision, crear nuevo registro
+                revision = new Revision();
+                revision.setBarra(producto.getId());
+                revision.setCantidad(0);
+                revision.setCantidadPedida(producto.getBultos());
+                revision.setCantidadDiferencia(producto.getBultos());
                 revision.setEstado("NOVEDAD");
+                revision.setSecuencia(producto.getSecuencia());
+                revision.setTramite(tramite);
+            } else {
+                int cantidadPedida = producto.getBultos();
+                revision.setCantidadPedida(cantidadPedida);
+                int diferencia = revision.getCantidad() - cantidadPedida;
+                revision.setCantidadDiferencia(Math.abs(diferencia));
+                revision.setSecuencia(producto.getSecuencia());
+                if (diferencia == 0) {
+                    revision.setEstado("COMPLETO");
+                } else if (diferencia > 0) {
+                    revision.setEstado("SOBRANTE");
+                } else {
+                    revision.setEstado("FALTANTE");
+                }
             }
             repository.save(revision);
         }
-        return revisions;
+
+        //Verificar revisiones que no esten en productos y actualizarlos
+        for (Revision revision : revisions) {
+            if (!tramiteProductMap.containsKey(revision.getBarra())){
+                revision.setEstado("SIN REGISTRO");
+                revision.setSecuencia(0);
+                repository.save(revision);
+            }
+        }
+
+        return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.cumpleanos.importramite.persistence.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -23,5 +24,6 @@ public class Tramite implements Serializable {
     @CreatedDate
     private LocalDate fechaCarga;
     private String observacion;
+    @JsonIgnore
     private List<Producto> listProductos;
 }

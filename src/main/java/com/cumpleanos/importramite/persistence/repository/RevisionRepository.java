@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface RevisionRepository extends MongoRepository<Revision,String> {
-    List<Revision> findByTramite_Id(String tramiteId);
+    List<Revision> findByTramite_IdOrderBySecuenciaAsc(String tramiteId);
     Revision findByBarraAndTramite_Id(String barra, String tramiteId);
 }
