@@ -35,9 +35,14 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         return repository.findByTramite_Id(tramiteId);
     }
 
+    /**
+     * Metodo para validar los productos comparando con loa tabla Tramite
+     * @param tramiteId el ID del tramite registrado
+     * @return devuelve la lista de revision actualizada comparando las cantidades de tramite y de revision actualizando estados
+     */
     @Override
     public List<Revision> updateRevisionWithTramiteQuantities(String tramiteId) {
-        Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite not found"));
+        Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
         List<Revision> revisions = repository.findByTramite_Id(tramiteId);
 
         //Logica actualizacion de cantidades pedidas
@@ -59,18 +64,23 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
                 revision.setCantidadDiferencia(revision.getCantidad());
                 revision.setEstado("NOVEDAD");
             }
-
             repository.save(revision);
         }
-
         return revisions;
     }
 
+    /**
+     * Metodo para crear o actualizar datos de la tabal revision
+     * @param tramiteId el id de tramite
+     * @param barra la barra del producto
+     * @param usuario el usurario q registra al producto
+     * @return nueva revision si no existe si existe va sumando la cantidad ++
+     */
     @Transactional
     @Override
-    public Revision updateCantidadByBarra(String tramiteId, String barra) {
+    public Revision updateCantidadByBarra(String tramiteId, String barra, String usuario) {
         Tramite tramite = tramiteRepository.findById(tramiteId)
-                .orElseThrow(() -> new DocumentNotFoundException("Tramite not found"));
+                .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
 
         Revision revision = repository.findByBarraAndTramite_Id(barra, tramiteId);
 
@@ -79,6 +89,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             revision = new Revision();
             revision.setId(UUID.randomUUID().toString());
             revision.setBarra(barra);
+            revision.setUsuario(usuario);
             revision.setCantidad(1L);
             revision.setTramite(tramite);
         }else{
@@ -86,6 +97,4 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         }
         return repository.save(revision);
     }
-
-
 }

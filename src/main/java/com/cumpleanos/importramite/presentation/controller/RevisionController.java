@@ -39,7 +39,6 @@ public class RevisionController {
         }
         found.setBarra(revision.getBarra());
         found.setCantidad(revision.getCantidad());
-        found.setUsr_id(revision.getUsr_id());
         found.setUsuario(revision.getUsuario());
         return ResponseEntity.ok(service.save(found));
     }
@@ -60,9 +59,9 @@ public class RevisionController {
         return ResponseEntity.ok(revisionList);
     }
 
-    @PutMapping("/updateCantidad/{tramiteId}/{barra}")
-    public ResponseEntity<Revision> updateCantidadByBarra(@PathVariable String tramiteId, @PathVariable String barra){
-        Revision updatedRevision = service.updateCantidadByBarra(tramiteId, barra);
+    @PutMapping("/updateCantidad/{tramiteId}/{barra}/{usuario}")
+    public ResponseEntity<Revision> updateCantidadByBarra(@PathVariable String tramiteId, @PathVariable String barra, @PathVariable String usuario){
+        Revision updatedRevision = service.updateCantidadByBarra(tramiteId, barra, usuario);
         return ResponseEntity.ok(updatedRevision);
     }
 }

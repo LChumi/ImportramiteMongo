@@ -1,8 +1,6 @@
 package com.cumpleanos.importramite.persistence.model;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -28,7 +26,6 @@ public class Revision implements Serializable {
     private Long cantidad;
     private LocalDate fecha;
     private String usuario;
-    private Long usr_id;
 
     @DBRef
     private Tramite tramite;

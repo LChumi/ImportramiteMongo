@@ -8,5 +8,5 @@ import java.util.List;
 public interface IRevisionService extends IGenericService<Revision, String> {
     List<Revision>  findByTramite_Id(String tramiteId);
     List<Revision> updateRevisionWithTramiteQuantities(String tramiteId);
-    Revision updateCantidadByBarra(String tramiteId, String  barra);
+    Revision updateCantidadByBarra(String tramiteId, String  barra, String usuario);
 }
