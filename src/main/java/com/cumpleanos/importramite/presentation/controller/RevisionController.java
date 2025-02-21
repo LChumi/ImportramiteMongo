@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("revision")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -59,7 +60,7 @@ public class RevisionController {
         return ResponseEntity.ok(revisionList);
     }
 
-    @PutMapping("/updateCantidad/{tramiteId}/{barra}/{usuario}")
+    @PutMapping("/updateQuantity/{tramiteId}/{barra}/{usuario}")
     public ResponseEntity<Revision> updateCantidadByBarra(@PathVariable String tramiteId, @PathVariable String barra, @PathVariable String usuario){
         Revision updatedRevision = service.updateCantidadByBarra(tramiteId, barra, usuario);
         return ResponseEntity.ok(updatedRevision);
