@@ -66,4 +66,10 @@ public class TramiteController {
         return ResponseEntity.ok(productos);
     }
 
+    @GetMapping("findId/{id}")
+    public ResponseEntity<Tramite> findById(@PathVariable String id) {
+        Tramite tramite = service.findById(id);
+        return ResponseEntity.ok(tramite);
+    }
+
 }
