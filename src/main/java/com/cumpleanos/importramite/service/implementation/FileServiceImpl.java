@@ -4,6 +4,7 @@ import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.utils.FileUtils;
+import com.cumpleanos.importramite.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
@@ -37,10 +38,10 @@ public class FileServiceImpl {
             productoList = mapRowsToProducts(sheet);
 
             Tramite tramite = new Tramite();
-            tramite.setId(tramiteId);
+            tramite.setId(StringUtils.trimWhitespace(tramiteId));
             tramite.setFechaCarga(LocalDate.now());
             tramite.setFechaLlegada(fechaLlegada);
-            tramite.setObservacion(observacion);
+            tramite.setObservacion(StringUtils.trimWhitespace(observacion));
             tramite.setListProductos(productoList);
             tramiteRepository.save(tramite);
             return tramite;
