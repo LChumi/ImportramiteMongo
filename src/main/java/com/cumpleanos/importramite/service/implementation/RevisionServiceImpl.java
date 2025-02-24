@@ -92,7 +92,8 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
                 repository.save(revision);
             }
         }
-
+        tramite.setEstado(true);
+        tramiteRepository.save(tramite);
         return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
     }
 
