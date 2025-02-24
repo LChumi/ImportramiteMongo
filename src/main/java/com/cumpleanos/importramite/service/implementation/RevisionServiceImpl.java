@@ -64,7 +64,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
                 revision.setCantidad(0);
                 revision.setCantidadPedida(producto.getBultos());
                 revision.setCantidadDiferencia(producto.getBultos());
-                revision.setEstado("NOVEDAD");
+                revision.setEstado("NO LLEGO");
                 revision.setSecuencia(producto.getSecuencia());
                 revision.setTramite(tramite);
             } else {
