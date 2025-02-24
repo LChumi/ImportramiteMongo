@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+
 @CrossOrigin("*")
 @Slf4j
 @RestController
@@ -22,8 +24,9 @@ public class FileController {
     public ResponseEntity<Tramite> importExcelTramite(
             @RequestParam("file") MultipartFile file,
             @RequestParam("tramiteId") String tramiteId,
+            @RequestParam("fechaLlegada") LocalDate fechaLlegada,
             @RequestParam("observacion") String observacion) {
-        Tramite tramite = fileService.readExcelFile(file, tramiteId, observacion);
+        Tramite tramite = fileService.readExcelFile(file, tramiteId, fechaLlegada, observacion);
         return ResponseEntity.ok(tramite);
     }
 }

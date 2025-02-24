@@ -29,7 +29,7 @@ public class FileServiceImpl {
 
     private final TramiteRepository  tramiteRepository;
 
-    public Tramite readExcelFile(MultipartFile file, String tramiteId, String observacion){
+    public Tramite readExcelFile(MultipartFile file, String tramiteId,LocalDate fechaLlegada, String observacion){
         List<Producto> productoList = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
@@ -39,6 +39,7 @@ public class FileServiceImpl {
             Tramite tramite = new Tramite();
             tramite.setId(tramiteId);
             tramite.setFechaCarga(LocalDate.now());
+            tramite.setFechaLlegada(fechaLlegada);
             tramite.setObservacion(observacion);
             tramite.setListProductos(productoList);
             tramiteRepository.save(tramite);

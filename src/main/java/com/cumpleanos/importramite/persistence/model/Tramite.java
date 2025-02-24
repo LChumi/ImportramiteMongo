@@ -23,6 +23,7 @@ public class Tramite implements Serializable {
 
     @CreatedDate
     private LocalDate fechaCarga;
+    private LocalDate fechaLlegada;
     private String observacion;
     @JsonIgnore
     private List<Producto> listProductos;
