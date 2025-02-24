@@ -26,4 +26,5 @@ public class Tramite implements Serializable {
     private String observacion;
     @JsonIgnore
     private List<Producto> listProductos;
+    private Boolean estado = false;
 }

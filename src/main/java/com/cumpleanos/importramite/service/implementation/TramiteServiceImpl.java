@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor(onConstructor_ =  {@Autowired})
 public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> implements ITramiteService {
@@ -17,5 +19,10 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     @Override
     public CrudRepository<Tramite, String> getRepository() {
         return repository;
+    }
+
+    @Override
+    public List<Tramite> findByEstadoFalse() {
+        return repository.findByEstadoFalse();
     }
 }

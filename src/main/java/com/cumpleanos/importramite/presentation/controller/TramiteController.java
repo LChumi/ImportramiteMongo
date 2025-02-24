@@ -26,6 +26,12 @@ public class TramiteController {
         return ResponseEntity.ok(tramites);
     }
 
+    @GetMapping("/pending")
+    public ResponseEntity<List<Tramite>> getPending() {
+        List<Tramite> tramites = service.findByEstadoFalse();
+        return ResponseEntity.ok(tramites);
+    }
+
     @PostMapping("/save")
     public ResponseEntity<Tramite> save(@RequestBody Tramite tramite) {
         Tramite saved = service.save(tramite);
