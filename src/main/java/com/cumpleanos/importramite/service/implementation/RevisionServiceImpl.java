@@ -8,6 +8,8 @@ import com.cumpleanos.importramite.persistence.repository.RevisionRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.service.interfaces.IRevisionService;
+import com.cumpleanos.importramite.utils.MapUtils;
+import com.cumpleanos.importramite.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
@@ -51,41 +53,37 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         Map<String, Revision> revisionMap = revisions.stream()
                 .collect(Collectors.toMap(Revision::getBarra, rev -> rev));
 
-        // Mapa de productos en tramite con Id -> bultos
-        Map<String, Producto> tramiteProductMap = tramite.getContenedor().stream()
-                .flatMap(contenedor -> contenedor.getProductos().stream())
-                .collect(Collectors.toMap(Producto::getId, prod -> prod));
 
-        for (Contenedor contenedor : tramite.getContenedor()) {
-            for (Producto producto : contenedor.getProductos()) {
-                Revision revision = revisionMap.get(producto.getId());
+        Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(tramite);
 
-                if (revision == null) {
-                    // Si no existe en revision, crear nuevo registro
-                    revision = new Revision();
-                    revision.setBarra(producto.getId());
-                    revision.setCantidad(0);
-                    revision.setCantidadPedida(producto.getBultos());
-                    revision.setCantidadDiferencia(producto.getBultos());
-                    revision.setEstado("NO LLEGO");
-                    revision.setSecuencia(producto.getSecuencia());
-                    revision.setTramite(tramite);
+        for (Producto producto : tramiteProductMap.values()) {
+            Revision revision = revisionMap.get(producto.getId());
+
+            if (revision == null) {
+                // Si no existe en revision, crear nuevo registro
+                revision = new Revision();
+                revision.setBarra(producto.getId());
+                revision.setCantidad(0);
+                revision.setCantidadPedida(producto.getBultos());
+                revision.setCantidadDiferencia(producto.getBultos());
+                revision.setEstado("NO LLEGO");
+                revision.setSecuencia(producto.getSecuencia());
+                revision.setTramite(tramite);
+            } else {
+                int cantidadPedida = producto.getBultos();
+                revision.setCantidadPedida(cantidadPedida);
+                int diferencia = revision.getCantidad() - cantidadPedida;
+                revision.setCantidadDiferencia(Math.abs(diferencia));
+                revision.setSecuencia(producto.getSecuencia());
+                if (diferencia == 0) {
+                    revision.setEstado("COMPLETO");
+                } else if (diferencia > 0) {
+                    revision.setEstado("SOBRANTE");
                 } else {
-                    int cantidadPedida = producto.getBultos();
-                    revision.setCantidadPedida(cantidadPedida);
-                    int diferencia = revision.getCantidad() - cantidadPedida;
-                    revision.setCantidadDiferencia(Math.abs(diferencia));
-                    revision.setSecuencia(producto.getSecuencia());
-                    if (diferencia == 0) {
-                        revision.setEstado("COMPLETO");
-                    } else if (diferencia > 0) {
-                        revision.setEstado("SOBRANTE");
-                    } else {
-                        revision.setEstado("FALTANTE");
-                    }
+                    revision.setEstado("FALTANTE");
                 }
-                repository.save(revision);
             }
+            repository.save(revision);
         }
 
         // Verificar revisiones que no esten en productos y actualizarlos
@@ -104,14 +102,17 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
 
     /**
      * Metodo para crear o actualizar datos de la tabal revision
-     * @param tramiteId el id de tramite
-     * @param barra la barra del producto
+     * @param tramiteStr el id de tramite
+     * @param barraStr la barra del producto
      * @param usuario el usurario q registra al producto
      * @return nueva revision si no existe si existe va sumando la cantidad ++
      */
     @Transactional
     @Override
-    public Revision updateCantidadByBarra(String tramiteId, String barra, String usuario) {
+    public Revision updateCantidadByBarra(String tramiteStr, String barraStr, String usuario) {
+        String tramiteId = StringUtils.trimWhitespace(tramiteStr);
+        String barra = StringUtils.trimWhitespace(barraStr);
+
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
 

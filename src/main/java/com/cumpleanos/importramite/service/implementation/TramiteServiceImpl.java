@@ -6,14 +6,13 @@ import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.service.interfaces.ITramiteService;
+import com.cumpleanos.importramite.utils.MapUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,13 +35,10 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     public List<Producto> listByTramite(String tramite) {
         Tramite tr = repository.findById(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " no encontrado"));
 
-        List<Producto> productos = new ArrayList<>();
+        Map<String, Producto> productosMap = MapUtils.listByTramite(tr);
 
-        for (Contenedor contenedor : tr.getContenedor()) {
-            productos.addAll(contenedor.getProductos());
-        }
 
-        return productos.stream()
+        return productosMap.values().stream()
                 .sorted(Comparator.comparingInt(Producto::getSecuencia))
                 .collect(Collectors.toList());
     }
