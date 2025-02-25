@@ -44,8 +44,6 @@ public class TramiteController {
         if (tra == null) {
             return ResponseEntity.notFound().build();
         }
-        tra.setObservacion(tramite.getObservacion());
-        tra.setListProductos(tramite.getListProductos());
         return ResponseEntity.ok(service.save(tra));
     }
 
@@ -61,14 +59,7 @@ public class TramiteController {
 
     @GetMapping("/{tramiteId}/products")
     public ResponseEntity<List<Producto>> getProductos(@PathVariable String tramiteId) {
-        Tramite tramite = service.findById(tramiteId);
-        if (tramite == null) {
-            return ResponseEntity.notFound().build();
-        }
-        // Ordenar la lista de productos por secuencia
-        List<Producto> productos = tramite.getListProductos().stream()
-                .sorted(Comparator.comparingInt(Producto::getSecuencia))
-                .collect(Collectors.toList());
+        List<Producto> productos = service.listByTramite(tramiteId);
         return ResponseEntity.ok(productos);
     }
 

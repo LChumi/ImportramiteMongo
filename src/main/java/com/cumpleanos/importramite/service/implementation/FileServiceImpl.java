@@ -1,5 +1,6 @@
 package com.cumpleanos.importramite.service.implementation;
 
+import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
@@ -30,19 +31,45 @@ public class FileServiceImpl {
 
     private final TramiteRepository  tramiteRepository;
 
-    public Tramite readExcelFile(MultipartFile file, String tramiteId,LocalDate fechaLlegada, String observacion){
+    public Tramite readExcelFile(MultipartFile file, String tramiteId,LocalDate fechaLlegada, String contenedorId){
         List<Producto> productoList = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
             productoList = mapRowsToProducts(sheet);
 
-            Tramite tramite = new Tramite();
-            tramite.setId(StringUtils.trimWhitespace(tramiteId));
-            tramite.setFechaCarga(LocalDate.now());
-            tramite.setFechaLlegada(fechaLlegada);
-            tramite.setObservacion(StringUtils.trimWhitespace(observacion));
-            tramite.setListProductos(productoList);
+            Contenedor contenedor = Contenedor.builder()
+                    .id(contenedorId)
+                    .productos(productoList)
+                    .build();
+            Tramite tramite = tramiteRepository.findById(tramiteId).orElse(new Tramite());
+
+            // Si el trámite no existe, crea uno nuevo
+            if (tramite.getId() == null) {
+                tramite.setId(StringUtils.trimWhitespace(tramiteId));
+                tramite.setFechaCarga(LocalDate.now());
+                tramite.setFechaLlegada(fechaLlegada);
+            } else {
+                // Si el trámite ya existe, solo actualiza la fecha de llegada
+                tramite.setFechaLlegada(fechaLlegada);
+            }
+
+            // Agrega el contenedor si la lista está vacía o si ya tiene contenedores
+            if (tramite.getContenedor().isEmpty()) {
+                tramite.getContenedor().add(contenedor);
+            } else {
+                boolean contenedorExistente = false;
+                for (Contenedor cont : tramite.getContenedor()) {
+                    if (cont.getId().equals(contenedor.getId())) {
+                        contenedorExistente = true;
+                        break;
+                    }
+                }
+                if (!contenedorExistente) {
+                    tramite.getContenedor().add(contenedor);
+                }
+            }
+
             tramiteRepository.save(tramite);
             return tramite;
         } catch (IOException e) {

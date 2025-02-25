@@ -1,5 +1,6 @@
 package com.cumpleanos.importramite.service.implementation;
 
+import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Revision;
 import com.cumpleanos.importramite.persistence.model.Tramite;
@@ -50,41 +51,44 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         Map<String, Revision> revisionMap = revisions.stream()
                 .collect(Collectors.toMap(Revision::getBarra, rev -> rev));
 
-        //Mapa de productos en tramite con Id -> bultos
-        Map<String, Producto> tramiteProductMap = tramite.getListProductos().stream()
+        // Mapa de productos en tramite con Id -> bultos
+        Map<String, Producto> tramiteProductMap = tramite.getContenedor().stream()
+                .flatMap(contenedor -> contenedor.getProductos().stream())
                 .collect(Collectors.toMap(Producto::getId, prod -> prod));
 
-        for (Producto producto : tramite.getListProductos()) {
-            Revision revision = revisionMap.get(producto.getId());
+        for (Contenedor contenedor : tramite.getContenedor()) {
+            for (Producto producto : contenedor.getProductos()) {
+                Revision revision = revisionMap.get(producto.getId());
 
-            if (revision == null) {
-                //Si no existe en revision, crear nuevo registro
-                revision = new Revision();
-                revision.setBarra(producto.getId());
-                revision.setCantidad(0);
-                revision.setCantidadPedida(producto.getBultos());
-                revision.setCantidadDiferencia(producto.getBultos());
-                revision.setEstado("NO LLEGO");
-                revision.setSecuencia(producto.getSecuencia());
-                revision.setTramite(tramite);
-            } else {
-                int cantidadPedida = producto.getBultos();
-                revision.setCantidadPedida(cantidadPedida);
-                int diferencia = revision.getCantidad() - cantidadPedida;
-                revision.setCantidadDiferencia(Math.abs(diferencia));
-                revision.setSecuencia(producto.getSecuencia());
-                if (diferencia == 0) {
-                    revision.setEstado("COMPLETO");
-                } else if (diferencia > 0) {
-                    revision.setEstado("SOBRANTE");
+                if (revision == null) {
+                    // Si no existe en revision, crear nuevo registro
+                    revision = new Revision();
+                    revision.setBarra(producto.getId());
+                    revision.setCantidad(0);
+                    revision.setCantidadPedida(producto.getBultos());
+                    revision.setCantidadDiferencia(producto.getBultos());
+                    revision.setEstado("NO LLEGO");
+                    revision.setSecuencia(producto.getSecuencia());
+                    revision.setTramite(tramite);
                 } else {
-                    revision.setEstado("FALTANTE");
+                    int cantidadPedida = producto.getBultos();
+                    revision.setCantidadPedida(cantidadPedida);
+                    int diferencia = revision.getCantidad() - cantidadPedida;
+                    revision.setCantidadDiferencia(Math.abs(diferencia));
+                    revision.setSecuencia(producto.getSecuencia());
+                    if (diferencia == 0) {
+                        revision.setEstado("COMPLETO");
+                    } else if (diferencia > 0) {
+                        revision.setEstado("SOBRANTE");
+                    } else {
+                        revision.setEstado("FALTANTE");
+                    }
                 }
+                repository.save(revision);
             }
-            repository.save(revision);
         }
 
-        //Verificar revisiones que no esten en productos y actualizarlos
+        // Verificar revisiones que no esten en productos y actualizarlos
         for (Revision revision : revisions) {
             if (!tramiteProductMap.containsKey(revision.getBarra())){
                 revision.setEstado("SIN REGISTRO");
@@ -96,6 +100,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         tramiteRepository.save(tramite);
         return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
     }
+
 
     /**
      * Metodo para crear o actualizar datos de la tabal revision
