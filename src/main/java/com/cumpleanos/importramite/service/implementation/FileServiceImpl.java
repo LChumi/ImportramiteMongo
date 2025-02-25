@@ -55,18 +55,18 @@ public class FileServiceImpl {
             }
 
             // Agrega el contenedor si la lista está vacía o si ya tiene contenedores
-            if (tramite.getContenedor().isEmpty()) {
-                tramite.getContenedor().add(contenedor);
+            if (tramite.getContenedores().isEmpty()) {
+                tramite.getContenedores().add(contenedor);
             } else {
                 boolean contenedorExistente = false;
-                for (Contenedor cont : tramite.getContenedor()) {
+                for (Contenedor cont : tramite.getContenedores()) {
                     if (cont.getId().equals(contenedor.getId())) {
                         contenedorExistente = true;
                         break;
                     }
                 }
                 if (!contenedorExistente) {
-                    tramite.getContenedor().add(contenedor);
+                    tramite.getContenedores().add(contenedor);
                 }
             }
 

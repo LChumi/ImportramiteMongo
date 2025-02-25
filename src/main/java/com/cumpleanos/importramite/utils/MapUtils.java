@@ -13,7 +13,7 @@ public class MapUtils {
     public static Map<String, Producto> listByTramite(Tramite tr) {
         Map<String, Producto> productosMap = new HashMap<>();
 
-        for (Contenedor contenedor : tr.getContenedor()) {
+        for (Contenedor contenedor : tr.getContenedores()) {
             for (Producto producto : contenedor.getProductos()) {
                 productosMap.merge(producto.getId(), producto, (p1, p2) -> {
                     p1.setBultos(p1.getBultos() + p2.getBultos());

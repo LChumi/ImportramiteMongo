@@ -25,6 +25,6 @@ public class Tramite implements Serializable {
     private LocalDate fechaCarga;
     private LocalDate fechaLlegada;
 
-    private List<Contenedor> contenedor = new ArrayList<>();
+    private List<Contenedor> contenedores = new ArrayList<>();
     private Boolean estado = false;
 }
