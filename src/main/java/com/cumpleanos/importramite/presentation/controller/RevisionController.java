@@ -54,9 +54,9 @@ public class RevisionController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/updateQuantities/{tramiteId}")
-    public ResponseEntity<List<Revision>> updateRevisionWithTramiteQuantities(@PathVariable String tramiteId){
-        List<Revision> revisionList =  service.updateRevisionWithTramiteQuantities(tramiteId);
+    @PutMapping("/updateQuantities/{tramiteId}/{contenedorId}")
+    public ResponseEntity<List<Revision>> updateRevisionWithTramiteQuantities(@PathVariable String tramiteId, @PathVariable String contenedorId){
+        List<Revision> revisionList =  service.validateAndProcessTramite(tramiteId.trim(), contenedorId.trim());
         return ResponseEntity.ok(revisionList);
     }
 

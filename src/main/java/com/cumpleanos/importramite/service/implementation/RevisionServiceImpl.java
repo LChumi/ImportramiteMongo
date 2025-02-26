@@ -40,12 +40,41 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
     }
 
     /**
-     * Metodo para validar los productos comparando con loa tabla Tramite
-     * @param tramiteId el ID del tramite registrado
-     * @return devuelve la lista de revision actualizada comparando las cantidades de tramite y de revision actualizando estados
+     * Metodo para validar los productos comparando con la tabla Trámite
+     * validando primero todos los contenedores disponibles
+     * @param tramiteId el ID del trámite registrado
+     * @return devuelve la lista de revision actualizada comparando las cantidades de trámite y de revision actualizando estados
      */
     @Override
-    public List<Revision> updateRevisionWithTramiteQuantities(String tramiteId) {
+    public List<Revision> validateAndProcessTramite(String tramiteId, String contenedorId) {
+        Tramite tramite = tramiteRepository.findById(tramiteId)
+                .orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
+
+        //Verificar si todos los contenedores estan finalizados
+        boolean allCompleted = tramite.getContenedores().stream()
+                .allMatch(Contenedor::getFinalizado);
+
+        if (!allCompleted) {
+            for (Contenedor contenedor : tramite.getContenedores()) {
+                if (contenedor.getId().equals(contenedorId)) {
+                    contenedor.setFinalizado(true);
+                }
+            }
+            tramiteRepository.save(tramite);
+
+            //Verificar Nuevamente los contenedores
+            allCompleted = tramite.getContenedores().stream()
+                    .allMatch(Contenedor::getFinalizado);
+        }
+
+        if (allCompleted) {
+            return updateRevisionWithTramiteQuantities(tramiteId);
+        }else {
+            return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
+        }
+    }
+
+    private List<Revision> updateRevisionWithTramiteQuantities(String tramiteId) {
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
         List<Revision> revisions = repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
@@ -131,5 +160,13 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             revision.setCantidad(revision.getCantidad() + 1);
         }
         return repository.save(revision);
+    }
+
+    private boolean checkContenedores(Tramite tramite) {
+
+        for (Contenedor  contenedor : tramite.getContenedores()) {
+
+        }
+        return true;
     }
 }
