@@ -21,6 +21,7 @@ public class Contenedor implements Serializable {
     private String id;
     private String usrBloquea = "";
     private Boolean bloqueado = false;
+    private Boolean finalizado = false;
     @JsonIgnore
     private List<Producto> productos;
 

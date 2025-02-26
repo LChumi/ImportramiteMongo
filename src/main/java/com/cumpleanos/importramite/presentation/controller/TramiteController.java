@@ -69,4 +69,10 @@ public class TramiteController {
         return ResponseEntity.ok(tramite);
     }
 
+    @GetMapping("lock-unlock/container/{tramite}/{contenedor}/{usr}")
+    public ResponseEntity<Tramite> lockUnlockContainer(@PathVariable  String tramite, @PathVariable String contenedor, @PathVariable String usr) {
+        Tramite tra = service.findTramiteBloqueaContenedor(tramite, contenedor, usr);
+        return ResponseEntity.ok(tra);
+    }
+
 }

@@ -41,6 +41,8 @@ public class FileServiceImpl {
             Contenedor contenedor = Contenedor.builder()
                     .id(contenedorId)
                     .productos(productoList)
+                    .finalizado(false)
+                    .bloqueado(false)
                     .build();
             Tramite tramite = tramiteRepository.findById(tramiteId).orElse(new Tramite());
 

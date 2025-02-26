@@ -42,4 +42,27 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
                 .sorted(Comparator.comparingInt(Producto::getSecuencia))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Tramite findTramiteBloqueaContenedor(String tramite, String contenedor, String usr) {
+        Tramite tr = repository.findById(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " no encontrado"));
+
+        for (Contenedor cont : tr.getContenedores()) {
+            if (cont.getId().equals(contenedor)) {
+                lockUnlockContenedor(cont, usr);
+            }
+        }
+        repository.save(tr);
+        return tr;
+    }
+
+    private void lockUnlockContenedor(Contenedor cont, String usr) {
+        if (cont.getBloqueado() && cont.getUsrBloquea().equals(usr)) {
+            cont.setUsrBloquea(null);
+            cont.setBloqueado(false);
+        }else  {
+            cont.setUsrBloquea(usr);
+            cont.setBloqueado(true);
+        }
+    }
 }
