@@ -3,6 +3,7 @@ package com.cumpleanos.importramite.service.implementation;
 import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.persistence.records.StatusResponse;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.service.interfaces.ITramiteService;
@@ -44,25 +45,33 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     }
 
     @Override
-    public Tramite findTramiteBloqueaContenedor(String tramite, String contenedor, String usr) {
+    public StatusResponse findTramiteBloqueaContenedor(String tramite, String contenedor, String usr) {
         Tramite tr = repository.findById(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " no encontrado"));
-
+        StatusResponse response = null;
         for (Contenedor cont : tr.getContenedores()) {
             if (cont.getId().equals(contenedor)) {
-                lockUnlockContenedor(cont, usr);
+                response =lockUnlockContenedor(cont, usr);
+                break;
             }
         }
         repository.save(tr);
-        return tr;
+        return response;
     }
 
-    private void lockUnlockContenedor(Contenedor cont, String usr) {
-        if (cont.getBloqueado() && cont.getUsrBloquea().equals(usr)) {
-            cont.setUsrBloquea(null);
-            cont.setBloqueado(false);
-        }else  {
+    private StatusResponse lockUnlockContenedor(Contenedor cont, String usr) {
+        if (cont.getUsrBloquea() == null) {
+            cont.setUsrBloquea("");
+        }
+        if (!cont.getBloqueado() && cont.getUsrBloquea().isEmpty()) {
             cont.setUsrBloquea(usr);
             cont.setBloqueado(true);
+            return new StatusResponse("bloqueado", true);
+        } else if (cont.getBloqueado() && cont.getUsrBloquea().equals(usr)) {
+            cont.setUsrBloquea(null);
+            cont.setBloqueado(false);
+            return new StatusResponse("desbloqueado", true);
+        } else {
+            return new StatusResponse("error", false);
         }
     }
 }

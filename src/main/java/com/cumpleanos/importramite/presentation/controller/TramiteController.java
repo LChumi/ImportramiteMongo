@@ -2,16 +2,17 @@ package com.cumpleanos.importramite.presentation.controller;
 
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.persistence.records.StatusResponse;
 import com.cumpleanos.importramite.service.interfaces.ITramiteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Slf4j
 @CrossOrigin("*")
 @RestController
 @RequestMapping("tramite")
@@ -63,15 +64,16 @@ public class TramiteController {
         return ResponseEntity.ok(productos);
     }
 
-    @GetMapping("findId/{id}")
+    @GetMapping("/findId/{id}")
     public ResponseEntity<Tramite> findById(@PathVariable String id) {
         Tramite tramite = service.findById(id);
         return ResponseEntity.ok(tramite);
     }
 
-    @GetMapping("lock-unlock/container/{tramite}/{contenedor}/{usr}")
-    public ResponseEntity<Tramite> lockUnlockContainer(@PathVariable  String tramite, @PathVariable String contenedor, @PathVariable String usr) {
-        Tramite tra = service.findTramiteBloqueaContenedor(tramite, contenedor, usr);
+    @GetMapping("/lock-unlock/container/{tramite}/{contenedor}/{usr}")
+    public ResponseEntity<StatusResponse> lockUnlockContainer(@PathVariable  String tramite, @PathVariable String contenedor, @PathVariable String usr) {
+        log.info("tramite:{} contenedor:{} usr:{}", tramite, contenedor, usr);
+        StatusResponse tra = service.findTramiteBloqueaContenedor(tramite.trim(), contenedor.trim(), usr.trim());
         return ResponseEntity.ok(tra);
     }
 

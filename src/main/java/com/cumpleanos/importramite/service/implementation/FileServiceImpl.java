@@ -41,6 +41,7 @@ public class FileServiceImpl {
             Contenedor contenedor = Contenedor.builder()
                     .id(contenedorId)
                     .productos(productoList)
+                    .usrBloquea("")
                     .finalizado(false)
                     .bloqueado(false)
                     .build();
