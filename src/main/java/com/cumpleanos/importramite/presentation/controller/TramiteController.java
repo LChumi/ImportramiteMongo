@@ -33,8 +33,8 @@ public class TramiteController {
         return ResponseEntity.ok(tramites);
     }
 
-    @GetMapping("/complete")
-    public ResponseEntity<List<Tramite>> getComplete() {
+    @GetMapping("/completed")
+    public ResponseEntity<List<Tramite>> getCompleted() {
         List<Tramite> tramites = service.findByEstadoTrue();
         return ResponseEntity.ok(tramites);
     }
