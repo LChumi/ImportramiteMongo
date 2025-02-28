@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ITramiteService extends IGenericService<Tramite, String> {
     List<Tramite> findByEstadoFalse();
+    List<Tramite> findByEstadoTrue();
     List<Producto> listByTramite(String tramite);
     StatusResponse findTramiteBloqueaContenedor(String tramite, String contenedor, String usr);
 }

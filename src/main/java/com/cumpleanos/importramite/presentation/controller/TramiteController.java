@@ -33,6 +33,12 @@ public class TramiteController {
         return ResponseEntity.ok(tramites);
     }
 
+    @GetMapping("/complete")
+    public ResponseEntity<List<Tramite>> getComplete() {
+        List<Tramite> tramites = service.findByEstadoTrue();
+        return ResponseEntity.ok(tramites);
+    }
+
     @PostMapping("/save")
     public ResponseEntity<Tramite> save(@RequestBody Tramite tramite) {
         Tramite saved = service.save(tramite);

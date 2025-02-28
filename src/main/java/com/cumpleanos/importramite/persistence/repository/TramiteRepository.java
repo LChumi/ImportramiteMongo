@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface TramiteRepository extends MongoRepository<Tramite,String> {
     List<Tramite> findByEstadoFalse();
+    List<Tramite> findByEstadoTrue();
 }

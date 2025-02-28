@@ -33,6 +33,11 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     }
 
     @Override
+    public List<Tramite> findByEstadoTrue() {
+        return repository.findByEstadoTrue();
+    }
+
+    @Override
     public List<Producto> listByTramite(String tramite) {
         Tramite tr = repository.findById(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " no encontrado"));
 
