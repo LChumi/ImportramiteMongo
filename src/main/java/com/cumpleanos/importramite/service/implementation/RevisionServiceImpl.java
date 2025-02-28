@@ -162,11 +162,4 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         return repository.save(revision);
     }
 
-    private boolean checkContenedores(Tramite tramite) {
-
-        for (Contenedor  contenedor : tramite.getContenedores()) {
-
-        }
-        return true;
-    }
 }
