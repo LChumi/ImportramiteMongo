@@ -31,15 +31,17 @@ public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> imp
     }
 
     @Override
-    public Muestra saveAndCompare(String barra, String muestra) {
-        Revision rev = revisionRepository.findById(barra).orElseThrow(() -> new DocumentNotFoundException("Revision no encontrada"));
+    public Muestra saveAndCompare(String barra, String muestra, String tramite) {
+        Revision rev = revisionRepository.findByBarraAndTramite_Id(barra, tramite);
+        if(rev == null) {
+            throw new DocumentNotFoundException("No muestra found");
+        }
         Muestra mr = repository.findById(barra).orElse(null);
         if (mr == null) {
             mr = new Muestra();
             mr.setId(barra);
             mr.setBarraMuestra(muestra);
             mr.setRevision(rev);
-            mr.setBarraMuestra(barra);
             mr.setStatus(validateMuestra(mr));
             mr.setCantidad(1);
         } else {

@@ -150,7 +150,6 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         if (revision == null) {
             //Crear nueva revision
             revision = new Revision();
-            revision.setId(UUID.randomUUID().toString());
             revision.setFecha(LocalDate.now());
             revision.setBarra(barra);
             revision.setUsuario(usuario);
