@@ -34,7 +34,7 @@ public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> imp
     public Muestra saveAndCompare(String barra, String muestra, String tramite) {
         Revision rev = revisionRepository.findByBarraAndTramite_Id(barra, tramite);
         if(rev == null) {
-            throw new DocumentNotFoundException("No muestra found");
+            throw new DocumentNotFoundException("Muestra no encontrada ");
         }
         Muestra mr = repository.findById(barra).orElse(null);
         if (mr == null) {
