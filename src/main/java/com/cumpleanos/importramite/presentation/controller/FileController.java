@@ -26,7 +26,7 @@ public class FileController {
             @RequestParam("tramiteId") String tramiteId,
             @RequestParam("fechaLlegada") LocalDate fechaLlegada,
             @RequestParam("contenedorId") String contenedorId) {
-        Tramite tramite = fileService.readExcelFile(file, tramiteId, fechaLlegada, contenedorId);
+        Tramite tramite = fileService.readExcelFile(file, tramiteId.trim(), fechaLlegada, contenedorId.trim());
         return ResponseEntity.ok(tramite);
     }
 }

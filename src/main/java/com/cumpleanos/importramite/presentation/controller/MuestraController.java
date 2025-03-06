@@ -19,13 +19,13 @@ public class MuestraController {
 
     @GetMapping("/list/{tramiteId}")
     public ResponseEntity<List<Muestra>> getAll(@PathVariable String tramiteId) {
-        List<Muestra> muestras= service.findByRevision_Tramite_Id(tramiteId);
+        List<Muestra> muestras= service.findByRevision_Tramite_Id(tramiteId.trim());
         return ResponseEntity.ok(muestras);
     }
 
     @GetMapping("/add/compare/{barra}/{muestra}/{tramite}")
     public ResponseEntity<Muestra> compare(@PathVariable String barra, @PathVariable String muestra, @PathVariable String tramite) {
-        Muestra mr = service.saveAndCompare(barra,muestra, tramite);
+        Muestra mr = service.saveAndCompare(barra.trim(), muestra.trim(), tramite.trim());
         return ResponseEntity.ok(mr);
     }
 

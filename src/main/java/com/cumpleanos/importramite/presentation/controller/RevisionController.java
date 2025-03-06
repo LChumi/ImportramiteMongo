@@ -19,7 +19,7 @@ public class RevisionController {
 
     @GetMapping("/tramiteId/{id}")
     public List<Revision> findByTramite_Id(@PathVariable String id) {
-        return service.findByTramite_Id(id);
+        return service.findByTramite_Id(id.trim());
     }
 
     @GetMapping("/listar")
@@ -34,7 +34,7 @@ public class RevisionController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Revision> update(@PathVariable String id, @RequestBody Revision revision){
-        Revision found = service.findById(id);
+        Revision found = service.findById(id.trim());
         if (found == null) {
             return ResponseEntity.notFound().build();
         }
@@ -46,7 +46,7 @@ public class RevisionController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Revision> delete(@PathVariable String id){
-        Revision found = service.findById(id);
+        Revision found = service.findById(id.trim());
         if (found == null) {
             return ResponseEntity.notFound().build();
         }
@@ -62,7 +62,7 @@ public class RevisionController {
 
     @PutMapping("/updateQuantity/{tramiteId}/{barra}/{usuario}")
     public ResponseEntity<Revision> updateCantidadByBarra(@PathVariable String tramiteId, @PathVariable String barra, @PathVariable String usuario){
-        Revision updatedRevision = service.updateCantidadByBarra(tramiteId, barra, usuario);
+        Revision updatedRevision = service.updateCantidadByBarra(tramiteId.trim(), barra.trim(), usuario.trim());
         return ResponseEntity.ok(updatedRevision);
     }
 }

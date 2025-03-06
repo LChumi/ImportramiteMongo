@@ -30,7 +30,7 @@ public class ProductoController {
     
     @PutMapping("/update/{id}")
     public ResponseEntity<Producto> updateProducto(@RequestBody Producto producto, @PathVariable String id) {
-        Producto found = service.findById(id);
+        Producto found = service.findById(id.trim());
         if (found == null) {
             return ResponseEntity.notFound().build();
         }

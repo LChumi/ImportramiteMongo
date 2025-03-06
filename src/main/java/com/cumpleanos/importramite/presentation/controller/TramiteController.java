@@ -56,7 +56,7 @@ public class TramiteController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
-        Tramite tra = service.findById(id);
+        Tramite tra = service.findById(id.trim());
         if (tra == null) {
             return ResponseEntity.notFound().build();
         }
@@ -66,13 +66,13 @@ public class TramiteController {
 
     @GetMapping("/{tramiteId}/products")
     public ResponseEntity<List<Producto>> getProductos(@PathVariable String tramiteId) {
-        List<Producto> productos = service.listByTramite(tramiteId);
+        List<Producto> productos = service.listByTramite(tramiteId.trim());
         return ResponseEntity.ok(productos);
     }
 
     @GetMapping("/findId/{id}")
     public ResponseEntity<Tramite> findById(@PathVariable String id) {
-        Tramite tramite = service.findById(id);
+        Tramite tramite = service.findById(id.trim());
         return ResponseEntity.ok(tramite);
     }
 
