@@ -5,6 +5,7 @@ import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.StatusResponse;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
+import com.cumpleanos.importramite.persistence.repository.TramiteRepositoryCustom;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.service.interfaces.ITramiteService;
 import com.cumpleanos.importramite.utils.MapUtils;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> implements ITramiteService {
 
     private final TramiteRepository repository;
+    private final TramiteRepositoryCustom repositoryCustom;
 
     @Override
     public CrudRepository<Tramite, String> getRepository() {
@@ -61,6 +64,11 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
         }
         repository.save(tr);
         return response;
+    }
+
+    @Override
+    public List<Tramite> buscarTramites(String id, Boolean estado, LocalDate fechaInicio, LocalDate fechaFin) {
+        return repositoryCustom.buscarTramites(id, estado, fechaInicio, fechaFin);
     }
 
     private StatusResponse lockUnlockContenedor(Contenedor cont, String usr) {
