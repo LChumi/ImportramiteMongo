@@ -147,6 +147,9 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
 
         Revision revision = repository.findByBarraAndTramite_Id(barra, tramiteId);
 
+        Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(tramite);
+
+
         if (revision == null) {
             //Crear nueva revision
             revision = new Revision();
@@ -155,10 +158,22 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             revision.setUsuario(usuario);
             revision.setCantidad(1);
             revision.setTramite(tramite);
+            verifyExist(tramiteProductMap, revision);
         }else{
             revision.setCantidad(revision.getCantidad() + 1);
+            verifyExist(tramiteProductMap, revision);
         }
         return repository.save(revision);
     }
 
+    private void verifyExist(Map<String, Producto> tramiteProductMap, Revision revision) {
+        for (Producto producto : tramiteProductMap.values()) {
+            if (producto.getId().equals(revision.getBarra())) {
+                revision.setEstado("REGISTRADO");
+                break;
+            }else{
+                revision.setEstado("SIN REGISTRO");
+            }
+        }
+    }
 }

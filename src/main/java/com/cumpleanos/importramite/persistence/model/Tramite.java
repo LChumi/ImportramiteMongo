@@ -27,4 +27,5 @@ public class Tramite implements Serializable {
 
     private List<Contenedor> contenedores = new ArrayList<>();
     private Boolean estado = false;
+    private Short tipo =1; // 1: Pendiente 2:Validado 3:Muestra 4:Finalizado
 }
