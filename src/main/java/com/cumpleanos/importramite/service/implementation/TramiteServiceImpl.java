@@ -31,13 +31,8 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     }
 
     @Override
-    public List<Tramite> findByEstadoFalse() {
-        return repository.findByEstadoFalse();
-    }
-
-    @Override
-    public List<Tramite> findByEstadoTrue() {
-        return repository.findByEstadoTrue();
+    public List<Tramite> findByProceso(Short proceso) {
+        return repository.findByProceso(proceso);
     }
 
     @Override
@@ -67,7 +62,7 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     }
 
     @Override
-    public List<Tramite> buscarTramites(String id, Boolean estado, LocalDate fechaInicio, LocalDate fechaFin) {
+    public List<Tramite> buscarTramites(String id, Short estado, LocalDate fechaInicio, LocalDate fechaFin) {
         return repositoryCustom.buscarTramites(id, estado, fechaInicio, fechaFin);
     }
 

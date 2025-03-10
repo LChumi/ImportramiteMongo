@@ -18,7 +18,7 @@ public class TramiteRepositoryCustom {
 
     private final MongoTemplate mongoTemplate;
 
-    public List<Tramite> buscarTramites(String id, Boolean estado, LocalDate fechaInicio, LocalDate fechaFin) {
+    public List<Tramite> buscarTramites(String id, Short proceso, LocalDate fechaInicio, LocalDate fechaFin) {
         Criteria criteria = new Criteria();
 
         List<Criteria> filters = new ArrayList<>();
@@ -28,8 +28,8 @@ public class TramiteRepositoryCustom {
             filters.add(Criteria.where("id").regex(id, "i")); // "i" ignore uppercase/lowercase
         }
         //Filter by status
-        if (estado != null){
-            filters.add(Criteria.where("estado").is(estado));
+        if (proceso != null){
+            filters.add(Criteria.where("proceso").is(proceso));
         }
         //Filter date between
         if (fechaInicio != null && fechaFin != null){

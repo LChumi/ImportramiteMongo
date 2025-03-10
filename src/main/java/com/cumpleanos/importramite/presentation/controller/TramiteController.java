@@ -7,7 +7,6 @@ import com.cumpleanos.importramite.service.interfaces.ITramiteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,15 +28,9 @@ public class TramiteController {
         return ResponseEntity.ok(tramites);
     }
 
-    @GetMapping("/pending")
-    public ResponseEntity<List<Tramite>> getPending() {
-        List<Tramite> tramites = service.findByEstadoFalse();
-        return ResponseEntity.ok(tramites);
-    }
-
-    @GetMapping("/completed")
-    public ResponseEntity<List<Tramite>> getCompleted() {
-        List<Tramite> tramites = service.findByEstadoTrue();
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Tramite>> getStatus(@PathVariable Short status) {
+        List<Tramite> tramites = service.findByProceso(status);
         return ResponseEntity.ok(tramites);
     }
 
@@ -87,7 +80,7 @@ public class TramiteController {
     @GetMapping("/filtros")
     public ResponseEntity<List<Tramite>> filtros(
             @RequestParam(required = false) String id,
-            @RequestParam(required = false) Boolean estado,
+            @RequestParam(required = false) Short estado,
             @RequestParam(required = false) LocalDate fechaInicio,
             @RequestParam(required = false) LocalDate fechaFin) {
 

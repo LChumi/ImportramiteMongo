@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,13 +67,14 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         }
 
         if (allCompleted) {
-            return updateRevisionWithTramiteQuantities(tramiteId);
-        }else {
-            return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
+            tramite.setProceso((short) 2);
+            tramiteRepository.save(tramite);
         }
+        return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
     }
 
-    private List<Revision> updateRevisionWithTramiteQuantities(String tramiteId) {
+    @Override
+    public List<Revision> updateRevisionWithTramiteQuantities(String tramiteId) {
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
         List<Revision> revisions = repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
@@ -123,7 +123,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
                 repository.save(revision);
             }
         }
-        tramite.setEstado(true);
+        tramite.setProceso((short) 3);
         tramiteRepository.save(tramite);
         return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
     }
@@ -148,7 +148,6 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         Revision revision = repository.findByBarraAndTramite_Id(barra, tramiteId);
 
         Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(tramite);
-
 
         if (revision == null) {
             //Crear nueva revision

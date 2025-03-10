@@ -8,9 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ITramiteService extends IGenericService<Tramite, String> {
-    List<Tramite> findByEstadoFalse();
-    List<Tramite> findByEstadoTrue();
+    List<Tramite> findByProceso(Short proceso);
     List<Producto> listByTramite(String tramite);
     StatusResponse findTramiteBloqueaContenedor(String tramite, String contenedor, String usr);
-    List<Tramite> buscarTramites(String id, Boolean estado, LocalDate fechaInicio, LocalDate fechaFin);
+    List<Tramite> buscarTramites(String id, Short estado, LocalDate fechaInicio, LocalDate fechaFin);
 }
