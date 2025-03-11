@@ -11,16 +11,15 @@ import java.util.function.Supplier;
 @Slf4j
 public class HttpResponseHandler {
 
-    public static <T> ApiResponse<T> handle(Supplier<ResponseEntity<T>> supplier, String errorMessage){
-        try {
-            T body = supplier.get().getBody();
-            return new ApiResponse<>(body);
-        } catch (FeignException e) {
-            log.error("Error de Feign: {} - {} ", e.status(), e.getMessage());
-            return new ApiResponse<>(new ErrorResponse(e.status(), e.getMessage()));
-        } catch (Exception e) {
+    public static <T> T handle(Supplier<ResponseEntity<T>> supplier, String errorMessage){
+        try{
+            return supplier.get().getBody();
+        }catch(FeignException e){
+            log.error("Error de Feign: {} - {} ",e.status(), e.getMessage());
+            return null;
+        }catch(Exception e){
             log.error(errorMessage, e);
-            return new ApiResponse<>(new ErrorResponse(500, e.getMessage()));
+            return null;
         }
     }
 }

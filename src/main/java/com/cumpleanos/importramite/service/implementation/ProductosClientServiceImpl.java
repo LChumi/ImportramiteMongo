@@ -1,6 +1,8 @@
 package com.cumpleanos.importramite.service.implementation;
 
-import com.cumpleanos.importramite.service.http.productosClient;
+import com.cumpleanos.importramite.persistence.api.ProductoApi;
+import com.cumpleanos.importramite.service.exception.HttpResponseHandler;
+import com.cumpleanos.importramite.service.http.ProductosClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ProductosClientServiceImpl {
 
-    private final productosClient productosClient;
+    private final ProductosClient productosClient;
+
+    public ProductoApi getProduct(long bodega, String data){
+        return HttpResponseHandler.handle(() -> productosClient.buscarProdBod(bodega, data),
+                "Error al obtener el producto :" + data);
+    }
 
 
 }
