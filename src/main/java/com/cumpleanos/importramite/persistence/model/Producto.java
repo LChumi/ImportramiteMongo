@@ -23,6 +23,11 @@ public class Producto implements Serializable {
     private Integer cxb;
     private Integer bultos;
     private Integer total;
+    private String itemAlterno;
     private Double pvp;
+    private Integer cxbAnterior;
+    private String ubicacionBulto;
+    private String stockReal;
+
     private int secuencia;
 }
