@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface MuestraRepository extends MongoRepository<Muestra,String> {
     List<Muestra> findByRevision_Tramite_Id(String tramiteId);
+    Muestra findByBarraBultoAndRevision_Tramite_Id(String barraBulto, String tramiteId);
 }
