@@ -48,8 +48,13 @@ public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> imp
             mr.setStatus(validateMuestra(mr));
             mr.setCantidad(1);
         } else {
-            mr.setCantidad(mr.getCantidad()+1);
-            mr.setStatus(validateMuestra(mr));
+            if (mr.getBarraMuestra().equals(muestra)) {
+                mr.setCantidad(mr.getCantidad()+1);
+                mr.setStatus(validateMuestra(mr));
+            }else{
+                throw new DocumentNotFoundException("Barra de muestra no coincide con el historial");
+            }
+
         }
         repository.save(mr);
         return mr;
