@@ -1,0 +1,68 @@
+package com.cumpleanos.importramite.service.implementation;
+
+import com.cumpleanos.importramite.persistence.model.Producto;
+import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.utils.MapUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Map;
+
+@Service
+public class ExcelService {
+
+    public byte[] generarExcel(Tramite tramite) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Tramite");
+
+        Row headerRow = sheet.createRow(0);
+        String[] columnas = {"COD.BARRA", "ITEM", "NUEVA_DESCRIPCION", "CANT", "CXB", "ITEM_ALTERNO", "PVP", "CXB_ANT", "ZHU", "STOCK", "DESCRIPCION", "DIFERENCIAS", "BARRA_SISTEMA"};
+
+        for (int i = 0; i < columnas.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(columnas[i]);
+            cell.setCellStyle(getHeaderCellStyle(workbook));
+        }
+
+        //Llenar los datos
+        int rowNum = 1;
+        Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(tramite);
+        for (Producto producto : tramiteProductMap.values()) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(producto.getId());
+            row.createCell(1).setCellValue(producto.getId1());
+            row.createCell(2).setCellValue(producto.getNombre());
+            row.createCell(3).setCellValue(producto.getBultos());
+            row.createCell(4).setCellValue(producto.getCxb());
+            row.createCell(5).setCellValue(producto.getItemAlterno());
+            row.createCell(6).setCellValue(producto.getPvp());
+            row.createCell(7).setCellValue(producto.getCxbAnterior());
+            row.createCell(8).setCellValue(producto.getUbicacionBulto());
+            row.createCell(9).setCellValue(producto.getStockReal());
+            row.createCell(10).setCellValue(producto.getDescripcion());
+            row.createCell(11).setCellValue(producto.getBarraSistema());
+            row.createCell(12).setCellValue(producto.getDiferencia());
+        }
+
+        for(int i =0 ; i < columnas.length; i++){
+            sheet.autoSizeColumn(i);
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        return out.toByteArray();
+    }
+
+    private CellStyle getHeaderCellStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        style.setFont(font);
+        return style;
+    }
+}

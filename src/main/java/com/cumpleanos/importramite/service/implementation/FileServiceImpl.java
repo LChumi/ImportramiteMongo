@@ -1,5 +1,6 @@
 package com.cumpleanos.importramite.service.implementation;
 
+import com.cumpleanos.importramite.persistence.api.ProductoApi;
 import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -30,6 +32,7 @@ import java.util.List;
 public class FileServiceImpl {
 
     private final TramiteRepository  tramiteRepository;
+    private final ProductosClientServiceImpl productosClientService;
 
     public Tramite readExcelFile(MultipartFile file, String tramiteId,LocalDate fechaLlegada, String contenedorId){
         List<Producto> productoList = new ArrayList<>();
@@ -99,11 +102,31 @@ public class FileServiceImpl {
                 Producto producto = FileUtils.mapRowToProduct(row);
                 counter++;
                 producto.setSecuencia(counter);
+                getProducts(producto);
                 productos.add(producto);
             } catch (ParseException e) {
                 log.error("Error al procesar la fila:  {}", e.getMessage());
             }
         }
         return productos;
+    }
+
+    private void getProducts(Producto producto) {
+        long bodega = 10000586L;
+        ProductoApi api = productosClientService.getProduct(bodega,  producto.getId());
+        if (api != null) {
+            producto.setItemAlterno(api.pro_id1());
+            producto.setPvp(api.pvp());
+            producto.setCxbAnterior(api.cxb());
+            producto.setUbicacionBulto(api.bulto());
+            producto.setStockReal(api.stock_real());
+            producto.setDescripcion(api.pro_nombre());
+            producto.setBarraSistema(api.pro_id());
+            if (!Objects.equals(producto.getCxb(), api.cxb())){
+                producto.setDiferencia(producto.getCxb() - api.cxb());
+            }
+        } else {
+            producto.setDescripcion("NUEVO PRODUCTO");
+        }
     }
 }
