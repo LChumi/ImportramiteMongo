@@ -29,4 +29,10 @@ public class MuestraController {
         return ResponseEntity.ok(mr);
     }
 
+    @GetMapping("/validate/{tramite}")
+    public ResponseEntity<List<Muestra>> validate(@PathVariable String tramite) {
+        List<Muestra> muestras= service.updateWithRevision(tramite.trim());
+        return ResponseEntity.ok(muestras);
+    }
+
 }
