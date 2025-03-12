@@ -1,6 +1,5 @@
 package com.cumpleanos.importramite.service.implementation;
 
-import com.cumpleanos.importramite.persistence.api.EmailRecord;
 import com.cumpleanos.importramite.service.exception.HttpResponseHandler;
 import com.cumpleanos.importramite.service.http.EmailClient;
 import lombok.RequiredArgsConstructor;
