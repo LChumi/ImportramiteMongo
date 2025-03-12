@@ -16,8 +16,8 @@ public class EmailClientServiceImpl {
 
     private final EmailClient emailClient;
 
-    public String sendEmail(EmailRecord email, MultipartFile file , String nombreAdjunto){
-        return HttpResponseHandler.handle(() -> emailClient.enviarMailAdjunto(email, file, nombreAdjunto),
+    public void sendEmailAdjutno(MultipartFile email, MultipartFile file , String nombreAdjunto){
+        HttpResponseHandler.handle(() -> emailClient.enviarMailAdjunto(file, nombreAdjunto, email),
                 "Error al enviar email :" + nombreAdjunto);
     }
 }

@@ -37,14 +37,14 @@ public class ExcelService {
             row.createCell(2).setCellValue(producto.getNombre());
             row.createCell(3).setCellValue(producto.getBultos());
             row.createCell(4).setCellValue(producto.getCxb());
-            row.createCell(5).setCellValue(producto.getItemAlterno());
-            row.createCell(6).setCellValue(producto.getPvp());
-            row.createCell(7).setCellValue(producto.getCxbAnterior());
-            row.createCell(8).setCellValue(producto.getUbicacionBulto());
-            row.createCell(9).setCellValue(producto.getStockReal());
-            row.createCell(10).setCellValue(producto.getDescripcion());
-            row.createCell(11).setCellValue(producto.getBarraSistema());
-            row.createCell(12).setCellValue(producto.getDiferencia());
+            row.createCell(5).setCellValue(producto.getItemAlterno() !=null  ? producto.getItemAlterno() : "");
+            row.createCell(6).setCellValue(producto.getPvp() != null ? producto.getPvp() : 0.0);
+            row.createCell(7).setCellValue(producto.getCxbAnterior()  != null ? producto.getCxbAnterior() : 0);
+            row.createCell(8).setCellValue(producto.getUbicacionBulto() != null ? producto.getUbicacionBulto() : "");
+            row.createCell(9).setCellValue(producto.getStockReal() != null ? producto.getStockReal() : 0);
+            row.createCell(10).setCellValue(producto.getDescripcion()  != null ? producto.getDescripcion() : "");
+            row.createCell(11).setCellValue(producto.getBarraSistema()  != null ? producto.getBarraSistema() : "");
+            row.createCell(12).setCellValue(producto.getDiferencia() != null ? producto.getDiferencia() : 0);
         }
 
         for(int i =0 ; i < columnas.length; i++){

@@ -2,11 +2,19 @@ package com.cumpleanos.importramite.utils;
 
 import com.cumpleanos.importramite.persistence.model.Producto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
@@ -72,4 +80,10 @@ public class FileUtils {
             return 0.0; // Valor predeterminado
         }
     }
+
+    public static MultipartFile converFileToMultipartFile(byte[] fileBytes, String nombreAdjunto) throws IOException {
+        return new CustomMultipartFile(fileBytes, nombreAdjunto,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    }
+
 }

@@ -1,12 +1,15 @@
 package com.cumpleanos.importramite.service.implementation;
 
+import com.cumpleanos.importramite.persistence.api.EmailRecord;
 import com.cumpleanos.importramite.persistence.api.ProductoApi;
 import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
+import com.cumpleanos.importramite.utils.CustomMultipartFile;
 import com.cumpleanos.importramite.utils.FileUtils;
 import com.cumpleanos.importramite.utils.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,6 +17,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +37,8 @@ public class FileServiceImpl {
 
     private final TramiteRepository  tramiteRepository;
     private final ProductosClientServiceImpl productosClientService;
+    private final ExcelService excelService;
+    private final EmailClientServiceImpl  emailClientService;
 
     public Tramite readExcelFile(MultipartFile file, String tramiteId,LocalDate fechaLlegada, String contenedorId){
         List<Producto> productoList = new ArrayList<>();
@@ -77,6 +83,21 @@ public class FileServiceImpl {
             }
 
             tramiteRepository.save(tramite);
+            String asunto = "Tramite ingresado";
+            String mensaje = "Envio de Tramite";
+            byte[] excelByte = excelService.generarExcel(tramite);
+            String nombreAdjunto = "Tramite-"+ tramite.getId() + ".xlsx";
+            MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
+            EmailRecord email = new EmailRecord(
+                    new String[]{"luischumi.9@gmail.com"},
+                    asunto,
+                    mensaje
+            );
+            // Serializa el objeto EmailRecord a JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            String emailJson = objectMapper.writeValueAsString(email);
+            MultipartFile emailFile = new CustomMultipartFile(emailJson.getBytes(), "email.json", "application/json");
+            emailClientService.sendEmailAdjutno(emailFile,fileExcel,nombreAdjunto);
             return tramite;
         } catch (IOException e) {
             throw new RuntimeException(e);
