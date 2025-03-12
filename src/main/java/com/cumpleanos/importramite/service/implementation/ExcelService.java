@@ -19,7 +19,7 @@ public class ExcelService {
         Sheet sheet = workbook.createSheet("Tramite");
 
         Row headerRow = sheet.createRow(0);
-        String[] columnas = {"COD.BARRA", "ITEM", "NUEVA_DESCRIPCION", "CANT", "CXB", "ITEM_ALTERNO", "PVP", "CXB_ANT", "ZHU", "STOCK", "DESCRIPCION", "DIFERENCIAS", "BARRA_SISTEMA"};
+        String[] columnas = {"COD.BARRA", "ITEM", "NUEVA_DESCRIPCION", "CANT", "CXB", "ITEM_ALTERNO", "PVP", "CXB_ANT", "ZHU", "STOCK", "DESCRIPCION", "BARRA_SISTEMA", "DIFERENCIAS"};
 
         for (int i = 0; i < columnas.length; i++) {
             Cell cell = headerRow.createCell(i);
