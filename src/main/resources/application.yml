@@ -1,19 +1,10 @@
+server:
+  port:7572
+
 spring:
   application:
     name: Import-tramite
 
-  data:
-    mongodb:
-      database: icep
-      host: localhost
-      port: 27017
+  config:
+    import: classpath:/mongo_secure.yml
 
-logging:
-  level:
-    org:
-      springframework:
-        data:
-          mongodb:
-            core:
-              MongoTemplate: DEBUG
-              MongoOperations: DEBUG
