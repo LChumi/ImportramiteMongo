@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -155,6 +156,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             //Crear nueva revision
             revision = new Revision();
             revision.setFecha(LocalDate.now());
+            revision.setHora(LocalTime.now());
             revision.setBarra(barra);
             revision.setUsuario(usuario);
             revision.setCantidad(1);

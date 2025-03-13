@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,6 +51,8 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
             mr.setRevision(rev);
             mr.setStatus(validateMuestra(mr));
             mr.setCantidad(1);
+            mr.setFecha(LocalDate.now());
+            mr.setHora(LocalTime.now());
         } else {
             if (mr.getBarraMuestra() == null || mr.getBarraMuestra().isEmpty()) {
                 mr.setBarraMuestra(muestra);

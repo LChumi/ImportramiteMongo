@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @Document(collection = "revision")
@@ -28,6 +29,8 @@ public class Revision implements Serializable {
 
     @CreatedDate
     private LocalDate fecha;
+    @CreatedDate
+    private LocalTime hora;
     private String usuario;
 
     @DBRef
