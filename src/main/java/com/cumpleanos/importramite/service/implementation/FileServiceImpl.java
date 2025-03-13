@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import static com.cumpleanos.importramite.utils.MessageUtil.MENSAJE_TRAMITE;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -83,8 +85,8 @@ public class FileServiceImpl {
             }
 
             tramiteRepository.save(tramite);
-            String asunto = "Tramite ingresado";
-            String mensaje = "Envio de Tramite";
+            String asunto = "LLEGADA TRAMITE "+ tramiteId.toUpperCase() ;
+            String mensaje = MENSAJE_TRAMITE(tramiteId, String.valueOf(fechaLlegada));
             byte[] excelByte = excelService.generarExcel(tramite);
             String nombreAdjunto = "Tramite-"+ tramite.getId() + ".xlsx";
             MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
@@ -98,7 +100,7 @@ public class FileServiceImpl {
 
     private static MultipartFile getEmailMultipartFile(String asunto, String mensaje) throws JsonProcessingException {
         EmailRecord email = new EmailRecord(
-                new String[]{"tguillen@cumpleanos.com.ec", "lchumi@cumpleanos.com.ec"},
+                new String[]{"ventas@cumpleanos.com.ec","compras@cumpleanos.com.ec", "publicidad@cumpleanos.com.ec", "inventarios@cumpleanos.com.ec" ,"tguillen@cumpleanos.com.ec", "edicion@cumpleanos.com.ec", "inventarios1@cumpleanos.com.ec", "inventariosnarancay@cumpleanos.com.ec", "jchumbi@cumpleanos.com.ec", "jrivas@cumpleanos.com.ec", "facturacion@cumpleanos.com.ec", "bodegazhucay@cumpleanos.com.ec"},
                 asunto,
                 mensaje
         );
@@ -145,14 +147,14 @@ public class FileServiceImpl {
             producto.setCxbAnterior(api.cxb());
             producto.setUbicacionBulto(api.bulto());
             producto.setUbicacionUnidad(api.unidad());
-            producto.setStockZhucay(api.stock_real());
+            producto.setStockZhucay(api.stock_disponible());
             producto.setDescripcion(api.pro_nombre());
             producto.setBarraSistema(api.pro_id());
             if (!Objects.equals(producto.getCxb(), api.cxb())){
                 producto.setDiferencia(producto.getCxb() - api.cxb());
             }
             if (apiNarancay != null) {
-                producto.setStockNarancay(apiNarancay.stock_real());
+                producto.setStockNarancay(apiNarancay.stock_disponible());
             }
         } else {
             producto.setDescripcion("NUEVO PRODUCTO");

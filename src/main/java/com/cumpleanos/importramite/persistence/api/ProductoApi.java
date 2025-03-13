@@ -11,6 +11,7 @@ public record ProductoApi (
         String unidad,
         String bulto,
         Integer stock_real,
+        Integer stock_disponible,
         Long bod_codigo,
         Long pro_empresa,
         Long pro_codigo
