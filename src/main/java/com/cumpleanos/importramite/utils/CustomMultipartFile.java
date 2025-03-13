@@ -15,6 +15,7 @@ public class CustomMultipartFile implements MultipartFile {
         this.fileName = fileName;
         this.contentType = contentType;
     }
+
     @Override
     public String getName() {
         return fileName;

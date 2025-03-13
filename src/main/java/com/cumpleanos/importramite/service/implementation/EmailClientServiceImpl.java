@@ -15,7 +15,7 @@ public class EmailClientServiceImpl {
 
     private final EmailClient emailClient;
 
-    public void sendEmailAdjutno(MultipartFile email, MultipartFile file , String nombreAdjunto){
+    public void sendEmailAdjutno(MultipartFile email, MultipartFile file, String nombreAdjunto) {
         HttpResponseHandler.handle(() -> emailClient.enviarMailAdjunto(file, nombreAdjunto, email),
                 "Error al enviar email :" + nombreAdjunto);
     }

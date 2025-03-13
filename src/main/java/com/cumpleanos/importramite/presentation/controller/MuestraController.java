@@ -19,7 +19,7 @@ public class MuestraController {
 
     @GetMapping("/list/{tramiteId}")
     public ResponseEntity<List<Muestra>> getAll(@PathVariable String tramiteId) {
-        List<Muestra> muestras= service.findByRevision_Tramite_Id(tramiteId.trim());
+        List<Muestra> muestras = service.findByRevision_Tramite_Id(tramiteId.trim());
         return ResponseEntity.ok(muestras);
     }
 
@@ -35,7 +35,7 @@ public class MuestraController {
 
     @GetMapping("/validate/{tramite}")
     public ResponseEntity<List<Muestra>> validate(@PathVariable String tramite) {
-        List<Muestra> muestras= service.updateWithRevision(tramite.trim());
+        List<Muestra> muestras = service.updateWithRevision(tramite.trim());
         return ResponseEntity.ok(muestras);
     }
 

@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ =  {@Autowired})
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> implements ITramiteService {
 
     private final TramiteRepository repository;
@@ -53,7 +53,7 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
         StatusResponse response = null;
         for (Contenedor cont : tr.getContenedores()) {
             if (cont.getId().equals(contenedor)) {
-                response =lockUnlockContenedor(cont, usr);
+                response = lockUnlockContenedor(cont, usr);
                 break;
             }
         }

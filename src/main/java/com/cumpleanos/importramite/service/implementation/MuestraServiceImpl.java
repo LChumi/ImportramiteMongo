@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ =  {@Autowired})
-public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> implements IMuestraService {
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> implements IMuestraService {
 
     private final MuestraRepository repository;
     private final RevisionRepository revisionRepository;
@@ -38,7 +38,7 @@ public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> imp
     @Override
     public Muestra saveAndCompare(String barra, String muestra, String tramite, Boolean status) {
         Revision rev = revisionRepository.findByBarraAndTramite_Id(barra, tramite);
-        if(rev == null) {
+        if (rev == null) {
             throw new DocumentNotFoundException("Muestra no encontrada ");
         }
         Muestra mr = repository.findByBarraBultoAndRevision_Tramite_Id(barra, tramite);
@@ -50,25 +50,25 @@ public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> imp
             mr.setStatus(validateMuestra(mr));
             mr.setCantidad(1);
         } else {
-            if (mr.getBarraMuestra() == null || mr.getBarraMuestra().isEmpty()){
+            if (mr.getBarraMuestra() == null || mr.getBarraMuestra().isEmpty()) {
                 mr.setBarraMuestra(muestra);
                 mr.setStatus(validateMuestra(mr));
                 mr.setCantidad(1);
             } else {
                 if (mr.getBarraMuestra().equals(muestra)) {
-                    if (status){
-                        mr.setCantidad(mr.getCantidad()+1);
+                    if (status) {
+                        mr.setCantidad(mr.getCantidad() + 1);
                         mr.setStatus(validateMuestra(mr));
-                    }else {
-                        int nuevaCantidad = mr.getCantidad()-1;
-                        if (nuevaCantidad > 0){
-                            mr.setCantidad(mr.getCantidad()-1);
+                    } else {
+                        int nuevaCantidad = mr.getCantidad() - 1;
+                        if (nuevaCantidad > 0) {
+                            mr.setCantidad(mr.getCantidad() - 1);
                             mr.setStatus(validateMuestra(mr));
                         } else {
                             throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
                         }
                     }
-                }else{
+                } else {
                     throw new DocumentNotFoundException("Barra de muestra no coincide con el historial");
                 }
             }
@@ -97,7 +97,7 @@ public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> imp
                 muestra.setBarraBulto(rev.getBarra());
                 muestra.setProceso("FALTANTE");
             } else {
-                if (muestra.getBarraMuestra() == null || muestra.getBarraMuestra().isEmpty()){
+                if (muestra.getBarraMuestra() == null || muestra.getBarraMuestra().isEmpty()) {
                     muestra.setProceso("FALTANTE");
                 } else {
                     muestra.setProceso("COMPLETA");
@@ -117,7 +117,7 @@ public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> imp
         return repository.findByRevision_Tramite_Id(tramite);
     }
 
-    private static boolean validateMuestra(Muestra muestra){
+    private static boolean validateMuestra(Muestra muestra) {
         return muestra.getBarraBulto().equals(muestra.getBarraMuestra());
     }
 }

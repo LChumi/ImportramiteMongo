@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ =  {@Autowired})
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> implements IRevisionService {
 
     private final RevisionRepository repository;
@@ -41,6 +41,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
     /**
      * Metodo para validar los productos comparando con la tabla Trámite
      * validando primero todos los contenedores disponibles
+     *
      * @param tramiteId el ID del trámite registrado
      * @return devuelve la lista de revision actualizada comparando las cantidades de trámite y de revision actualizando estados
      */
@@ -117,7 +118,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
 
         // Verificar revisiones que no esten en productos y actualizarlos
         for (Revision revision : revisions) {
-            if (!tramiteProductMap.containsKey(revision.getBarra())){
+            if (!tramiteProductMap.containsKey(revision.getBarra())) {
                 revision.setEstado("SIN REGISTRO");
                 revision.setSecuencia(0);
                 repository.save(revision);
@@ -131,9 +132,10 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
 
     /**
      * Metodo para crear o actualizar datos de la tabal revision
+     *
      * @param tramiteStr el id de tramite
-     * @param barraStr la barra del producto
-     * @param usuario el usurario q registra al producto
+     * @param barraStr   la barra del producto
+     * @param usuario    el usurario q registra al producto
      * @return nueva revision si no existe si existe va sumando la cantidad ++
      */
     @Transactional
@@ -158,7 +160,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             revision.setCantidad(1);
             revision.setTramite(tramite);
             verifyExist(tramiteProductMap, revision);
-        }else{
+        } else {
             if (status) {
                 revision.setCantidad(revision.getCantidad() + 1);
                 verifyExist(tramiteProductMap, revision);
@@ -180,7 +182,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             if (producto.getId().equals(revision.getBarra())) {
                 revision.setEstado("REGISTRADO");
                 break;
-            }else{
+            } else {
                 revision.setEstado("SIN REGISTRO");
             }
         }

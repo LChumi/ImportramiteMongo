@@ -26,5 +26,5 @@ public class Tramite implements Serializable {
     private LocalDate fechaLlegada;
 
     private List<Contenedor> contenedores = new ArrayList<>();
-    private Short proceso =1; // 1:Registrado 2: Pendiente 3:Validado 4:Muestra 5:Finalizado
+    private Short proceso = 1; // 1:Registrado 2: Pendiente 3:Validado 4:Muestra 5:Finalizado
 }

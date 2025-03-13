@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-@RequiredArgsConstructor(onConstructor_ =  {@Autowired})
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class TramiteRepositoryCustom {
 
     private final MongoTemplate mongoTemplate;
@@ -24,24 +24,24 @@ public class TramiteRepositoryCustom {
         List<Criteria> filters = new ArrayList<>();
 
         //Filter by Id by Regex (MongoDB)
-        if (id != null && !id.isEmpty()){
+        if (id != null && !id.isEmpty()) {
             filters.add(Criteria.where("id").regex(id, "i")); // "i" ignore uppercase/lowercase
         }
         //Filter by status
-        if (proceso != null){
+        if (proceso != null) {
             filters.add(Criteria.where("proceso").is(proceso));
         }
         //Filter date between
-        if (fechaInicio != null && fechaFin != null){
+        if (fechaInicio != null && fechaFin != null) {
             filters.add(Criteria.where("fechaLlegada").gte(fechaInicio).lte(fechaFin));
         }
         //Filter date
-        if (fechaInicio != null){
+        if (fechaInicio != null) {
             filters.add(Criteria.where("fechaLlegada").gte(fechaInicio));
         }
 
         //filter existing
-        if (!filters.isEmpty()){
+        if (!filters.isEmpty()) {
             criteria.andOperator(filters.toArray(new Criteria[0]));
         }
 

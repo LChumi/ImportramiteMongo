@@ -13,21 +13,21 @@ import java.util.List;
 @RequestMapping("product")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ProductoController {
-    
+
     private final IProductoService service;
-    
+
     @GetMapping("/all")
     public ResponseEntity<List<Producto>> getAllProductos() {
         List<Producto> productos = service.findAll();
         return ResponseEntity.ok(productos);
     }
-    
+
     @PostMapping("/save")
     public ResponseEntity<Producto> saveProducto(@RequestBody Producto producto) {
         Producto newProducto = service.save(producto);
         return ResponseEntity.ok(newProducto);
     }
-    
+
     @PutMapping("/update/{id}")
     public ResponseEntity<Producto> updateProducto(@RequestBody Producto producto, @PathVariable String id) {
         Producto found = service.findById(id.trim());
@@ -38,7 +38,7 @@ public class ProductoController {
         found.setBultos(producto.getBultos());
         found.setCxb(producto.getCxb());
         found.setTotal(producto.getTotal());
-            return ResponseEntity.ok(service.save(found));
+        return ResponseEntity.ok(service.save(found));
     }
 
     @DeleteMapping("/delete/{id}")

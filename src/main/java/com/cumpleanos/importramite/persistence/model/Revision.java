@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Data
 @Document(collection = "revision")
 @CompoundIndexes({
-        @CompoundIndex(name = "barra_tramite_idx", def = "{'barra':1, 'tramite._id':1}",  unique = true)
+        @CompoundIndex(name = "barra_tramite_idx", def = "{'barra':1, 'tramite._id':1}", unique = true)
 })
 public class Revision implements Serializable {
     @Serial
@@ -33,8 +33,8 @@ public class Revision implements Serializable {
     @DBRef
     private Tramite tramite;
 
-    private Integer cantidadPedida=0;
-    private Integer cantidadDiferencia =0;
+    private Integer cantidadPedida = 0;
+    private Integer cantidadDiferencia = 0;
     private String estado = "SN";
     private int secuencia;
 }

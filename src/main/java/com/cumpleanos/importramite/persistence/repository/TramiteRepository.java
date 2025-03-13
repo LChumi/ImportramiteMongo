@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TramiteRepository extends MongoRepository<Tramite,String> {
+public interface TramiteRepository extends MongoRepository<Tramite, String> {
     List<Tramite> findByProceso(Short proceso);
 }

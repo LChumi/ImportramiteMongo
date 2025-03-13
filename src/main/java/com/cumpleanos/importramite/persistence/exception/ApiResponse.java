@@ -5,14 +5,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ApiResponse<T>{
+public class ApiResponse<T> {
     private T data;
     private ErrorResponse error;
 
-    public ApiResponse(T data){
+    public ApiResponse(T data) {
         this.data = data;
     }
-    public ApiResponse(ErrorResponse error){
+
+    public ApiResponse(ErrorResponse error) {
         this.error = error;
     }
 }

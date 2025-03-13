@@ -1,6 +1,6 @@
 package com.cumpleanos.importramite.persistence.api;
 
-public record ProductoApi (
+public record ProductoApi(
         String secuencia,
         String pro_id,
         String pro_id1,
@@ -15,4 +15,5 @@ public record ProductoApi (
         Long bod_codigo,
         Long pro_empresa,
         Long pro_codigo
-) {}
+) {
+}

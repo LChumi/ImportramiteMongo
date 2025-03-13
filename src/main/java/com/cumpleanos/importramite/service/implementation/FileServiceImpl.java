@@ -37,12 +37,12 @@ import static com.cumpleanos.importramite.utils.MessageUtil.MENSAJE_TRAMITE;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class FileServiceImpl {
 
-    private final TramiteRepository  tramiteRepository;
+    private final TramiteRepository tramiteRepository;
     private final ProductosClientServiceImpl productosClientService;
     private final ExcelService excelService;
-    private final EmailClientServiceImpl  emailClientService;
+    private final EmailClientServiceImpl emailClientService;
 
-    public Tramite readExcelFile(MultipartFile file, String tramiteId,LocalDate fechaLlegada, String contenedorId){
+    public Tramite readExcelFile(MultipartFile file, String tramiteId, LocalDate fechaLlegada, String contenedorId) {
         List<Producto> productoList = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
@@ -85,13 +85,13 @@ public class FileServiceImpl {
             }
 
             tramiteRepository.save(tramite);
-            String asunto = "LLEGADA TRAMITE "+ tramiteId.toUpperCase() ;
+            String asunto = "LLEGADA TRAMITE " + tramiteId.toUpperCase();
             String mensaje = MENSAJE_TRAMITE(tramiteId, String.valueOf(fechaLlegada));
             byte[] excelByte = excelService.generarExcel(tramite);
-            String nombreAdjunto = "Tramite-"+ tramite.getId() + ".xlsx";
+            String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
             MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
             MultipartFile emailFile = getEmailMultipartFile(asunto, mensaje);
-            emailClientService.sendEmailAdjutno(emailFile,fileExcel,nombreAdjunto);
+            emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
             return tramite;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -100,7 +100,7 @@ public class FileServiceImpl {
 
     private static MultipartFile getEmailMultipartFile(String asunto, String mensaje) throws JsonProcessingException {
         EmailRecord email = new EmailRecord(
-                new String[]{"ventas@cumpleanos.com.ec","compras@cumpleanos.com.ec", "publicidad@cumpleanos.com.ec", "inventarios@cumpleanos.com.ec" ,"tguillen@cumpleanos.com.ec", "edicion@cumpleanos.com.ec", "inventarios1@cumpleanos.com.ec", "inventariosnarancay@cumpleanos.com.ec", "jchumbi@cumpleanos.com.ec", "jrivas@cumpleanos.com.ec", "facturacion@cumpleanos.com.ec", "bodegazhucay@cumpleanos.com.ec"},
+                new String[]{"ventas@cumpleanos.com.ec", "compras@cumpleanos.com.ec", "publicidad@cumpleanos.com.ec", "inventarios@cumpleanos.com.ec", "tguillen@cumpleanos.com.ec", "edicion@cumpleanos.com.ec", "inventarios1@cumpleanos.com.ec", "inventariosnarancay@cumpleanos.com.ec", "jchumbi@cumpleanos.com.ec", "jrivas@cumpleanos.com.ec", "facturacion@cumpleanos.com.ec", "bodegazhucay@cumpleanos.com.ec"},
                 asunto,
                 mensaje
         );
@@ -110,7 +110,7 @@ public class FileServiceImpl {
         return new CustomMultipartFile(emailJson.getBytes(), "email.json", "application/json");
     }
 
-    private List<Producto> mapRowsToProducts(Sheet sheet){
+    private List<Producto> mapRowsToProducts(Sheet sheet) {
         List<Producto> productos = new ArrayList<>();
         Iterator<Row> rowIterator = sheet.iterator();
 
@@ -118,7 +118,7 @@ public class FileServiceImpl {
         Row headerRow = rowIterator.next();
 
         int counter = 0;
-        while(rowIterator.hasNext()){
+        while (rowIterator.hasNext()) {
             Row row = rowIterator.next(); //Obtiene la siguiente fila
 
             if (FileUtils.isRowEmpty(row)) break;
@@ -150,7 +150,7 @@ public class FileServiceImpl {
             producto.setStockZhucay(api.stock_disponible());
             producto.setDescripcion(api.pro_nombre());
             producto.setBarraSistema(api.pro_id());
-            if (!Objects.equals(producto.getCxb(), api.cxb())){
+            if (!Objects.equals(producto.getCxb(), api.cxb())) {
                 producto.setDiferencia(producto.getCxb() - api.cxb());
             }
             if (apiNarancay != null) {

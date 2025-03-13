@@ -23,17 +23,17 @@ public class RevisionController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<List<Revision>> listar(){
+    public ResponseEntity<List<Revision>> listar() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Revision> save(@RequestBody Revision revision){
+    public ResponseEntity<Revision> save(@RequestBody Revision revision) {
         return ResponseEntity.ok(service.save(revision));
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Revision> update(@PathVariable String id, @RequestBody Revision revision){
+    public ResponseEntity<Revision> update(@PathVariable String id, @RequestBody Revision revision) {
         Revision found = service.findById(id.trim());
         if (found == null) {
             return ResponseEntity.notFound().build();
@@ -45,7 +45,7 @@ public class RevisionController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Revision> delete(@PathVariable String id){
+    public ResponseEntity<Revision> delete(@PathVariable String id) {
         Revision found = service.findById(id.trim());
         if (found == null) {
             return ResponseEntity.notFound().build();
@@ -55,13 +55,13 @@ public class RevisionController {
     }
 
     @PutMapping("/updateQuantities/{tramiteId}/{contenedorId}")
-    public ResponseEntity<List<Revision>> updateRevisionWithTramiteQuantities(@PathVariable String tramiteId, @PathVariable String contenedorId){
-        List<Revision> revisionList =  service.validateAndProcessTramite(tramiteId.trim(), contenedorId.trim());
+    public ResponseEntity<List<Revision>> updateRevisionWithTramiteQuantities(@PathVariable String tramiteId, @PathVariable String contenedorId) {
+        List<Revision> revisionList = service.validateAndProcessTramite(tramiteId.trim(), contenedorId.trim());
         return ResponseEntity.ok(revisionList);
     }
 
     @GetMapping("validate/{tramiteId}")
-    public ResponseEntity<List<Revision>> validateAndProcessTramite(@PathVariable String tramiteId){
+    public ResponseEntity<List<Revision>> validateAndProcessTramite(@PathVariable String tramiteId) {
         List<Revision> verified = service.updateRevisionWithTramiteQuantities(tramiteId.trim());
         return ResponseEntity.ok(verified);
     }
@@ -72,8 +72,8 @@ public class RevisionController {
             @PathVariable String barra,
             @PathVariable String usuario,
             @PathVariable Boolean status
-    ){
-        Revision updatedRevision = service.updateCantidadByBarra(tramiteId.trim(), barra.trim(), usuario.trim(),  status);
+    ) {
+        Revision updatedRevision = service.updateCantidadByBarra(tramiteId.trim(), barra.trim(), usuario.trim(), status);
         return ResponseEntity.ok(updatedRevision);
     }
 }
