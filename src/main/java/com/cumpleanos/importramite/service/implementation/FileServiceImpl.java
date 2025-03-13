@@ -122,7 +122,6 @@ public class FileServiceImpl {
             Row row = rowIterator.next(); //Obtiene la siguiente fila
 
             if (FileUtils.isRowEmpty(row)) break;
-
             try {
                 Producto producto = FileUtils.mapRowToProduct(row);
                 counter++;
