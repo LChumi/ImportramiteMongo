@@ -9,6 +9,7 @@ import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.utils.CustomMultipartFile;
 import com.cumpleanos.importramite.utils.FileUtils;
 import com.cumpleanos.importramite.utils.StringUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -87,20 +88,24 @@ public class FileServiceImpl {
             byte[] excelByte = excelService.generarExcel(tramite);
             String nombreAdjunto = "Tramite-"+ tramite.getId() + ".xlsx";
             MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
-            EmailRecord email = new EmailRecord(
-                    new String[]{"luischumi.9@gmail.com"},
-                    asunto,
-                    mensaje
-            );
-            // Serializa el objeto EmailRecord a JSON
-            ObjectMapper objectMapper = new ObjectMapper();
-            String emailJson = objectMapper.writeValueAsString(email);
-            MultipartFile emailFile = new CustomMultipartFile(emailJson.getBytes(), "email.json", "application/json");
+            MultipartFile emailFile = getEmailMultipartFile(asunto, mensaje);
             emailClientService.sendEmailAdjutno(emailFile,fileExcel,nombreAdjunto);
             return tramite;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static MultipartFile getEmailMultipartFile(String asunto, String mensaje) throws JsonProcessingException {
+        EmailRecord email = new EmailRecord(
+                new String[]{"tguillen@cumpleanos.com.ec", "lchumi@cumpleanos.com.ec"},
+                asunto,
+                mensaje
+        );
+        // Serializa el objeto EmailRecord a JSON
+        ObjectMapper objectMapper = new ObjectMapper();
+        String emailJson = objectMapper.writeValueAsString(email);
+        return new CustomMultipartFile(emailJson.getBytes(), "email.json", "application/json");
     }
 
     private List<Producto> mapRowsToProducts(Sheet sheet){
@@ -109,8 +114,6 @@ public class FileServiceImpl {
 
         //Leer encabezados
         Row headerRow = rowIterator.next();
-        Row headerRow1 = rowIterator.next();
-        Row headerRow2 = rowIterator.next();
 
         int counter = 0;
         while(rowIterator.hasNext()){
@@ -133,17 +136,23 @@ public class FileServiceImpl {
 
     private void getProducts(Producto producto) {
         long bodega = 10000586L;
-        ProductoApi api = productosClientService.getProduct(bodega,  producto.getId());
+        long bodegaNarancay = 10000601L;
+        ProductoApi api = productosClientService.getProduct(bodega, producto.getId());
+        ProductoApi apiNarancay = productosClientService.getProduct(bodegaNarancay, producto.getId());
         if (api != null) {
             producto.setItemAlterno(api.pro_id1());
             producto.setPvp(api.pvp());
             producto.setCxbAnterior(api.cxb());
             producto.setUbicacionBulto(api.bulto());
-            producto.setStockReal(api.stock_real());
+            producto.setUbicacionUnidad(api.unidad());
+            producto.setStockZhucay(api.stock_real());
             producto.setDescripcion(api.pro_nombre());
             producto.setBarraSistema(api.pro_id());
             if (!Objects.equals(producto.getCxb(), api.cxb())){
                 producto.setDiferencia(producto.getCxb() - api.cxb());
+            }
+            if (apiNarancay != null) {
+                producto.setStockNarancay(apiNarancay.stock_real());
             }
         } else {
             producto.setDescripcion("NUEVO PRODUCTO");

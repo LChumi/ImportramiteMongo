@@ -19,7 +19,7 @@ public class ExcelService {
         Sheet sheet = workbook.createSheet("Tramite");
 
         Row headerRow = sheet.createRow(0);
-        String[] columnas = {"COD.BARRA", "ITEM", "NUEVA_DESCRIPCION", "CANT", "CXB", "ITEM_ALTERNO", "PVP", "CXB_ANT", "ZHU", "STOCK", "DESCRIPCION", "BARRA_SISTEMA", "DIFERENCIAS"};
+        String[] columnas = {"COD.BARRA", "ITEM", "NUEVA_DESCRIPCION", "CANT", "CXB", "ITEM_ALTERNO", "PVP", "CXB_ANT", "UBICACION_BULTO", "UBICACION_UNIDAD",  "STOCK_ZHUCAY", "STOCK_NARANCAY", "DESCRIPCION", "BARRA_SISTEMA", "DIFERENCIAS"};
 
         for (int i = 0; i < columnas.length; i++) {
             Cell cell = headerRow.createCell(i);
@@ -41,10 +41,12 @@ public class ExcelService {
             row.createCell(6).setCellValue(producto.getPvp() != null ? producto.getPvp() : 0.0);
             row.createCell(7).setCellValue(producto.getCxbAnterior()  != null ? producto.getCxbAnterior() : 0);
             row.createCell(8).setCellValue(producto.getUbicacionBulto() != null ? producto.getUbicacionBulto() : "");
-            row.createCell(9).setCellValue(producto.getStockReal() != null ? producto.getStockReal() : 0);
-            row.createCell(10).setCellValue(producto.getDescripcion()  != null ? producto.getDescripcion() : "");
-            row.createCell(11).setCellValue(producto.getBarraSistema()  != null ? producto.getBarraSistema() : "");
-            row.createCell(12).setCellValue(producto.getDiferencia() != null ? producto.getDiferencia() : 0);
+            row.createCell(9).setCellValue(producto.getUbicacionUnidad() != null ? producto.getUbicacionUnidad() : "");
+            row.createCell(10).setCellValue(producto.getStockZhucay() != null ? producto.getStockZhucay() : 0);
+            row.createCell(8).setCellValue(producto.getStockNarancay() != null ? producto.getStockNarancay() : 0);
+            row.createCell(11).setCellValue(producto.getDescripcion()  != null ? producto.getDescripcion() : "");
+            row.createCell(12).setCellValue(producto.getBarraSistema()  != null ? producto.getBarraSistema() : "");
+            row.createCell(13).setCellValue(producto.getDiferencia() != null ? producto.getDiferencia() : 0);
         }
 
         for(int i =0 ; i < columnas.length; i++){

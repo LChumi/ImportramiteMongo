@@ -27,7 +27,9 @@ public class Producto implements Serializable {
     private Double pvp;
     private Integer cxbAnterior;
     private String ubicacionBulto;
-    private Integer stockReal;
+    private String ubicacionUnidad;
+    private Integer stockZhucay;
+    private Integer stockNarancay;
     private String descripcion;
     private String barraSistema;
     private Integer diferencia =0;
