@@ -138,7 +138,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
      */
     @Transactional
     @Override
-    public Revision updateCantidadByBarra(String tramiteStr, String barraStr, String usuario) {
+    public Revision updateCantidadByBarra(String tramiteStr, String barraStr, String usuario, Boolean status) {
         String tramiteId = StringUtils.trimWhitespace(tramiteStr);
         String barra = StringUtils.trimWhitespace(barraStr);
 
@@ -159,8 +159,18 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             revision.setTramite(tramite);
             verifyExist(tramiteProductMap, revision);
         }else{
-            revision.setCantidad(revision.getCantidad() + 1);
-            verifyExist(tramiteProductMap, revision);
+            if (status) {
+                revision.setCantidad(revision.getCantidad() + 1);
+                verifyExist(tramiteProductMap, revision);
+            } else {
+                int nuevaCantidad = revision.getCantidad() - 1;
+                if (nuevaCantidad >= 0) {
+                    revision.setCantidad(nuevaCantidad);
+                    verifyExist(tramiteProductMap, revision);
+                } else {
+                    throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
+                }
+            }
         }
         return repository.save(revision);
     }

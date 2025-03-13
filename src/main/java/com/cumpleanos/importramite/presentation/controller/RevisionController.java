@@ -66,9 +66,14 @@ public class RevisionController {
         return ResponseEntity.ok(verified);
     }
 
-    @PutMapping("/updateQuantity/{tramiteId}/{barra}/{usuario}")
-    public ResponseEntity<Revision> updateCantidadByBarra(@PathVariable String tramiteId, @PathVariable String barra, @PathVariable String usuario){
-        Revision updatedRevision = service.updateCantidadByBarra(tramiteId.trim(), barra.trim(), usuario.trim());
+    @PutMapping("/updateQuantity/{tramiteId}/{barra}/{usuario}/{status}")
+    public ResponseEntity<Revision> updateCantidadByBarra(
+            @PathVariable String tramiteId,
+            @PathVariable String barra,
+            @PathVariable String usuario,
+            @PathVariable Boolean status
+    ){
+        Revision updatedRevision = service.updateCantidadByBarra(tramiteId.trim(), barra.trim(), usuario.trim(),  status);
         return ResponseEntity.ok(updatedRevision);
     }
 }

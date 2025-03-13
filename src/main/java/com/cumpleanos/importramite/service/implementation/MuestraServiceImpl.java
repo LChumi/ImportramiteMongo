@@ -36,7 +36,7 @@ public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> imp
     }
 
     @Override
-    public Muestra saveAndCompare(String barra, String muestra, String tramite) {
+    public Muestra saveAndCompare(String barra, String muestra, String tramite, Boolean status) {
         Revision rev = revisionRepository.findByBarraAndTramite_Id(barra, tramite);
         if(rev == null) {
             throw new DocumentNotFoundException("Muestra no encontrada ");
@@ -56,8 +56,18 @@ public class MuestraServiceImpl extends  GenericServiceImpl<Muestra, String> imp
                 mr.setCantidad(1);
             } else {
                 if (mr.getBarraMuestra().equals(muestra)) {
-                    mr.setCantidad(mr.getCantidad()+1);
-                    mr.setStatus(validateMuestra(mr));
+                    if (status){
+                        mr.setCantidad(mr.getCantidad()+1);
+                        mr.setStatus(validateMuestra(mr));
+                    }else {
+                        int nuevaCantidad = mr.getCantidad()-1;
+                        if (nuevaCantidad > 0){
+                            mr.setCantidad(mr.getCantidad()-1);
+                            mr.setStatus(validateMuestra(mr));
+                        } else {
+                            throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
+                        }
+                    }
                 }else{
                     throw new DocumentNotFoundException("Barra de muestra no coincide con el historial");
                 }

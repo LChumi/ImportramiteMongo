@@ -23,9 +23,13 @@ public class MuestraController {
         return ResponseEntity.ok(muestras);
     }
 
-    @GetMapping("/add/compare/{barra}/{muestra}/{tramite}")
-    public ResponseEntity<Muestra> compare(@PathVariable String barra, @PathVariable String muestra, @PathVariable String tramite) {
-        Muestra mr = service.saveAndCompare(barra.trim(), muestra.trim(), tramite.trim());
+    @GetMapping("/add/compare/{barra}/{muestra}/{tramite}/{status}")
+    public ResponseEntity<Muestra> compare(
+            @PathVariable String barra,
+            @PathVariable String muestra,
+            @PathVariable String tramite,
+            @PathVariable Boolean status) {
+        Muestra mr = service.saveAndCompare(barra.trim(), muestra.trim(), tramite.trim(), status);
         return ResponseEntity.ok(mr);
     }
 
