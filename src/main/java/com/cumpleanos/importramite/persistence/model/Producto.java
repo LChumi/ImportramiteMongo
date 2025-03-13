@@ -34,4 +34,12 @@ public class Producto implements Serializable {
     private String barraSistema;
     private Integer diferencia = 0;
     private int secuencia;
+
+    public void calcularTotal() {
+        if (this.bultos != null && this.cxb != null) {
+            this.total = this.bultos * this.cxb;
+        } else {
+            this.total = 0; // O maneja el caso de error como prefieras
+        }
+    }
 }

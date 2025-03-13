@@ -129,6 +129,7 @@ public class FileServiceImpl {
                 } else {
                     counter++;
                     producto.setSecuencia(counter);
+                    producto.calcularTotal();
                     getProducts(producto);
                     productos.add(producto);
                 }
