@@ -124,10 +124,14 @@ public class FileServiceImpl {
             if (FileUtils.isRowEmpty(row)) break;
             try {
                 Producto producto = FileUtils.mapRowToProduct(row);
-                counter++;
-                producto.setSecuencia(counter);
-                getProducts(producto);
-                productos.add(producto);
+                if (producto.getId() == null || producto.getId().isEmpty()) {
+                    log.error("Producto sin datos");
+                } else {
+                    counter++;
+                    producto.setSecuencia(counter);
+                    getProducts(producto);
+                    productos.add(producto);
+                }
             } catch (ParseException e) {
                 log.error("Error al procesar la fila:  {}", e.getMessage());
             }
