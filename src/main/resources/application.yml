@@ -7,4 +7,3 @@ spring:
 
   config:
     import: classpath:/mongo_secure.yml
-
