@@ -3,6 +3,8 @@ package com.cumpleanos.importramite.persistence.repository;
 import com.cumpleanos.importramite.persistence.model.Emails;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.Optional;
+
 public interface EmailRepository extends MongoRepository<Emails, String> {
-    Emails findByTipo(Long tipo);
+    Optional<Emails> findByTipo(Long tipo);
 }
