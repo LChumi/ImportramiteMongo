@@ -3,10 +3,14 @@ package com.cumpleanos.importramite.service.implementation;
 import com.cumpleanos.importramite.persistence.api.EmailRecord;
 import com.cumpleanos.importramite.persistence.api.ProductoApi;
 import com.cumpleanos.importramite.persistence.model.Contenedor;
+import com.cumpleanos.importramite.persistence.model.Emails;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.persistence.repository.EmailRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
+import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.utils.CustomMultipartFile;
+import com.cumpleanos.importramite.utils.EmailsUtils;
 import com.cumpleanos.importramite.utils.FileUtils;
 import com.cumpleanos.importramite.utils.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,6 +45,7 @@ public class FileServiceImpl {
     private final ProductosClientServiceImpl productosClientService;
     private final ExcelService excelService;
     private final EmailClientServiceImpl emailClientService;
+    private final EmailRepository emailRepository;
 
     public Tramite readExcelFile(MultipartFile file, String tramiteId, LocalDate fechaLlegada, String contenedorId) {
         List<Producto> productoList = new ArrayList<>();
@@ -98,22 +103,11 @@ public class FileServiceImpl {
         }
     }
 
-    private static MultipartFile getEmailMultipartFile(String asunto, String mensaje) throws JsonProcessingException {
+    private MultipartFile getEmailMultipartFile(String asunto, String mensaje) throws JsonProcessingException {
+        Emails e = emailRepository.findByTipo(1L).orElseThrow(() -> new DocumentNotFoundException("Email no encontrado"));
+        String[] emails = EmailsUtils.addresseeToArray(e.getDestinatarios());
         EmailRecord email = new EmailRecord(
-                new String[]{
-                        "ventas@cumpleanos.com.ec",
-                        "compras@cumpleanos.com.ec",
-                        "publicidad@cumpleanos.com.ec",
-                        "inventarios@cumpleanos.com.ec",
-                        "tguillen@cumpleanos.com.ec",
-                        "edicion@cumpleanos.com.ec",
-                        "inventarios1@cumpleanos.com.ec",
-                        "inventariosnarancay@cumpleanos.com.ec",
-                        "jchumbi@cumpleanos.com.ec",
-                        "jrivas@cumpleanos.com.ec",
-                        "facturacion@cumpleanos.com.ec",
-                        "bodegazhucay@cumpleanos.com.ec"
-                },
+                emails,
                 asunto,
                 mensaje
         );
