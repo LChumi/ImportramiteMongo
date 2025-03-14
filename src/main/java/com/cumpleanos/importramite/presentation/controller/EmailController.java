@@ -1,7 +1,9 @@
 package com.cumpleanos.importramite.presentation.controller;
 
+import com.cumpleanos.importramite.persistence.model.Destinatario;
 import com.cumpleanos.importramite.persistence.model.Emails;
 import com.cumpleanos.importramite.service.interfaces.IEmailService;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,5 +27,16 @@ public class EmailController {
         return ResponseEntity.ok(service.save(emails));
     }
 
+    @PutMapping("/add/addressee/{tipo}")
+    public ResponseEntity<Emails> addAddressee(@PathVariable Long tipo, @RequestBody Destinatario addressee) {
+        Emails emails = service.addAddressee(tipo, addressee);
+        return ResponseEntity.ok(emails);
+    }
 
+    @DeleteMapping("/remove/{tipo}/{addressee}")
+    public ResponseEntity<Emails> removeAddressee(@PathVariable Long tipo, @PathVariable String addressee) {
+        Emails email = service.removeAddressee(tipo, addressee);
+        return ResponseEntity.ok(email);
+    }
 }
+

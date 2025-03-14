@@ -30,18 +30,32 @@ public class EmailServiceImpl extends GenericServiceImpl<Emails, String> impleme
     }
 
     @Override
-    public Emails addDestinatario(Long tipo, Destinatario destinatario) {
+    public Emails addAddressee(Long tipo, Destinatario addressee) {
         Emails emails = repository.findByTipo(tipo).orElseThrow(() -> new DocumentNotFoundException("No se encontraron Emails"));
         Set<String> existingDestinatarios = new HashSet<>();
 
         //Cargar direcciones existentes en un HashSet para verificar la unicidad
-        emails.getDestinatarios().forEach(destinatarios -> existingDestinatarios.add(destinatarios.getDireccion()));
+        emails.getDestinatarios().forEach(addressees -> existingDestinatarios.add(addressees.getDireccion()));
 
-        if (existingDestinatarios.contains(destinatario.getDireccion())) {
+        if (existingDestinatarios.contains(addressee.getDireccion())) {
             throw  new RuntimeException("Destinatario existente");
         }
 
-        emails.getDestinatarios().add(destinatario);
+        emails.getDestinatarios().add(addressee);
+        return repository.save(emails);
+    }
+
+    @Override
+    public Emails removeAddressee(Long tipo, String addressee) {
+        Emails emails = repository.findByTipo(tipo).orElseThrow(() -> new DocumentNotFoundException("No se encontraron Emails"));
+
+        //Buscar el destinatario en la lista y eliminarlo
+        boolean removed = emails.getDestinatarios().removeIf(destinatario -> destinatario.getDireccion().equals(addressee));
+
+        if (!removed) {
+            throw  new RuntimeException("No se encontró Destinatario");
+        }
+
         return repository.save(emails);
     }
 }
