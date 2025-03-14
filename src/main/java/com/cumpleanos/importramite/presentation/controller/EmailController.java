@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("email")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class EmailController {
