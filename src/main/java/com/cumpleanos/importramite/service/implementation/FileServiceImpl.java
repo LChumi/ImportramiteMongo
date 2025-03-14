@@ -100,7 +100,20 @@ public class FileServiceImpl {
 
     private static MultipartFile getEmailMultipartFile(String asunto, String mensaje) throws JsonProcessingException {
         EmailRecord email = new EmailRecord(
-                new String[]{"ventas@cumpleanos.com.ec", "compras@cumpleanos.com.ec", "publicidad@cumpleanos.com.ec", "inventarios@cumpleanos.com.ec", "tguillen@cumpleanos.com.ec", "edicion@cumpleanos.com.ec", "inventarios1@cumpleanos.com.ec", "inventariosnarancay@cumpleanos.com.ec", "jchumbi@cumpleanos.com.ec", "jrivas@cumpleanos.com.ec", "facturacion@cumpleanos.com.ec", "bodegazhucay@cumpleanos.com.ec"},
+                new String[]{
+                        "ventas@cumpleanos.com.ec",
+                        "compras@cumpleanos.com.ec",
+                        "publicidad@cumpleanos.com.ec",
+                        "inventarios@cumpleanos.com.ec",
+                        "tguillen@cumpleanos.com.ec",
+                        "edicion@cumpleanos.com.ec",
+                        "inventarios1@cumpleanos.com.ec",
+                        "inventariosnarancay@cumpleanos.com.ec",
+                        "jchumbi@cumpleanos.com.ec",
+                        "jrivas@cumpleanos.com.ec",
+                        "facturacion@cumpleanos.com.ec",
+                        "bodegazhucay@cumpleanos.com.ec"
+                },
                 asunto,
                 mensaje
         );
