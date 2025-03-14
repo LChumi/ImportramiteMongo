@@ -3,7 +3,6 @@ package com.cumpleanos.importramite.presentation.controller;
 import com.cumpleanos.importramite.persistence.model.Destinatario;
 import com.cumpleanos.importramite.persistence.model.Emails;
 import com.cumpleanos.importramite.service.interfaces.IEmailService;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
