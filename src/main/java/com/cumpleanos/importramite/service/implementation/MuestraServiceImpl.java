@@ -65,7 +65,7 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
                         mr.setStatus(validateMuestra(mr));
                     } else {
                         int nuevaCantidad = mr.getCantidad() - 1;
-                        if (nuevaCantidad > 0) {
+                        if (nuevaCantidad >= 0) {
                             mr.setCantidad(mr.getCantidad() - 1);
                             mr.setStatus(validateMuestra(mr));
                         } else {
