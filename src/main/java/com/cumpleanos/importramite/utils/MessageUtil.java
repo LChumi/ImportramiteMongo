@@ -7,11 +7,12 @@ public class MessageUtil {
                 """
                         Estimados,
                         
-                        Adjunto a este correo encontrarán un archivo de Excel correspondiente a la lista de productos del trámite %s que llegará el día %s que llega al puerto de Guayaquil.\s
+                        Adjunto a este correo encontrarán un archivo de Excel correspondiente a la lista de productos del trámite %s que llegará el día %s al puerto de Guayaquil.
                         
-                        El tramite llega en %s contenedor(es). \s
+                        El trámite consta de %s contenedor(es).
                         
-                        Saludos cordiales.""",
+                        Saludos cordiales.
+                        """,
                 tramite, fecha, contenedores
         );
     }
