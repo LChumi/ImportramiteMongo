@@ -29,4 +29,10 @@ public class FileController {
         Tramite tramite = fileService.readExcelFile(file, tramiteId.trim(), fechaLlegada, contenedorId.trim());
         return ResponseEntity.ok(tramite);
     }
+
+    @GetMapping("/send/tramite/{tramiteId}")
+    public ResponseEntity<String> sendTramite(@PathVariable String tramiteId) {
+        String response = fileService.sendTramiteEmail(tramiteId);
+        return ResponseEntity.ok(response);
+    }
 }

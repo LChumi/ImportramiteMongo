@@ -90,16 +90,25 @@ public class FileServiceImpl {
             }
 
             tramiteRepository.save(tramite);
-            String asunto = "LLEGADA TRAMITE " + tramiteId.toUpperCase();
-            String mensaje = MENSAJE_TRAMITE(tramiteId, String.valueOf(fechaLlegada));
+            return tramite;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String sendTramiteEmail(String tramiteId){
+        try {
+            Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new RuntimeException(tramiteId + " no encontrado"));
+            String asunto = "LLEGADA TRAMITE " + tramite.getId().toUpperCase();
+            String mensaje = MENSAJE_TRAMITE(tramite.getId(), String.valueOf(tramite.getFechaCarga()), String.valueOf(tramite.getContenedores().size()));
             byte[] excelByte = excelService.generarExcel(tramite);
             String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
             MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
             MultipartFile emailFile = getEmailMultipartFile(asunto, mensaje);
             emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
-            return tramite;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            return "ok";
+        } catch (Exception e){
+            throw new RuntimeException("Error sending email", e);
         }
     }
 

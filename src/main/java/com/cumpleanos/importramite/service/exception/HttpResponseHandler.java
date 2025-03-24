@@ -1,7 +1,5 @@
 package com.cumpleanos.importramite.service.exception;
 
-import com.cumpleanos.importramite.persistence.exception.ApiResponse;
-import com.cumpleanos.importramite.persistence.exception.ErrorResponse;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
