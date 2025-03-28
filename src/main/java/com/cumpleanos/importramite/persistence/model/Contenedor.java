@@ -1,6 +1,5 @@
 package com.cumpleanos.importramite.persistence.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -22,7 +21,6 @@ public class Contenedor implements Serializable {
     private String usrBloquea = "";
     private Boolean bloqueado = false;
     private Boolean finalizado = false;
-    @JsonIgnore
     private List<Producto> productos;
 
 }

@@ -5,7 +5,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
@@ -33,8 +32,7 @@ public class Revision implements Serializable {
     private LocalTime hora;
     private String usuario;
 
-    @DBRef
-    private Tramite tramite;
+    private String tramite;
 
     private Integer cantidadPedida = 0;
     private Integer cantidadDiferencia = 0;

@@ -36,7 +36,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
 
     @Override
     public List<Revision> findByTramite_Id(String tramiteId) {
-        return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
+        return repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
     }
 
     /**
@@ -72,14 +72,14 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             tramite.setProceso((short) 2);
             tramiteRepository.save(tramite);
         }
-        return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
+        return repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
     }
 
     @Override
     public List<Revision> updateRevisionWithTramiteQuantities(String tramiteId) {
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
-        List<Revision> revisions = repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
+        List<Revision> revisions = repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
 
         Map<String, Revision> revisionMap = revisions.stream()
                 .collect(Collectors.toMap(Revision::getBarra, rev -> rev));
@@ -99,7 +99,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
                 revision.setCantidadDiferencia(producto.getBultos());
                 revision.setEstado("NO LLEGO");
                 revision.setSecuencia(producto.getSecuencia());
-                revision.setTramite(tramite);
+                revision.setTramite(tramite.getId());
             } else {
                 int cantidadPedida = producto.getBultos();
                 revision.setCantidadPedida(cantidadPedida);
@@ -127,7 +127,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         }
         tramite.setProceso((short) 3);
         tramiteRepository.save(tramite);
-        return repository.findByTramite_IdOrderBySecuenciaAsc(tramiteId);
+        return repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
     }
 
 
@@ -148,7 +148,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
 
-        Revision revision = repository.findByBarraAndTramite_Id(barra, tramiteId);
+        Revision revision = repository.findByBarraAndTramite(barra, tramiteId);
 
         Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(tramite);
 
@@ -160,7 +160,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             revision.setBarra(barra);
             revision.setUsuario(usuario);
             revision.setCantidad(1);
-            revision.setTramite(tramite);
+            revision.setTramite(tramite.getId());
             verifyExist(tramiteProductMap, revision);
         } else {
             if (status) {
