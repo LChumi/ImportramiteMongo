@@ -24,4 +24,13 @@ public class MapUtils {
         }
         return productosMap;
     }
+
+    //Crear un map para acumular la cantidad de bultos por producto en el contenedor
+    public static Map<String, Producto> listByContainer(Contenedor contenedor) {
+        Map<String, Producto> productosMap = new HashMap<>();
+        for (Producto producto : contenedor.getProductos()) {
+            productosMap.put(producto.getId(), producto);
+        }
+        return productosMap;
+    }
 }

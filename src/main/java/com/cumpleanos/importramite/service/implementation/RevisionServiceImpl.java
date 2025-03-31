@@ -4,6 +4,7 @@ import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Revision;
 import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.persistence.records.RevisionRequest;
 import com.cumpleanos.importramite.persistence.repository.RevisionRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,24 +135,31 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
 
     /**
      * Metodo para crear o actualizar datos de la tabal revision
-     *
-     * @param tramiteStr el id de tramite
-     * @param barraStr   la barra del producto
-     * @param usuario    el usurario q registra al producto
-     * @return nueva revision si no existe si existe va sumando la cantidad ++
+     * @param request Cuerpo de solicitud tramite contendor, usuario, barra, status
+     * @return nueva revision si no existe si existe va sumando la cantidad ++ o restando -- dependiendo el status
      */
     @Transactional
     @Override
-    public Revision updateCantidadByBarra(String tramiteStr, String barraStr, String usuario, Boolean status) {
-        String tramiteId = StringUtils.trimWhitespace(tramiteStr);
-        String barra = StringUtils.trimWhitespace(barraStr);
+    public Revision updateCantidadByBarra(RevisionRequest request) {
+        String tramiteId = StringUtils.trimWhitespace(request.tramiteId());
+        String barra = StringUtils.trimWhitespace(request.barra());
 
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
 
+        Optional<Contenedor> contenedor = tramite.getContenedores()
+                .stream()
+                .filter(contenedor1 -> request.contenedor().equals(contenedor1.getId()))
+                .findFirst();
+
+        if (contenedor.isEmpty()){
+            throw new DocumentNotFoundException("Contenedor no encontrado en el tramite");
+        }
+
+
         Revision revision = repository.findByBarraAndTramite(barra, tramiteId);
 
-        Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(tramite);
+        Map<String, Producto> tramiteProductMap = MapUtils.listByContainer(contenedor.get());
 
         if (revision == null) {
             //Crear nueva revision
@@ -158,12 +167,12 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             revision.setFecha(LocalDate.now());
             revision.setHora(LocalTime.now());
             revision.setBarra(barra);
-            revision.setUsuario(usuario);
+            revision.setUsuario(request.usuario());
             revision.setCantidad(1);
             revision.setTramite(tramite.getId());
             verifyExist(tramiteProductMap, revision);
         } else {
-            if (status) {
+            if (request.status()) {
                 revision.setCantidad(revision.getCantidad() + 1);
                 verifyExist(tramiteProductMap, revision);
             } else {

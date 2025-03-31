@@ -1,6 +1,7 @@
 package com.cumpleanos.importramite.presentation.controller;
 
 import com.cumpleanos.importramite.persistence.model.Revision;
+import com.cumpleanos.importramite.persistence.records.RevisionRequest;
 import com.cumpleanos.importramite.service.interfaces.IRevisionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,20 +61,9 @@ public class RevisionController {
         return ResponseEntity.ok(revisionList);
     }
 
-    @GetMapping("validate/{tramiteId}")
-    public ResponseEntity<List<Revision>> validateAndProcessTramite(@PathVariable String tramiteId) {
-        List<Revision> verified = service.updateRevisionWithTramiteQuantities(tramiteId.trim());
-        return ResponseEntity.ok(verified);
-    }
-
-    @PutMapping("/updateQuantity/{tramiteId}/{barra}/{usuario}/{status}")
-    public ResponseEntity<Revision> updateCantidadByBarra(
-            @PathVariable String tramiteId,
-            @PathVariable String barra,
-            @PathVariable String usuario,
-            @PathVariable Boolean status
-    ) {
-        Revision updatedRevision = service.updateCantidadByBarra(tramiteId.trim(), barra.trim(), usuario.trim(), status);
+    @PutMapping("/updateQuantity")
+    public ResponseEntity<Revision> updateCantidadByBarra(@RequestBody RevisionRequest request) {
+        Revision updatedRevision = service.updateCantidadByBarra(request);
         return ResponseEntity.ok(updatedRevision);
     }
 }
