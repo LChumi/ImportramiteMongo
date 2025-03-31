@@ -61,8 +61,16 @@ public class RevisionController {
         return ResponseEntity.ok(revisionList);
     }
 
+    @GetMapping("validate/{tramiteId}")
+    public ResponseEntity<List<Revision>> validateAndProcessTramite(@PathVariable String tramiteId) {
+        List<Revision> verified = service.updateRevisionWithTramiteQuantities(tramiteId.trim());
+        return ResponseEntity.ok(verified);
+    }
+
     @PutMapping("/updateQuantity")
-    public ResponseEntity<Revision> updateCantidadByBarra(@RequestBody RevisionRequest request) {
+    public ResponseEntity<Revision> updateCantidadByBarra(
+            @RequestBody RevisionRequest request
+            ) {
         Revision updatedRevision = service.updateCantidadByBarra(request);
         return ResponseEntity.ok(updatedRevision);
     }
