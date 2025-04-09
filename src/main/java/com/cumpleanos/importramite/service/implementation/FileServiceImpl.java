@@ -100,7 +100,7 @@ public class FileServiceImpl {
         try {
             Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new RuntimeException(tramiteId + " no encontrado"));
             String asunto = "LLEGADA TRAMITE " + tramite.getId().toUpperCase();
-            String mensaje = MENSAJE_TRAMITE(tramite.getId(), String.valueOf(tramite.getFechaCarga()), String.valueOf(tramite.getContenedores().size()));
+            String mensaje = MENSAJE_TRAMITE(tramite.getId(), String.valueOf(tramite.getFechaLlegada()), String.valueOf(tramite.getContenedores().size()));
             byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
             String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
             MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
