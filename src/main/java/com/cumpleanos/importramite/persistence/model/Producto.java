@@ -32,7 +32,7 @@ public class Producto implements Serializable {
     private Integer stockNarancay;
     private String descripcion;
     private String barraSistema;
-    private Integer diferencia = 0;
+    private Integer diferencia;
     private int secuencia;
 
     public void calcularTotal() {
