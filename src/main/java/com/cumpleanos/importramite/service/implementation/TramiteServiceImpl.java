@@ -15,6 +15,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
 
     private final TramiteRepository repository;
     private final TramiteRepositoryCustom repositoryCustom;
+    private final FileServiceImpl fileService;
 
     @Override
     public CrudRepository<Tramite, String> getRepository() {
@@ -66,6 +68,20 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
         return repositoryCustom.buscarTramites(id, estado, fechaInicio, fechaFin);
     }
 
+    @Override
+    public StatusResponse updateDateAndSendEmails(String id, LocalDate fechaLlegada, LocalTime horaLlegada) {
+        String response;
+        Tramite found = repository.findById(id).orElseThrow(() -> new DocumentNotFoundException("No se encontraron datos a actualizar"));
+        found.setFechaArribo(fechaLlegada);
+        found.setHoraArribo(horaLlegada);
+        Tramite saved= repository.save(found);
+        if (saved.getFechaArribo() == null){
+            throw new DocumentNotFoundException("El documento no tiene fecha de arribo");
+        }
+        response = fileService.sendTramiteFinal(saved.getId());
+        return new StatusResponse(response, true);
+    }
+
     private StatusResponse lockUnlockContenedor(Contenedor cont, String usr) {
         if (cont.getUsrBloquea() == null) {
             cont.setUsrBloquea("");
@@ -82,4 +98,6 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
             return new StatusResponse("error", false);
         }
     }
+
+
 }

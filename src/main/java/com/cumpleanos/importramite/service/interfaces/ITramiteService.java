@@ -5,6 +5,7 @@ import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.StatusResponse;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public interface ITramiteService extends IGenericService<Tramite, String> {
@@ -15,4 +16,6 @@ public interface ITramiteService extends IGenericService<Tramite, String> {
     StatusResponse findTramiteBloqueaContenedor(String tramite, String contenedor, String usr);
 
     List<Tramite> buscarTramites(String id, Short estado, LocalDate fechaInicio, LocalDate fechaFin);
+
+    StatusResponse updateDateAndSendEmails(String id, LocalDate fechaLlegada, LocalTime horaLlegada);
 }

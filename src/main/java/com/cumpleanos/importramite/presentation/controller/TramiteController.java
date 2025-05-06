@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Slf4j
@@ -46,6 +47,10 @@ public class TramiteController {
         if (tra == null) {
             return ResponseEntity.notFound().build();
         }
+        tra.setFechaLlegada(tramite.getFechaLlegada());
+        tra.setProceso(tramite.getProceso());
+        tra.setFechaArribo(tramite.getFechaArribo());
+        tra.setHoraArribo(tramite.getHoraArribo());
         return ResponseEntity.ok(service.save(tra));
     }
 
@@ -86,6 +91,12 @@ public class TramiteController {
 
         List<Tramite> tramites = service.buscarTramites(id, estado, fechaInicio, fechaFin);
         return ResponseEntity.ok(tramites);
+    }
+
+    @GetMapping("/update/date")
+    public ResponseEntity<StatusResponse> updateDates(@RequestParam LocalDate fechaArribo, @RequestParam LocalTime horaArribo, @RequestParam String id){
+        StatusResponse status = service.updateDateAndSendEmails(id.trim(), fechaArribo, horaArribo);
+        return ResponseEntity.ok(status);
     }
 
 }

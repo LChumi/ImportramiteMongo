@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import static com.cumpleanos.importramite.utils.MessageUtil.MENSAJE_LLEGADA_BODEGA;
 import static com.cumpleanos.importramite.utils.MessageUtil.MENSAJE_TRAMITE;
 
 @Service
@@ -99,7 +100,7 @@ public class FileServiceImpl {
     public String sendTramiteEmail(String tramiteId){
         try {
             Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new RuntimeException(tramiteId + " no encontrado"));
-            String asunto = "LLEGADA TRAMITE " + tramite.getId().toUpperCase();
+            String asunto = "Tramite " + tramite.getId().toUpperCase() + " - Confirmación de llegada al puerto";
             String mensaje = MENSAJE_TRAMITE(tramite.getId(), String.valueOf(tramite.getFechaLlegada()), String.valueOf(tramite.getContenedores().size()));
             byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
             String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
@@ -107,6 +108,27 @@ public class FileServiceImpl {
             MultipartFile emailFile = getEmailMultipartFile(asunto, mensaje);
             emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
             return "ok";
+        } catch (Exception e){
+            throw new RuntimeException("Error sending email", e);
+        }
+    }
+
+    public String sendTramiteFinal(String tramiteId){
+        try{
+            Tramite tramite= tramiteRepository.findById(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite no registrado en el sistema"));
+            String asunto = "Trámite " + tramite.getId().toUpperCase() + " -Registro de arribo a bodega";
+            String mensaje = MENSAJE_LLEGADA_BODEGA(
+                    tramite.getId(),
+                    String.valueOf(tramite.getFechaArribo()),
+                    String.valueOf(tramite.getHoraArribo()),
+                    String.valueOf(tramite.getContenedores().size())
+            );
+            byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
+            String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
+            MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
+            MultipartFile emailFile = getEmailMultipartFile(asunto, mensaje);
+            emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
+            return "Correo enviado satisfactoriamente.";
         } catch (Exception e){
             throw new RuntimeException("Error sending email", e);
         }
