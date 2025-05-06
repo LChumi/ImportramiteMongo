@@ -105,7 +105,7 @@ public class FileServiceImpl {
             byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
             String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
             MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
-            MultipartFile emailFile = getEmailMultipartFile(asunto, mensaje);
+            MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
             emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
             return "ok";
         } catch (Exception e){
@@ -126,9 +126,9 @@ public class FileServiceImpl {
             byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
             String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
             MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
-            MultipartFile emailFile = getEmailMultipartFile(asunto, mensaje);
+            MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
             emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
-            return "Correo enviado satisfactoriamente.";
+            return "Ok";
         } catch (Exception e){
             throw new RuntimeException("Error sending email", e);
         }
