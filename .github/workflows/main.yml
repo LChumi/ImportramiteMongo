@@ -29,6 +29,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: Build Spring Boot application
+        run: mvn clean package -DskipTests
       
       - name: logging in to GHCR
         uses: docker/login-action@v3
