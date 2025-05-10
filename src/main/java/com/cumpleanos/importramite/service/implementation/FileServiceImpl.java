@@ -17,10 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,8 +49,9 @@ public class FileServiceImpl {
         List<Producto> productoList = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();//
             Sheet sheet = workbook.getSheetAt(0);
-            productoList = mapRowsToProducts(sheet);
+            productoList = mapRowsToProducts(sheet, evaluator);
 
             Contenedor contenedor = Contenedor.builder()
                     .id(contenedorId)
@@ -148,7 +146,7 @@ public class FileServiceImpl {
         return new CustomMultipartFile(emailJson.getBytes(), "email.json", "application/json");
     }
 
-    private List<Producto> mapRowsToProducts(Sheet sheet) {
+    private List<Producto> mapRowsToProducts(Sheet sheet,  FormulaEvaluator evaluator) {
         List<Producto> productos = new ArrayList<>();
         Iterator<Row> rowIterator = sheet.iterator();
 
@@ -161,7 +159,7 @@ public class FileServiceImpl {
 
             if (FileUtils.isRowEmpty(row)) break;
             try {
-                Producto producto = FileUtils.mapRowToProduct(row);
+                Producto producto = FileUtils.mapRowToProduct(row, evaluator);
                 if (producto.getId() == null || producto.getId().isEmpty()) {
                     log.error("Producto sin datos");
                 } else {

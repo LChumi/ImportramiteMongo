@@ -2,10 +2,7 @@ package com.cumpleanos.importramite.utils;
 
 import com.cumpleanos.importramite.persistence.model.Producto;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -28,13 +25,14 @@ public class FileUtils {
         return true;
     }
 
-    public static Producto mapRowToProduct(Row row) throws ParseException {
+    public static Producto mapRowToProduct(Row row, FormulaEvaluator evaluator) throws ParseException {
+
         return Producto.builder()
-                .id(getCellValueSafely(row.getCell(0)))
+                .id(getCellValueClean(row.getCell(0)))
                 .id1(getCellValueSafely(row.getCell(1)))
                 .nombre(getCellValueSafely(row.getCell(2)))
-                .bultos(parseIntegerSafely(getCellValueSafely(row.getCell(3))))
-                .cxb(parseIntegerSafely(getCellValueSafely(row.getCell(4))))
+                .bultos(parseIntegerSafely(row.getCell(3), evaluator))
+                .cxb(parseIntegerSafely(row.getCell(4), evaluator))
                 .build();
     }
 
@@ -72,6 +70,39 @@ public class FileUtils {
             System.err.println("Error al convertir valor a Double: " + value);
             return 0.0; // Valor predeterminado
         }
+    }
+
+    private static String getCellValueClean(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        DataFormatter formatter = new DataFormatter();
+        String rawValue = formatter.formatCellValue(cell).trim();
+
+        return rawValue.replaceAll("[^0-9]", "");
+    }
+
+    private static int parseIntegerSafely(Cell cell, FormulaEvaluator evaluator) {
+        if (cell == null) {
+            return 0;
+        }
+
+        try {
+            if (cell.getCellType() == CellType.FORMULA) {
+                // Evaluar la celda si contiene una fórmula
+                CellValue cellValue = evaluator.evaluate(cell);
+                if (cellValue != null && cellValue.getCellType() == CellType.NUMERIC) {
+                    return (int) cellValue.getNumberValue();
+                }
+            } else {
+                // Si no es fórmula, procesar normalmente
+                String value = new DataFormatter().formatCellValue(cell).trim();
+                return value.isEmpty() ? 0 : Integer.parseInt(value);
+            }
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+        return 0;
     }
 
     public static MultipartFile converFileToMultipartFile(byte[] fileBytes, String nombreAdjunto) throws IOException {
