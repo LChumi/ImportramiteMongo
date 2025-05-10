@@ -85,6 +85,7 @@ public class FileServiceImpl {
 
             // Agrega el contenedor si la lista está vacía o si ya tiene contenedores
             if (tramite.getContenedoresIds().isEmpty()) {
+                tramite.setContenedoresIds(new ArrayList<>());
                 tramite.getContenedoresIds().add(c.getId());
             } else {
                 boolean contenedorExistente = false;
