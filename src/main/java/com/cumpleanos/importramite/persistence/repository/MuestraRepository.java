@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface MuestraRepository extends MongoRepository<Muestra, String> {
-    List<Muestra> findByRevision_Tramite(String tramiteId);
+    List<Muestra> findByTramiteId(String tramiteId);
 
-    Muestra findByBarraBultoAndRevision_Tramite(String barraBulto, String tramiteId);
+    Muestra findByBarraBultoAndTramiteId(String barraBulto, String tramiteId);
 }

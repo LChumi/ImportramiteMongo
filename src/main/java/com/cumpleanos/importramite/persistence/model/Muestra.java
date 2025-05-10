@@ -9,6 +9,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -23,11 +24,15 @@ public class Muestra implements Serializable {
     @Id
     @Setter(AccessLevel.NONE)
     private String id;
+
+    private String revisionId;
+    private String tramiteId;
+    private String contendorId;
+
     private String barraBulto;
-    private String barraMuestra;
+    private List<String> barraMuestra;
     private Integer cantidad;
     private Boolean status;
-    private Revision revision;
     private String proceso;
 
     @CreatedDate

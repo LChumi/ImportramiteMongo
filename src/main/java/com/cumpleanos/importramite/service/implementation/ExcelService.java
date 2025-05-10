@@ -1,22 +1,28 @@
 package com.cumpleanos.importramite.service.implementation;
 
-import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.persistence.repository.ProductoRepository;
 import com.cumpleanos.importramite.service.exception.ExcelNotCreateException;
 import com.cumpleanos.importramite.utils.MapUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ExcelService {
+
+    private final ProductoRepository productoRepository;
 
     private static final String[] columnas = {
             "COD.BARRA",
@@ -76,10 +82,10 @@ public class ExcelService {
             tramiteCell.setCellValue("Trámite: "+tramite.getId());
             tramiteCell.setCellStyle(getHeaderCellStyle(workbook));
 
-            for (Contenedor contenedor: tramite.getContenedores()) {
+            for (String contenedor: tramite.getContenedoresIds()) {
                 Row contenedorRow = sheet.createRow(rowNum++);
                 Cell contenedorCell = contenedorRow.createCell(1);
-                contenedorCell.setCellValue("Contenedor: "+contenedor.getId());
+                contenedorCell.setCellValue("Contenedor: "+contenedor);
                 contenedorCell.setCellStyle(getHeaderCellStyle(workbook));
 
                 // Agregar encabezados de columnas
@@ -90,8 +96,9 @@ public class ExcelService {
                     cell.setCellStyle(getHeaderCellStyle(workbook));
                 }
 
+                List<Producto> productos = productoRepository.findByTramiteIdAndContenedorId(tramite.getId(), contenedor).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: "+tramite.getId()+" y el contenedor: "+contenedor));
                 // Agregar productos del contenedor
-                for (Producto producto: contenedor.getProductos()) {
+                for (Producto producto: productos) {
                     rowNum = getRowProduct(sheet, rowNum, producto);
                 }
 

@@ -18,6 +18,9 @@ public class Producto implements Serializable {
 
     @Id
     private String id;
+    private String contenedorId;
+    private String tramiteId;
+
     private String id1;
     private String nombre;
     private Integer cxb;

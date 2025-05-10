@@ -23,6 +23,8 @@ public class Revision implements Serializable {
 
     @Id
     private String id;
+    private String tramiteId; //Referencia del tramite
+    private String contenedorId;//Referencia del contenedor
     private String barra;
     private Integer cantidad;
 
@@ -34,8 +36,8 @@ public class Revision implements Serializable {
 
     private String tramite;
 
-    private Integer cantidadPedida = 0;
-    private Integer cantidadDiferencia = 0;
-    private String estado = "SN";
+    private Integer cantidadPedida;
+    private Integer cantidadDiferencia;
+    private String estado;
     private int secuencia;
 }

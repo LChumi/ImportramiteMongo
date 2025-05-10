@@ -6,7 +6,9 @@ import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Emails;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
 import com.cumpleanos.importramite.persistence.repository.EmailRepository;
+import com.cumpleanos.importramite.persistence.repository.ProductoRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.utils.CustomMultipartFile;
@@ -40,26 +42,34 @@ import static com.cumpleanos.importramite.utils.MessageUtil.MENSAJE_TRAMITE;
 public class FileServiceImpl {
 
     private final TramiteRepository tramiteRepository;
+    private final ProductoRepository productoRepository;
+    private final ContenedorRepository contenedorRepository;
+
     private final ProductosClientServiceImpl productosClientService;
     private final ExcelService excelService;
     private final EmailClientServiceImpl emailClientService;
     private final EmailRepository emailRepository;
 
     public Tramite readExcelFile(MultipartFile file, String tramiteId, LocalDate fechaLlegada, String contenedorId) {
-        List<Producto> productoList = new ArrayList<>();
+        List<String> productoList = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
             FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();//
             Sheet sheet = workbook.getSheetAt(0);
-            productoList = mapRowsToProducts(sheet, evaluator);
+            productoList = mapRowsToProducts(sheet, evaluator, tramiteId, contenedorId);
 
             Contenedor contenedor = Contenedor.builder()
                     .id(contenedorId)
-                    .productos(productoList)
-                    .usrBloquea("")
+                    .productIds(productoList)
                     .finalizado(false)
                     .bloqueado(false)
+                    .tramiteId(tramiteId)
                     .build();
+            Contenedor c = contenedorRepository.save(contenedor);
+            if (c.getId() == null) {
+                throw new RuntimeException("Error al guardar el contenedor: " + contenedor);
+            }
+            // Busca el trámite en la base de datos o crea uno nuevo si no existe
             Tramite tramite = tramiteRepository.findById(tramiteId).orElse(new Tramite());
 
             // Si el trámite no existe, crea uno nuevo
@@ -67,24 +77,25 @@ public class FileServiceImpl {
                 tramite.setId(StringUtils.trimWhitespace(tramiteId));
                 tramite.setFechaCarga(LocalDate.now());
                 tramite.setFechaLlegada(fechaLlegada);
+                tramite.setProceso((short) 1);
             } else {
                 // Si el trámite ya existe, solo actualiza la fecha de llegada
                 tramite.setFechaLlegada(fechaLlegada);
             }
 
             // Agrega el contenedor si la lista está vacía o si ya tiene contenedores
-            if (tramite.getContenedores().isEmpty()) {
-                tramite.getContenedores().add(contenedor);
+            if (tramite.getContenedoresIds().isEmpty()) {
+                tramite.getContenedoresIds().add(c.getId());
             } else {
                 boolean contenedorExistente = false;
-                for (Contenedor cont : tramite.getContenedores()) {
-                    if (cont.getId().equals(contenedor.getId())) {
+                for (String cont : tramite.getContenedoresIds()) {
+                    if (cont.equals(c.getId())) {
                         contenedorExistente = true;
                         break;
                     }
                 }
                 if (!contenedorExistente) {
-                    tramite.getContenedores().add(contenedor);
+                    tramite.getContenedoresIds().add(c.getId());
                 }
             }
 
@@ -92,43 +103,6 @@ public class FileServiceImpl {
             return tramite;
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public String sendTramiteEmail(String tramiteId){
-        try {
-            Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new RuntimeException(tramiteId + " no encontrado"));
-            String asunto = "Tramite " + tramite.getId().toUpperCase() + " - Confirmación de llegada al puerto";
-            String mensaje = MENSAJE_TRAMITE(tramite.getId(), String.valueOf(tramite.getFechaLlegada()), String.valueOf(tramite.getContenedores().size()));
-            byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
-            String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
-            MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
-            MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
-            emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
-            return "ok";
-        } catch (Exception e){
-            throw new RuntimeException("Error sending email", e);
-        }
-    }
-
-    public String sendTramiteFinal(String tramiteId){
-        try{
-            Tramite tramite= tramiteRepository.findById(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite no registrado en el sistema"));
-            String asunto = "Trámite " + tramite.getId().toUpperCase() + " -Registro de arribo a bodega";
-            String mensaje = MENSAJE_LLEGADA_BODEGA(
-                    tramite.getId(),
-                    String.valueOf(tramite.getFechaArribo()),
-                    String.valueOf(tramite.getHoraArribo()),
-                    String.valueOf(tramite.getContenedores().size())
-            );
-            byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
-            String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
-            MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
-            MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
-            emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
-            return "Ok";
-        } catch (Exception e){
-            throw new RuntimeException("Error sending email", e);
         }
     }
 
@@ -146,8 +120,8 @@ public class FileServiceImpl {
         return new CustomMultipartFile(emailJson.getBytes(), "email.json", "application/json");
     }
 
-    private List<Producto> mapRowsToProducts(Sheet sheet,  FormulaEvaluator evaluator) {
-        List<Producto> productos = new ArrayList<>();
+    private List<String> mapRowsToProducts(Sheet sheet,  FormulaEvaluator evaluator, String tramiteId, String contenedorId) {
+        List<String> productos = new ArrayList<>();
         Iterator<Row> rowIterator = sheet.iterator();
 
         //Leer encabezados
@@ -164,10 +138,17 @@ public class FileServiceImpl {
                     log.error("Producto sin datos");
                 } else {
                     counter++;
+                    producto.setTramiteId(tramiteId);
+                    producto.setContenedorId(contenedorId);
                     producto.setSecuencia(counter);
                     producto.calcularTotal();
                     getProducts(producto);
-                    productos.add(producto);
+                    Producto p = productoRepository.save(producto);
+                    if (p.getId() == null) {
+                        throw new RuntimeException("Error al guardar el producto: " + producto);
+                    }
+                    productos.add(p.getId());
+                    log.info("Producto guardado: {}", p);
                 }
             } catch (ParseException e) {
                 log.error("Error al procesar la fila:  {}", e.getMessage());
@@ -198,6 +179,45 @@ public class FileServiceImpl {
             }
         } else {
             producto.setDescripcion("NUEVO PRODUCTO");
+        }
+    }
+
+
+    public String sendTramiteFinal(String tramiteId){
+        try{
+            Tramite tramite= tramiteRepository.findById(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite no registrado en el sistema"));
+            String asunto = "Trámite " + tramite.getId().toUpperCase() + " -Registro de arribo a bodega";
+            String mensaje = MENSAJE_LLEGADA_BODEGA(
+                    tramite.getId(),
+                    String.valueOf(tramite.getFechaArribo()),
+                    String.valueOf(tramite.getHoraArribo()),
+                    String.valueOf(tramite.getContenedoresIds().size())
+            );
+            byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
+            String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
+            MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
+            MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
+            emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
+            return "Ok";
+        } catch (Exception e){
+            throw new RuntimeException("Error sending email", e);
+        }
+    }
+
+
+    public String sendTramiteEmail(String tramiteId){
+        try {
+            Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new RuntimeException(tramiteId + " no encontrado"));
+            String asunto = "Tramite " + tramite.getId().toUpperCase() + " - Confirmación de llegada al puerto";
+            String mensaje = MENSAJE_TRAMITE(tramite.getId(), String.valueOf(tramite.getFechaLlegada()), String.valueOf(tramite.getContenedoresIds().size()));
+            byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
+            String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
+            MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
+            MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
+            emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
+            return "ok";
+        } catch (Exception e){
+            throw new RuntimeException("Error sending email", e);
         }
     }
 }

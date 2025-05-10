@@ -21,6 +21,7 @@ public class Contenedor implements Serializable {
     private String usrBloquea;
     private Boolean bloqueado;
     private Boolean finalizado;
-    private List<Producto> productos;
+    private List<String> productIds;
+    private String tramiteId;
 
 }
