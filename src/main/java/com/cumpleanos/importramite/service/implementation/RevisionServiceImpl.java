@@ -5,9 +5,12 @@ import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Revision;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
+import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
+import com.cumpleanos.importramite.persistence.repository.ProductoRepository;
 import com.cumpleanos.importramite.persistence.repository.RevisionRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
+import com.cumpleanos.importramite.service.exception.ExcelNotCreateException;
 import com.cumpleanos.importramite.service.interfaces.IRevisionService;
 import com.cumpleanos.importramite.utils.MapUtils;
 import com.cumpleanos.importramite.utils.StringUtils;
@@ -29,7 +32,9 @@ import java.util.stream.Collectors;
 public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> implements IRevisionService {
 
     private final RevisionRepository repository;
+    private final ContenedorRepository contenedorRepository;
     private final TramiteRepository tramiteRepository;
+    private final ProductoRepository productoRepository;
 
     @Override
     public CrudRepository<Revision, String> getRepository() {
@@ -54,11 +59,12 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
 
         //Verificar si todos los contenedores estan finalizados
-        boolean allCompleted = tramite.getContenedores().stream()
+        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
+        boolean allCompleted = contenedores.stream()
                 .allMatch(Contenedor::getFinalizado);
 
         if (!allCompleted) {
-            for (Contenedor contenedor : tramite.getContenedores()) {
+            for (Contenedor contenedor : contenedores) {
                 if (contenedor.getId().equals(contenedorId)) {
                     contenedor.setFinalizado(true);
                 }
@@ -66,12 +72,12 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             tramiteRepository.save(tramite);
 
             //Verificar Nuevamente los contenedores
-            allCompleted = tramite.getContenedores().stream()
+            allCompleted = contenedores.stream()
                     .allMatch(Contenedor::getFinalizado);
         }
 
         if (allCompleted) {
-            tramite.setProceso((short) 2);
+            tramite.setProceso((short) 3);
             tramiteRepository.save(tramite);
         }
         return repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
@@ -79,15 +85,18 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
 
     @Override
     public List<Revision> updateRevisionWithTramiteQuantities(String tramiteId) {
+
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
+
         List<Revision> revisions = repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
 
         Map<String, Revision> revisionMap = revisions.stream()
                 .collect(Collectors.toMap(Revision::getBarra, rev -> rev));
 
+        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
 
-        Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(tramite);
+        Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(contenedores, productoRepository);
 
         for (Producto producto : tramiteProductMap.values()) {
             Revision revision = revisionMap.get(producto.getId());
@@ -141,25 +150,21 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
     @Transactional
     @Override
     public Revision updateCantidadByBarra(RevisionRequest request) {
+
         String tramiteId = StringUtils.trimWhitespace(request.tramiteId());
         String barra = StringUtils.trimWhitespace(request.barra());
 
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
 
-        Optional<Contenedor> contenedor = tramite.getContenedores()
-                .stream()
-                .filter(contenedor1 -> request.contenedor().equals(contenedor1.getId()))
-                .findFirst();
-
-        if (contenedor.isEmpty()){
-            throw new DocumentNotFoundException("Contenedor no encontrado en el tramite");
-        }
+        Contenedor contenedor = contenedorRepository.findById(request.contenedor()).orElseThrow(() -> new DocumentNotFoundException("Contenedor no encontrado"));
 
 
         Revision revision = repository.findByBarraAndTramite(barra, tramiteId);
 
-        Map<String, Producto> tramiteProductMap = MapUtils.listByContainer(contenedor.get());
+        List<Producto> productos = productoRepository.findByTramiteIdAndContenedorId(tramite.getId(), request.contenedor()).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: "+tramite.getId()+" y el contenedor: "+contenedor));
+
+        Map<String, Producto> tramiteProductMap = MapUtils.listByContainer(productos);
 
         if (revision == null) {
             //Crear nueva revision
