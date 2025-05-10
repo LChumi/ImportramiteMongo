@@ -1,8 +1,11 @@
 package com.cumpleanos.importramite.service.implementation;
 
+import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
 import com.cumpleanos.importramite.persistence.repository.ProductoRepository;
+import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.service.exception.ExcelNotCreateException;
 import com.cumpleanos.importramite.utils.MapUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import java.util.Map;
 public class ExcelService {
 
     private final ProductoRepository productoRepository;
+    private final ContenedorRepository contenedorRepository;
 
     private static final String[] columnas = {
             "COD.BARRA",
@@ -43,6 +47,9 @@ public class ExcelService {
     };
 
     public byte[] generarExcel(Tramite tramite) throws IOException {
+
+        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramite.getId()).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " not found"));
+
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Tramite");
 
@@ -56,7 +63,7 @@ public class ExcelService {
 
         //Llenar los datos
         int rowNum = 1;
-        Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(tramite);
+        Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(contenedores, productoRepository);
         for (Producto producto : tramiteProductMap.values()) {
             rowNum = getRowProduct(sheet, rowNum, producto);
         }
