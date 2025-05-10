@@ -9,16 +9,19 @@ import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.service.interfaces.IMuestraService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> implements IMuestraService {
@@ -34,7 +37,7 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
 
     @Override
     public List<Muestra> findByRevision_Tramite_Id(String tramiteId) {
-        return repository.findByRevision_Tramite(tramiteId);
+        return repository.findByTramiteId(tramiteId);
     }
 
     @Override
@@ -43,12 +46,12 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
         if (rev == null) {
             throw new DocumentNotFoundException("Muestra no encontrada ");
         }
-        Muestra mr = repository.findByBarraBultoAndRevision_Tramite(barra, tramite);
+        Muestra mr = repository.findByBarraBultoAndTramiteId(barra, tramite);
         if (mr == null) {
             mr = new Muestra();
             mr.setBarraBulto(barra);
             mr.setBarraMuestra(muestra);
-            mr.setRevision(rev);
+            mr.setRevisionId(rev.getId());
             mr.setStatus(validateMuestra(mr));
             mr.setCantidad(1);
             mr.setFecha(LocalDate.now());
@@ -73,7 +76,12 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
                         }
                     }
                 } else {
-                    throw new DocumentNotFoundException("Barra de muestra no coincide con el historial");
+                    log.error("Barra de muestra no coincide con el historial");
+                    if (mr.getBarrasNovedad() == null) {
+                        mr.setBarrasNovedad(new ArrayList<>());
+                    }
+                    mr.getBarrasNovedad().add(muestra);
+
                 }
             }
         }
@@ -83,11 +91,10 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
 
     @Override
     public List<Muestra> updateWithRevision(String tramite) {
-        List<Muestra> muestras = repository.findByRevision_Tramite(tramite);
+        List<Muestra> muestras = repository.findByTramiteId(tramite);
         List<Revision> revisiones = revisionRepository.findByTramiteOrderBySecuenciaAsc(tramite);
         Tramite tr = tramiteRepository.findById(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
-        Map<String, Revision> revisionMap = revisiones.stream()
-                .collect(Collectors.toMap(Revision::getBarra, rev -> rev));
+
         Map<String, Muestra> muestraMap = muestras.stream()
                 .collect(Collectors.toMap(Muestra::getBarraBulto, muestra -> muestra));
 
@@ -97,7 +104,7 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
             if (muestra == null) {
                 //Si no existe la muestra creo el registro
                 muestra = new Muestra();
-                muestra.setRevision(rev);
+                muestra.setRevisionId(rev.getId());
                 muestra.setBarraBulto(rev.getBarra());
                 muestra.setProceso("FALTANTE");
             } else {
@@ -109,7 +116,7 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
             }
             repository.save(muestra);
         }
-        muestras = repository.findByRevision_Tramite(tramite);
+        muestras = repository.findByTramiteId(tramite);
 
         boolean allComplete = muestras.stream().allMatch(muestra -> "COMPLETA".equals(muestra.getProceso()));
 
@@ -118,7 +125,7 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
             tramiteRepository.save(tr);
         }
 
-        return repository.findByRevision_Tramite(tramite);
+        return repository.findByTramiteId(tramite);
     }
 
     private static boolean validateMuestra(Muestra muestra) {

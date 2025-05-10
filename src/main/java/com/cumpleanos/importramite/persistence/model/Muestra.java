@@ -30,10 +30,12 @@ public class Muestra implements Serializable {
     private String contendorId;
 
     private String barraBulto;
-    private List<String> barraMuestra;
+    private String barraMuestra;
     private Integer cantidad;
     private Boolean status;
     private String proceso;
+
+    private List<String> barrasNovedad;
 
     @CreatedDate
     private LocalDate fecha;
