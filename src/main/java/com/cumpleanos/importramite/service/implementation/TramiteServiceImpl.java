@@ -4,6 +4,8 @@ import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.StatusResponse;
+import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
+import com.cumpleanos.importramite.persistence.repository.ProductoRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepositoryCustom;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
@@ -26,6 +28,8 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     private final TramiteRepository repository;
     private final TramiteRepositoryCustom repositoryCustom;
     private final FileServiceImpl fileService;
+    private final ContenedorRepository contenedorRepository;
+    private final ProductoRepository productoRepository;
 
     @Override
     public CrudRepository<Tramite, String> getRepository() {
@@ -39,9 +43,11 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
 
     @Override
     public List<Producto> listByTramite(String tramite) {
-        Tramite tr = repository.findById(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " no encontrado"));
 
-        Map<String, Producto> productosMap = MapUtils.listByTramite(tr);
+        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " not found"));
+
+
+        Map<String, Producto> productosMap = MapUtils.listByTramite(contenedores, productoRepository);
 
 
         return productosMap.values().stream()
@@ -51,15 +57,15 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
 
     @Override
     public StatusResponse findTramiteBloqueaContenedor(String tramite, String contenedor, String usr) {
-        Tramite tr = repository.findById(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " no encontrado"));
         StatusResponse response = null;
-        for (Contenedor cont : tr.getContenedores()) {
+        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " not found"));
+        for (Contenedor cont : contenedores) {
             if (cont.getId().equals(contenedor)) {
                 response = lockUnlockContenedor(cont, usr);
+                contenedorRepository.save(cont);
                 break;
             }
         }
-        repository.save(tr);
         return response;
     }
 
