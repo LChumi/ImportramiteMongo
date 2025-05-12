@@ -1,7 +1,6 @@
 package com.cumpleanos.importramite.persistence.model;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,8 +9,11 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "producto")
 @CompoundIndex(name = "barcode_unique_contenedor_tramite_idx",
         def = "{'barcode' : 1, 'contenedorId': 1, 'tramiteId': 1}",
@@ -58,7 +60,6 @@ public class Producto implements Serializable {
     private List<String> historialBarrasMuestra;
     private String procesoMuestra;
     private String usuarioMuestra;
-    private String procesoMuetsra;
 
 
     public void calcularTotal() {

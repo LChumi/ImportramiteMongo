@@ -10,5 +10,8 @@ import java.util.Optional;
 @Repository
 public interface ProductoRepository extends MongoRepository<Producto, String> {
 
-    Optional<List<Producto>> findByTramiteIdAndContenedorId(String tramiteId, String contenedorId);
+    Optional<List<Producto>> findByTramiteIdAndContenedorIdOrderBySecuencia(String tramiteId, String contenedorId);
+
+    Optional<Producto> findByBarcodeAndTramiteIdAndContenedorId(String barcode, String tramiteId, String contenedorId);
+
 }

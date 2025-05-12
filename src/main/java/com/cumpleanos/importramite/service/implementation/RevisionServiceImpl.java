@@ -7,10 +7,8 @@ import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
 import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
 import com.cumpleanos.importramite.persistence.repository.ProductoRepository;
-import com.cumpleanos.importramite.persistence.repository.RevisionRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
-import com.cumpleanos.importramite.service.exception.ExcelNotCreateException;
 import com.cumpleanos.importramite.service.interfaces.IRevisionService;
 import com.cumpleanos.importramite.utils.MapUtils;
 import com.cumpleanos.importramite.utils.StringUtils;
@@ -22,27 +20,34 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.cumpleanos.importramite.utils.StringUtils.obtenerHora;
+
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> implements IRevisionService {
+public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> implements IRevisionService {
 
-    private final RevisionRepository repository;
     private final ContenedorRepository contenedorRepository;
     private final TramiteRepository tramiteRepository;
     private final ProductoRepository productoRepository;
 
+    private static final String PRODUCTO_NOT_IN_LIST = "PRODUCTO NO ENCONTRADO EN LA LISTA";
+    private static final String ADD = "AGREGADO";
+    private static final String REMOVE = "ELIMINADO";
+    private static final String NO_DATA = "SIN REGISTRO";
+
     @Override
-    public CrudRepository<Revision, String> getRepository() {
-        return repository;
+    public CrudRepository<Producto, String> getRepository() {
+        return productoRepository;
     }
 
     @Override
-    public List<Revision> findByTramite_Id(String tramiteId) {
-        return repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
+    public List<Producto> findByTramite_Id(String tramiteId) {
+        return null;
     }
 
     /**
@@ -53,18 +58,21 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
      * @return devuelve la lista de revision actualizada comparando las cantidades de trámite y de revision actualizando estados
      */
     @Override
-    public List<Revision> validateAndProcessTramite(String tramiteId, String contenedorId) {
-        Tramite tramite = tramiteRepository.findById(tramiteId)
-                .orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
+    public List<Producto> validateAndProcessTramite(String tramiteId, String contenedorId) {
+        String finalTramiteId = tramiteId.trim();
+        String finalContenedorId = contenedorId.trim();
+        Tramite tramite = tramiteRepository.findById(finalTramiteId)
+                .orElseThrow(() -> new DocumentNotFoundException("Tramite " + finalTramiteId + " not found"));
 
         //Verificar si todos los contenedores estan finalizados
-        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
+        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(finalTramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
         boolean allCompleted = contenedores.stream()
                 .allMatch(Contenedor::getFinalizado);
 
         if (!allCompleted) {
             for (Contenedor contenedor : contenedores) {
-                if (contenedor.getId().equals(contenedorId)) {
+                if (contenedor.getId().equals(finalContenedorId)) {
+                    contenedor.setEndHour(LocalTime.now());
                     contenedor.setFinalizado(true);
                 }
             }
@@ -79,19 +87,17 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
             tramite.setProceso((short) 3);
             tramiteRepository.save(tramite);
         }
-        return repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
+        return productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramiteId, finalContenedorId).orElseThrow(() -> new DocumentNotFoundException("No se encontraron productos para el trámite: "+tramiteId+" y el contenedor: "+contenedorId));
     }
 
     @Override
-    public List<Revision> updateRevisionWithTramiteQuantities(String tramiteId) {
-
+    public List<Producto> updateRevisionWithTramiteQuantities(String tramiteStr, String contenedorStr) {
+        String tramiteId = tramiteStr.trim();
+        String contenedorId = contenedorStr.trim();
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
 
-        List<Revision> revisions = repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
-
-        Map<String, Revision> revisionMap = revisions.stream()
-                .collect(Collectors.toMap(Revision::getBarra, rev -> rev));
+        List<Producto> productos = productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramiteId, contenedorId).orElseThrow(() -> new DocumentNotFoundException("No se encontraron productos para el trámite: "+tramiteId+" y el contenedor: "+contenedorId));
 
         List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
 
@@ -148,58 +154,61 @@ public class RevisionServiceImpl extends GenericServiceImpl<Revision, String> im
      */
     @Transactional
     @Override
-    public Revision updateCantidadByBarra(RevisionRequest request) {
+    public Producto updateCantidadByBarra(RevisionRequest request) {
 
         String tramiteId = StringUtils.trimWhitespace(request.tramiteId());
         String barra = StringUtils.trimWhitespace(request.barra());
+        String contenedorId = StringUtils.trimWhitespace(request.contenedor());
 
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
 
-        Contenedor contenedor = contenedorRepository.findById(request.contenedor()).orElseThrow(() -> new DocumentNotFoundException("Contenedor no encontrado"));
+        Contenedor contenedor = contenedorRepository.findById(contenedorId).orElseThrow(() -> new DocumentNotFoundException("Contenedor no encontrado"));
 
+        if (contenedor.getStartDate() == null && contenedor.getStartHour() == null) {
+            contenedor.setStartDate(LocalDate.now());
+            contenedor.setStartHour(LocalTime.now());
+            contenedorRepository.save(contenedor);
+        }
 
-        Revision revision = repository.findByBarraAndTramite(barra, tramiteId);
+        Producto revision = productoRepository.findByBarcodeAndTramiteIdAndContenedorId(barra, tramiteId, contenedorId).orElse(new Producto());
 
-        List<Producto> productos = productoRepository.findByTramiteIdAndContenedorId(tramite.getId(), request.contenedor()).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: "+tramite.getId()+" y el contenedor: "+contenedor));
-
-        Map<String, Producto> tramiteProductMap = MapUtils.listByContainer(productos);
-
-        if (revision == null) {
+        if (revision.getBarcode() == null || revision.getBarcode().isEmpty()) {
             //Crear nueva revision
-            revision = new Revision();
-            revision.setFecha(LocalDate.now());
-            revision.setHora(LocalTime.now());
-            revision.setBarra(barra);
-            revision.setUsuario(request.usuario());
-            revision.setCantidad(1);
-            revision.setTramite(tramite.getId());
-            verifyExist(tramiteProductMap, revision);
+            revision.setBarcode(barra);
+            revision.setContenedorId(contenedorId);
+            revision.setTramiteId(tramiteId);
+            revision.setNombre(PRODUCTO_NOT_IN_LIST);
+            revision.setCantidadRevision(1);
+            revision.setUsuarioRevision(request.usuario());
+            revision.setEstadoRevision(NO_DATA);
+            revision.setHistorialRevision(new ArrayList<>());
+            revision.getHistorialRevision().add(historial(true));
         } else {
             if (request.status()) {
-                revision.setCantidad(revision.getCantidad() + 1);
-                verifyExist(tramiteProductMap, revision);
+                revision.setCantidadRevision(revision.getCantidadRevision() + 1);
+                revision.getHistorialRevision().add(historial(true));
+                revision.setEstadoRevision(ADD);
             } else {
-                int nuevaCantidad = revision.getCantidad() - 1;
+                int nuevaCantidad = revision.getCantidadRevision() - 1;
                 if (nuevaCantidad >= 0) {
-                    revision.setCantidad(nuevaCantidad);
-                    verifyExist(tramiteProductMap, revision);
+                    revision.setCantidadRevision(nuevaCantidad);
+                    revision.getHistorialRevision().add(historial(false));
+                    revision.setEstadoRevision(REMOVE);
                 } else {
                     throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
                 }
             }
         }
-        return repository.save(revision);
+        return productoRepository.save(revision);
     }
 
-    private void verifyExist(Map<String, Producto> tramiteProductMap, Revision revision) {
-        for (Producto producto : tramiteProductMap.values()) {
-            if (producto.getId().equals(revision.getBarra())) {
-                revision.setEstado("REGISTRADO");
-                break;
-            } else {
-                revision.setEstado("SIN REGISTRO");
-            }
+
+    private static String historial(boolean status) {
+        if (status) {
+            return ADD + obtenerHora();
+        }else {
+            return REMOVE + obtenerHora();
         }
     }
 }

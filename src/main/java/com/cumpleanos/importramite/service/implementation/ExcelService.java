@@ -103,7 +103,7 @@ public class ExcelService {
                     cell.setCellStyle(getHeaderCellStyle(workbook));
                 }
 
-                List<Producto> productos = productoRepository.findByTramiteIdAndContenedorId(tramite.getId(), contenedor).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: "+tramite.getId()+" y el contenedor: "+contenedor));
+                List<Producto> productos = productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramite.getId(), contenedor).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: "+tramite.getId()+" y el contenedor: "+contenedor));
                 // Agregar productos del contenedor
                 for (Producto producto: productos) {
                     rowNum = getRowProduct(sheet, rowNum, producto);
