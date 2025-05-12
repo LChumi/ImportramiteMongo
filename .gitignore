@@ -34,3 +34,6 @@ build/
 
 ### Mongo DB
 mongo_secure.yml
+
+### environments ###
+.env
