@@ -2,7 +2,6 @@ package com.cumpleanos.importramite.service.implementation;
 
 import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
-import com.cumpleanos.importramite.persistence.model.Revision;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
 import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
@@ -23,8 +22,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import static com.cumpleanos.importramite.utils.ProductoStatus.*;
 import static com.cumpleanos.importramite.utils.StringUtils.obtenerHora;
 
 @Service
@@ -35,19 +34,10 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
     private final TramiteRepository tramiteRepository;
     private final ProductoRepository productoRepository;
 
-    private static final String PRODUCTO_NOT_IN_LIST = "PRODUCTO NO ENCONTRADO EN LA LISTA";
-    private static final String ADD = "AGREGADO";
-    private static final String REMOVE = "ELIMINADO";
-    private static final String NO_DATA = "SIN REGISTRO";
 
     @Override
     public CrudRepository<Producto, String> getRepository() {
         return productoRepository;
-    }
-
-    @Override
-    public List<Producto> findByTramite_Id(String tramiteId) {
-        return null;
     }
 
     /**
@@ -90,6 +80,12 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
         return productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramiteId, finalContenedorId).orElseThrow(() -> new DocumentNotFoundException("No se encontraron productos para el trámite: "+tramiteId+" y el contenedor: "+contenedorId));
     }
 
+    /**
+     * Metodo para validar la Revision con la informacion de las cantidades solicitadas en el Tramite
+     * @param tramiteStr id del tramite
+     * @param contenedorStr id del contenedor
+     * @return lista de productos con sus respectivas actualizaciones
+     */
     @Override
     public List<Producto> updateRevisionWithTramiteQuantities(String tramiteStr, String contenedorStr) {
         String tramiteId = tramiteStr.trim();
@@ -103,47 +99,35 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
 
         Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(contenedores, productoRepository);
 
-        for (Producto producto : tramiteProductMap.values()) {
-            Revision revision = revisionMap.get(producto.getId());
+        for (Producto producto : productos) {
 
-            if (revision == null) {
-                // Si no existe en revision, crear nuevo registro
-                revision = new Revision();
-                revision.setBarra(producto.getId());
-                revision.setCantidad(0);
-                revision.setCantidadPedida(producto.getBultos());
-                revision.setCantidadDiferencia(producto.getBultos());
-                revision.setEstado("NO LLEGO");
-                revision.setSecuencia(producto.getSecuencia());
-                revision.setTramite(tramite.getId());
-            } else {
+            if (producto.getCantidadRevision() == null || producto.getCantidadRevision() == 0) {
+                producto.setEstadoRevision(NO_LLEGO.name());
+                producto.setCantidadRevision(0);
+                producto.setCantidadDiferenciaRevision(producto.getBultos());
+                producto.setHistorialRevision(new ArrayList<>());
+                producto.getHistorialRevision().add(historial(true));
+                producto.setSecuencia(0);
+            }else {
                 int cantidadPedida = producto.getBultos();
-                revision.setCantidadPedida(cantidadPedida);
-                int diferencia = revision.getCantidad() - cantidadPedida;
-                revision.setCantidadDiferencia(Math.abs(diferencia));
-                revision.setSecuencia(producto.getSecuencia());
+                int diferencia = producto.getBultos() - producto.getCantidadRevision();
+                producto.setCantidadDiferenciaRevision(Math.abs(diferencia));
+                producto.setCantidadRevision(producto.getCantidadRevision() + cantidadPedida);
                 if (diferencia == 0) {
-                    revision.setEstado("COMPLETO");
+                    producto.setEstadoRevision(COMPLETO.name());
                 } else if (diferencia > 0) {
-                    revision.setEstado("SOBRANTE");
+                    producto.setEstadoRevision(SOBRANTE.name());
                 } else {
-                    revision.setEstado("FALTANTE");
+                    producto.setEstadoRevision(FALTANTE.name());
                 }
             }
-            repository.save(revision);
+
+            productoRepository.save(producto);
         }
 
-        // Verificar revisiones que no esten en productos y actualizarlos
-        for (Revision revision : revisions) {
-            if (!tramiteProductMap.containsKey(revision.getBarra())) {
-                revision.setEstado("SIN REGISTRO");
-                revision.setSecuencia(0);
-                repository.save(revision);
-            }
-        }
         tramite.setProceso((short) 3);
         tramiteRepository.save(tramite);
-        return repository.findByTramiteOrderBySecuenciaAsc(tramiteId);
+        return productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramiteId, contenedorId).orElseThrow(() -> new DocumentNotFoundException("No se encontraron productos para el trámite: "+tramiteId+" y el contenedor: "+contenedorId));
     }
 
 
@@ -163,6 +147,11 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
         Tramite tramite = tramiteRepository.findById(tramiteId)
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
 
+        if (tramite.getProceso() == 1) {
+            tramite.setProceso((short) 2);
+            tramiteRepository.save(tramite);
+        }
+
         Contenedor contenedor = contenedorRepository.findById(contenedorId).orElseThrow(() -> new DocumentNotFoundException("Contenedor no encontrado"));
 
         if (contenedor.getStartDate() == null && contenedor.getStartHour() == null) {
@@ -178,23 +167,23 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
             revision.setBarcode(barra);
             revision.setContenedorId(contenedorId);
             revision.setTramiteId(tramiteId);
-            revision.setNombre(PRODUCTO_NOT_IN_LIST);
+            revision.setNombre(PRODUCTO_SIN_REGISTRO.name());
             revision.setCantidadRevision(1);
             revision.setUsuarioRevision(request.usuario());
-            revision.setEstadoRevision(NO_DATA);
+            revision.setEstadoRevision(SIN_REGISTRO.name());
             revision.setHistorialRevision(new ArrayList<>());
             revision.getHistorialRevision().add(historial(true));
         } else {
             if (request.status()) {
                 revision.setCantidadRevision(revision.getCantidadRevision() + 1);
                 revision.getHistorialRevision().add(historial(true));
-                revision.setEstadoRevision(ADD);
+                revision.setEstadoRevision(AGREGADO.name());
             } else {
                 int nuevaCantidad = revision.getCantidadRevision() - 1;
                 if (nuevaCantidad >= 0) {
                     revision.setCantidadRevision(nuevaCantidad);
                     revision.getHistorialRevision().add(historial(false));
-                    revision.setEstadoRevision(REMOVE);
+                    revision.setEstadoRevision(ELIMINADO.name());
                 } else {
                     throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
                 }
@@ -206,9 +195,9 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
 
     private static String historial(boolean status) {
         if (status) {
-            return ADD + obtenerHora();
+            return AGREGADO.name() + obtenerHora();
         }else {
-            return REMOVE + obtenerHora();
+            return ELIMINADO.name() + obtenerHora();
         }
     }
 }
