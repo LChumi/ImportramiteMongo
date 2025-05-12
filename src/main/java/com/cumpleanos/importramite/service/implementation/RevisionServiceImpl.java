@@ -5,11 +5,10 @@ import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
 import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
-import com.cumpleanos.importramite.persistence.repository.ProductoRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
+import com.cumpleanos.importramite.service.interfaces.IProductoService;
 import com.cumpleanos.importramite.service.interfaces.IRevisionService;
-import com.cumpleanos.importramite.utils.MapUtils;
 import com.cumpleanos.importramite.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,23 +20,21 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static com.cumpleanos.importramite.utils.ProductoStatus.*;
-import static com.cumpleanos.importramite.utils.StringUtils.obtenerHora;
+import static com.cumpleanos.importramite.utils.StringUtils.historial;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> implements IRevisionService {
+public class RevisionServiceImpl extends GenericServiceImpl<Contenedor, String> implements IRevisionService {
 
     private final ContenedorRepository contenedorRepository;
     private final TramiteRepository tramiteRepository;
-    private final ProductoRepository productoRepository;
-
+    private final IProductoService productoService;
 
     @Override
-    public CrudRepository<Producto, String> getRepository() {
-        return productoRepository;
+    public CrudRepository<Contenedor, String> getRepository() {
+        return contenedorRepository;
     }
 
     /**
@@ -77,7 +74,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
             tramite.setProceso((short) 3);
             tramiteRepository.save(tramite);
         }
-        return productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramiteId, finalContenedorId).orElseThrow(() -> new DocumentNotFoundException("No se encontraron productos para el trámite: "+tramiteId+" y el contenedor: "+contenedorId));
+        return productoService.findByTramiteIdAndContenedorId(finalTramiteId, finalContenedorId);
     }
 
     /**
@@ -88,16 +85,11 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
      */
     @Override
     public List<Producto> updateRevisionWithTramiteQuantities(String tramiteStr, String contenedorStr) {
-        String tramiteId = tramiteStr.trim();
-        String contenedorId = contenedorStr.trim();
-        Tramite tramite = tramiteRepository.findById(tramiteId)
+        Tramite tramite = tramiteRepository.findById(tramiteStr.trim())
                 .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
 
-        List<Producto> productos = productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramiteId, contenedorId).orElseThrow(() -> new DocumentNotFoundException("No se encontraron productos para el trámite: "+tramiteId+" y el contenedor: "+contenedorId));
+        List<Producto> productos = productoService.findByTramiteIdAndContenedorId(tramiteStr, contenedorStr);
 
-        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
-
-        Map<String, Producto> tramiteProductMap = MapUtils.listByTramite(contenedores, productoRepository);
 
         for (Producto producto : productos) {
 
@@ -122,12 +114,12 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
                 }
             }
 
-            productoRepository.save(producto);
+            productoService.save(producto);
         }
 
         tramite.setProceso((short) 3);
         tramiteRepository.save(tramite);
-        return productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramiteId, contenedorId).orElseThrow(() -> new DocumentNotFoundException("No se encontraron productos para el trámite: "+tramiteId+" y el contenedor: "+contenedorId));
+        return productoService.findByTramiteIdAndContenedorId(tramiteStr, contenedorStr);
     }
 
 
@@ -160,7 +152,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
             contenedorRepository.save(contenedor);
         }
 
-        Producto revision = productoRepository.findByBarcodeAndTramiteIdAndContenedorId(barra, tramiteId, contenedorId).orElse(new Producto());
+        Producto revision = productoService.findByBarcodeAndTramiteIdAndContenedorId(barra, tramiteId, contenedorId);
 
         if (revision.getBarcode() == null || revision.getBarcode().isEmpty()) {
             //Crear nueva revision
@@ -173,6 +165,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
             revision.setEstadoRevision(SIN_REGISTRO.name());
             revision.setHistorialRevision(new ArrayList<>());
             revision.getHistorialRevision().add(historial(true));
+            revision.generateId();
         } else {
             if (request.status()) {
                 revision.setCantidadRevision(revision.getCantidadRevision() + 1);
@@ -189,15 +182,6 @@ public class RevisionServiceImpl extends GenericServiceImpl<Producto, String> im
                 }
             }
         }
-        return productoRepository.save(revision);
-    }
-
-
-    private static String historial(boolean status) {
-        if (status) {
-            return AGREGADO.name() + obtenerHora();
-        }else {
-            return ELIMINADO.name() + obtenerHora();
-        }
+        return productoService.save(revision);
     }
 }

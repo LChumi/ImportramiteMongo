@@ -60,6 +60,7 @@ public class Producto implements Serializable {
     private List<String> historialBarrasMuestra;
     private String procesoMuestra;
     private String usuarioMuestra;
+    private Boolean statusMuestra;
 
 
     public void calcularTotal() {

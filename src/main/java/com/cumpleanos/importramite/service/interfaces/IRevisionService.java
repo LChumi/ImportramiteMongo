@@ -1,12 +1,13 @@
 package com.cumpleanos.importramite.service.interfaces;
 
 
+import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
 
 import java.util.List;
 
-public interface IRevisionService extends IGenericService<Producto, String> {
+public interface IRevisionService extends IGenericService<Contenedor, String> {
 
     List<Producto> validateAndProcessTramite(String tramiteId, String contenedorId);
 

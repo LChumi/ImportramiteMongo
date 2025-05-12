@@ -1,13 +1,14 @@
 package com.cumpleanos.importramite.service.interfaces;
 
 import com.cumpleanos.importramite.persistence.model.Muestra;
+import com.cumpleanos.importramite.persistence.model.Producto;
+import com.cumpleanos.importramite.persistence.records.MuestraRequest;
 
 import java.util.List;
 
 public interface IMuestraService extends IGenericService<Muestra, String> {
-    List<Muestra> findByRevision_Tramite_Id(String tramiteId);
 
-    Muestra saveAndCompare(String barra, String muestra, String tramite, Boolean status);
+    Producto saveAndCompare(MuestraRequest request);
 
-    List<Muestra> updateWithRevision(String tramite);
+    List<Producto> updateWithRevision(String tramite, String contenedor);
 }

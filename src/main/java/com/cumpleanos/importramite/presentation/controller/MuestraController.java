@@ -1,6 +1,8 @@
 package com.cumpleanos.importramite.presentation.controller;
 
 import com.cumpleanos.importramite.persistence.model.Muestra;
+import com.cumpleanos.importramite.persistence.model.Producto;
+import com.cumpleanos.importramite.persistence.records.MuestraRequest;
 import com.cumpleanos.importramite.service.interfaces.IMuestraService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,25 +19,15 @@ public class MuestraController {
 
     private final IMuestraService service;
 
-    @GetMapping("/list/{tramiteId}")
-    public ResponseEntity<List<Muestra>> getAll(@PathVariable String tramiteId) {
-        List<Muestra> muestras = service.findByRevision_Tramite_Id(tramiteId.trim());
-        return ResponseEntity.ok(muestras);
-    }
-
-    @GetMapping("/add/compare/{barra}/{muestra}/{tramite}/{status}")
-    public ResponseEntity<Muestra> compare(
-            @PathVariable String barra,
-            @PathVariable String muestra,
-            @PathVariable String tramite,
-            @PathVariable Boolean status) {
-        Muestra mr = service.saveAndCompare(barra.trim(), muestra.trim(), tramite.trim(), status);
+    @PutMapping("/add/compare/")
+    public ResponseEntity<Producto> compare(@RequestBody MuestraRequest request) {
+        Producto mr = service.saveAndCompare(request);
         return ResponseEntity.ok(mr);
     }
 
-    @GetMapping("/validate/{tramite}")
-    public ResponseEntity<List<Muestra>> validate(@PathVariable String tramite) {
-        List<Muestra> muestras = service.updateWithRevision(tramite.trim());
+    @GetMapping("/validate/{tramite}/{containerId}")
+    public ResponseEntity<List<Producto>> validate(@PathVariable String tramite,@PathVariable String containerId) {
+        List<Producto> muestras = service.updateWithRevision(tramite, containerId);
         return ResponseEntity.ok(muestras);
     }
 
