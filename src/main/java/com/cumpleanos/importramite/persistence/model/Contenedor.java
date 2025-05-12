@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -23,5 +25,10 @@ public class Contenedor implements Serializable {
     private Boolean finalizado;
     private List<String> productIds;
     private String tramiteId;
+
+    //Datos de Procesamiento
+    private LocalDate startDate;
+    private LocalTime startHour;
+    private LocalTime endHour;
 
 }

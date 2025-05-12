@@ -84,7 +84,7 @@ public class FileServiceImpl {
             }
 
             // Agrega el contenedor si la lista está vacía o si ya tiene contenedores
-            if (tramite.getContenedoresIds().isEmpty()) {
+            if (tramite.getContenedoresIds() == null || tramite.getContenedoresIds().isEmpty()) {
                 tramite.setContenedoresIds(new ArrayList<>());
                 tramite.getContenedoresIds().add(c.getId());
             } else {
@@ -135,7 +135,7 @@ public class FileServiceImpl {
             if (FileUtils.isRowEmpty(row)) break;
             try {
                 Producto producto = FileUtils.mapRowToProduct(row, evaluator);
-                if (producto.getId() == null || producto.getId().isEmpty()) {
+                if (producto.getBarcode() == null || producto.getBarcode().isEmpty()) {
                     log.error("Producto sin datos");
                 } else {
                     counter++;
@@ -143,12 +143,13 @@ public class FileServiceImpl {
                     producto.setContenedorId(contenedorId);
                     producto.setSecuencia(counter);
                     producto.calcularTotal();
+                    producto.generateId();
                     getProducts(producto);
                     Producto p = productoRepository.save(producto);
                     if (p.getId() == null) {
                         throw new RuntimeException("Error al guardar el producto: " + producto);
                     }
-                    productos.add(p.getId());
+                    productos.add(p.getBarcode());
                     log.info("Producto guardado: {}", p);
                 }
             } catch (ParseException e) {
@@ -161,8 +162,8 @@ public class FileServiceImpl {
     private void getProducts(Producto producto) {
         long bodega = 10000586L;
         long bodegaNarancay = 10000601L;
-        ProductoApi api = productosClientService.getProduct(bodega, producto.getId());
-        ProductoApi apiNarancay = productosClientService.getProduct(bodegaNarancay, producto.getId());
+        ProductoApi api = productosClientService.getProduct(bodega, producto.getBarcode());
+        ProductoApi apiNarancay = productosClientService.getProduct(bodegaNarancay, producto.getBarcode());
         if (api != null) {
             producto.setItemAlterno(api.pro_id1());
             producto.setPvp(api.pvp());

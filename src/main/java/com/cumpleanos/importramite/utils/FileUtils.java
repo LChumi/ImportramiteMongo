@@ -26,9 +26,8 @@ public class FileUtils {
     }
 
     public static Producto mapRowToProduct(Row row, FormulaEvaluator evaluator) throws ParseException {
-
         return Producto.builder()
-                .id(getCellValueClean(row.getCell(0)))
+                .barcode(getCellValueClean(row.getCell(0)))
                 .id1(getCellValueSafely(row.getCell(1)))
                 .nombre(getCellValueSafely(row.getCell(2)))
                 .bultos(parseIntegerSafely(row.getCell(3), evaluator))
