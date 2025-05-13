@@ -20,5 +20,4 @@ public class ProductosClientServiceImpl {
                 "Error al obtener el producto :" + data);
     }
 
-
 }

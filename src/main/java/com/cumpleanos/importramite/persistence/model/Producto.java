@@ -62,7 +62,6 @@ public class Producto implements Serializable {
     private String usuarioMuestra;
     private Boolean statusMuestra;
 
-
     public void calcularTotal() {
         if (this.bultos != null && this.cxb != null) {
             this.total = this.bultos * this.cxb;

@@ -79,7 +79,8 @@ public class RevisionServiceImpl extends GenericServiceImpl<Contenedor, String> 
 
     /**
      * Metodo para validar la Revision con la informacion de las cantidades solicitadas en el Tramite
-     * @param tramiteStr id del tramite
+     *
+     * @param tramiteStr    id del tramite
      * @param contenedorStr id del contenedor
      * @return lista de productos con sus respectivas actualizaciones
      */
@@ -100,7 +101,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Contenedor, String> 
                 producto.setHistorialRevision(new ArrayList<>());
                 producto.getHistorialRevision().add(historial(true));
                 producto.setSecuencia(0);
-            }else {
+            } else {
                 int cantidadPedida = producto.getBultos();
                 int diferencia = producto.getBultos() - producto.getCantidadRevision();
                 producto.setCantidadDiferenciaRevision(Math.abs(diferencia));
@@ -125,6 +126,7 @@ public class RevisionServiceImpl extends GenericServiceImpl<Contenedor, String> 
 
     /**
      * Metodo para crear o actualizar datos de la tabal revision
+     *
      * @param request Cuerpo de solicitud tramite contendor, usuario, barra, status
      * @return nueva revision si no existe si existe va sumando la cantidad ++ o restando -- dependiendo el status
      */

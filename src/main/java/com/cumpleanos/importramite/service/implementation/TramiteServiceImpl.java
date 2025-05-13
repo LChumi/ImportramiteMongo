@@ -80,8 +80,8 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
         Tramite found = repository.findById(id).orElseThrow(() -> new DocumentNotFoundException("No se encontraron datos a actualizar"));
         found.setFechaArribo(fechaLlegada);
         found.setHoraArribo(horaLlegada);
-        Tramite saved= repository.save(found);
-        if (saved.getFechaArribo() == null){
+        Tramite saved = repository.save(found);
+        if (saved.getFechaArribo() == null) {
             throw new DocumentNotFoundException("El documento no tiene fecha de arribo");
         }
         response = fileService.sendTramiteFinal(saved.getId());

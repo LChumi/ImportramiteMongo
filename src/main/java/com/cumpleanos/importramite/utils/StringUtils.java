@@ -13,7 +13,7 @@ public class StringUtils {
         return input == null ? null : input.trim();
     }
 
-    public static String obtenerHora(){
+    public static String obtenerHora() {
         LocalDateTime fecha = LocalDateTime.now();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("HH:mm:ss");
         return fecha.format(formato);
@@ -21,14 +21,15 @@ public class StringUtils {
 
     public static String historial(boolean status) {
         if (status) {
-            return  obtenerHora() + AGREGADO.name();
-        }else {
+            return obtenerHora() + AGREGADO.name();
+        } else {
             return obtenerHora() + ELIMINADO.name();
         }
     }
 
     /**
      * Metodo para extraer la hora
+     *
      * @param texto String texto ya sea 16:42:36 AGREGADO o BARRA 1234567890 16:52:36 AGREGADO
      * @return la hora extraida del texto Output: 16:42:36
      */
@@ -40,10 +41,11 @@ public class StringUtils {
 
     /**
      * Metodo para separar las Barras de un texto
+     *
      * @param texto BARRA: cod_barras
      * @return codigo de barras
      */
-    public static String extraerBarra(String texto){
+    public static String extraerBarra(String texto) {
         Pattern pattern = Pattern.compile("BARRA: (\\d+)");
         Matcher matcher = pattern.matcher(texto);
         return matcher.find() ? matcher.group(1) : null;

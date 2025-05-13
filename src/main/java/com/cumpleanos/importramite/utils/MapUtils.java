@@ -16,7 +16,7 @@ public class MapUtils {
         Map<String, Producto> productosMap = new HashMap<>();
 
         for (Contenedor contenedor : contenedores) {
-            List<Producto> productos = repository.findByTramiteIdAndContenedorIdOrderBySecuencia(contenedor.getTramiteId(), contenedor.getId()).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: "+contenedor.getTramiteId()+" y el contenedor: "+contenedor));
+            List<Producto> productos = repository.findByTramiteIdAndContenedorIdOrderBySecuencia(contenedor.getTramiteId(), contenedor.getId()).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: " + contenedor.getTramiteId() + " y el contenedor: " + contenedor));
 
             for (Producto producto : productos) {
                 productosMap.merge(producto.getId(), producto, (p1, p2) -> {

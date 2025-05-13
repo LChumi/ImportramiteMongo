@@ -79,20 +79,20 @@ public class ExcelService {
         return out.toByteArray();
     }
 
-    public byte[] generarExcelPorContenedores (Tramite tramite){
-        try(Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Tramite"+ tramite.getId());
+    public byte[] generarExcelPorContenedores(Tramite tramite) {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Tramite" + tramite.getId());
             int rowNum = 0;//Control de filas
 
             Row tramiteRow = sheet.createRow(rowNum++);
             Cell tramiteCell = tramiteRow.createCell(0);
-            tramiteCell.setCellValue("Trámite: "+tramite.getId());
+            tramiteCell.setCellValue("Trámite: " + tramite.getId());
             tramiteCell.setCellStyle(getHeaderCellStyle(workbook));
 
-            for (String contenedor: tramite.getContenedoresIds()) {
+            for (String contenedor : tramite.getContenedoresIds()) {
                 Row contenedorRow = sheet.createRow(rowNum++);
                 Cell contenedorCell = contenedorRow.createCell(1);
-                contenedorCell.setCellValue("Contenedor: "+contenedor);
+                contenedorCell.setCellValue("Contenedor: " + contenedor);
                 contenedorCell.setCellStyle(getHeaderCellStyle(workbook));
 
                 // Agregar encabezados de columnas
@@ -103,9 +103,9 @@ public class ExcelService {
                     cell.setCellStyle(getHeaderCellStyle(workbook));
                 }
 
-                List<Producto> productos = productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramite.getId(), contenedor).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: "+tramite.getId()+" y el contenedor: "+contenedor));
+                List<Producto> productos = productoRepository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramite.getId(), contenedor).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: " + tramite.getId() + " y el contenedor: " + contenedor));
                 // Agregar productos del contenedor
-                for (Producto producto: productos) {
+                for (Producto producto : productos) {
                     rowNum = getRowProduct(sheet, rowNum, producto);
                 }
 
@@ -122,9 +122,9 @@ public class ExcelService {
             workbook.close();
             return out.toByteArray();
 
-        } catch (IOException e){
+        } catch (IOException e) {
             log.error("Error al generar el excel de tramite", e);
-            throw new ExcelNotCreateException("Error al generar el excel de tramite"+ tramite.getId(), e);
+            throw new ExcelNotCreateException("Error al generar el excel de tramite" + tramite.getId(), e);
         }
     }
 

@@ -26,7 +26,7 @@ public class MuestraController {
     }
 
     @GetMapping("/validate/{tramite}/{containerId}")
-    public ResponseEntity<List<Producto>> validate(@PathVariable String tramite,@PathVariable String containerId) {
+    public ResponseEntity<List<Producto>> validate(@PathVariable String tramite, @PathVariable String containerId) {
         List<Producto> muestras = service.updateWithRevision(tramite, containerId);
         return ResponseEntity.ok(muestras);
     }

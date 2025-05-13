@@ -38,7 +38,7 @@ public class EmailServiceImpl extends GenericServiceImpl<Emails, String> impleme
         emails.getDestinatarios().forEach(addressees -> existingDestinatarios.add(addressees.getDireccion()));
 
         if (existingDestinatarios.contains(addressee.getDireccion())) {
-            throw  new RuntimeException("Destinatario existente");
+            throw new RuntimeException("Destinatario existente");
         }
 
         emails.getDestinatarios().add(addressee);
@@ -53,7 +53,7 @@ public class EmailServiceImpl extends GenericServiceImpl<Emails, String> impleme
         boolean removed = emails.getDestinatarios().removeIf(destinatario -> destinatario.getDireccion().equals(addressee));
 
         if (!removed) {
-            throw  new RuntimeException("No se encontró Destinatario");
+            throw new RuntimeException("No se encontró Destinatario");
         }
 
         return repository.save(emails);

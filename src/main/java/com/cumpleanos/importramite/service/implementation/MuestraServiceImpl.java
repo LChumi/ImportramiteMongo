@@ -42,11 +42,11 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
     @Override
     public Producto saveAndCompare(MuestraRequest request) {
 
-        String idProducto = request.tramiteId() +"_" + request.contenedor() + "_" + request.barra();
+        String idProducto = request.tramiteId() + "_" + request.contenedor() + "_" + request.barra();
 
         Producto p = productoService.findById(idProducto);
 
-        if (p== null){
+        if (p == null) {
             throw new DocumentNotFoundException("Producto no encontrado");
         }
 
@@ -84,9 +84,9 @@ public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> impl
 
         for (Producto producto : productos) {
             //Si no existe la muestra se registra
-            if (producto.getBarraMuestra() == null){
+            if (producto.getBarraMuestra() == null) {
                 producto.setProcesoMuestra(FALTANTE.name());
-            }else {
+            } else {
                 producto.setProcesoMuestra(COMPLETO.name());
             }
             productoService.save(producto);

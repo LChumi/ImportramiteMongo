@@ -121,7 +121,7 @@ public class FileServiceImpl {
         return new CustomMultipartFile(emailJson.getBytes(), "email.json", "application/json");
     }
 
-    private List<String> mapRowsToProducts(Sheet sheet,  FormulaEvaluator evaluator, String tramiteId, String contenedorId) {
+    private List<String> mapRowsToProducts(Sheet sheet, FormulaEvaluator evaluator, String tramiteId, String contenedorId) {
         List<String> productos = new ArrayList<>();
         Iterator<Row> rowIterator = sheet.iterator();
 
@@ -185,9 +185,9 @@ public class FileServiceImpl {
     }
 
 
-    public String sendTramiteFinal(String tramiteId){
-        try{
-            Tramite tramite= tramiteRepository.findById(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite no registrado en el sistema"));
+    public String sendTramiteFinal(String tramiteId) {
+        try {
+            Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite no registrado en el sistema"));
             String asunto = "Trámite " + tramite.getId().toUpperCase() + " -Registro de arribo a bodega";
             String mensaje = MENSAJE_LLEGADA_BODEGA(
                     tramite.getId(),
@@ -201,13 +201,13 @@ public class FileServiceImpl {
             MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
             emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
             return "Ok";
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Error sending email", e);
         }
     }
 
 
-    public String sendTramiteEmail(String tramiteId){
+    public String sendTramiteEmail(String tramiteId) {
         try {
             Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new RuntimeException(tramiteId + " no encontrado"));
             String asunto = "Tramite " + tramite.getId().toUpperCase() + " - Confirmación de llegada al puerto";
@@ -218,7 +218,7 @@ public class FileServiceImpl {
             MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
             emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
             return "ok";
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Error sending email", e);
         }
     }
