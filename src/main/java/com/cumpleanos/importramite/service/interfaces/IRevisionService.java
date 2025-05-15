@@ -1,6 +1,7 @@
 package com.cumpleanos.importramite.service.interfaces;
 
 
+import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
 
@@ -13,4 +14,6 @@ public interface IRevisionService {
     Producto updateCantidadByBarra(RevisionRequest request);
 
     List<Producto> updateRevisionWithTramiteQuantities(String tramiteId, String contenedorId);
+
+    List<Contenedor> listContenedoresByTramite(String tramiteId);
 }

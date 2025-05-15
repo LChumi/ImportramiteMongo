@@ -1,5 +1,6 @@
 package com.cumpleanos.importramite.presentation.controller;
 
+import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
 import com.cumpleanos.importramite.service.interfaces.IRevisionService;
@@ -36,5 +37,11 @@ public class RevisionController {
     ) {
         Producto updatedRevision = service.updateCantidadByBarra(request);
         return ResponseEntity.ok(updatedRevision);
+    }
+
+    @GetMapping("/contenedores/{tramiteId}")
+    public ResponseEntity<List<Contenedor>> listContenedoresByTramite(@PathVariable String tramiteId) {
+        List<Contenedor> contenedores = service.listContenedoresByTramite(tramiteId);
+        return ResponseEntity.ok(contenedores);
     }
 }

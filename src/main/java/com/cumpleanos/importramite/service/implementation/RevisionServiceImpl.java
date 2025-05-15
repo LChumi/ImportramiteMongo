@@ -117,6 +117,11 @@ public class RevisionServiceImpl implements IRevisionService {
         return productoService.findByTramiteIdAndContenedorId(tramiteStr, contenedorStr);
     }
 
+    @Override
+    public List<Contenedor> listContenedoresByTramite(String tramiteId) {
+        return contenedorRepository.findByTramiteId(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
+    }
+
 
     /**
      * Metodo para crear o actualizar datos de la tabal revision

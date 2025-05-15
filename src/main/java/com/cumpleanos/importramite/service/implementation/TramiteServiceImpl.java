@@ -46,9 +46,7 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
 
         List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " not found"));
 
-
         Map<String, Producto> productosMap = MapUtils.listByTramite(contenedores, productoRepository);
-
 
         return productosMap.values().stream()
                 .sorted(Comparator.comparingInt(Producto::getSecuencia))
