@@ -1,10 +1,8 @@
 package com.cumpleanos.importramite.service.implementation;
 
-import com.cumpleanos.importramite.persistence.model.Muestra;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.MuestraRequest;
-import com.cumpleanos.importramite.persistence.repository.MuestraRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.service.interfaces.IMuestraService;
@@ -28,16 +26,10 @@ import static com.cumpleanos.importramite.utils.StringUtils.historial;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class MuestraServiceImpl extends GenericServiceImpl<Muestra, String> implements IMuestraService {
+public class MuestraServiceImpl implements IMuestraService {
 
-    private final MuestraRepository repository;
     private final TramiteRepository tramiteRepository;
     private final IProductoService productoService;
-
-    @Override
-    public CrudRepository<Muestra, String> getRepository() {
-        return repository;
-    }
 
     @Override
     public Producto saveAndCompare(MuestraRequest request) {

@@ -12,7 +12,6 @@ import com.cumpleanos.importramite.service.interfaces.IRevisionService;
 import com.cumpleanos.importramite.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,16 +25,11 @@ import static com.cumpleanos.importramite.utils.StringUtils.historial;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class RevisionServiceImpl extends GenericServiceImpl<Contenedor, String> implements IRevisionService {
+public class RevisionServiceImpl implements IRevisionService {
 
     private final ContenedorRepository contenedorRepository;
     private final TramiteRepository tramiteRepository;
     private final IProductoService productoService;
-
-    @Override
-    public CrudRepository<Contenedor, String> getRepository() {
-        return contenedorRepository;
-    }
 
     /**
      * Metodo para validar los productos comparando con la tabla Trámite
