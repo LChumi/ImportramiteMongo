@@ -1,5 +1,6 @@
 package com.cumpleanos.importramite.presentation.controller;
 
+import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.StatusResponse;
@@ -97,6 +98,12 @@ public class TramiteController {
     public ResponseEntity<StatusResponse> updateDates(@RequestParam LocalDate fechaArribo, @RequestParam LocalTime horaArribo, @RequestParam String id) {
         StatusResponse status = service.updateDateAndSendEmails(id.trim(), fechaArribo, horaArribo);
         return ResponseEntity.ok(status);
+    }
+
+    @GetMapping("/contenedor/{tramite}/{contenedor}")
+    public ResponseEntity<Contenedor> getContenedor(@PathVariable String tramite, @PathVariable String contenedor) {
+        Contenedor c = service.findByTramiteAndId(tramite.trim(), contenedor.trim());
+        return ResponseEntity.ok(c);
     }
 
 }

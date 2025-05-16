@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface ContenedorRepository extends MongoRepository<Contenedor, String> {
 
     Optional<List<Contenedor>> findByTramiteId(String tramiteId);
+
+    Optional<Contenedor> findByTramiteIdAndContenedorId(String tramiteId, String contenedorId);
 }

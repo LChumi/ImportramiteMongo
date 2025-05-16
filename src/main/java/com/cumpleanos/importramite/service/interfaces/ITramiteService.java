@@ -1,5 +1,6 @@
 package com.cumpleanos.importramite.service.interfaces;
 
+import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.StatusResponse;
@@ -18,4 +19,6 @@ public interface ITramiteService extends IGenericService<Tramite, String> {
     List<Tramite> buscarTramites(String id, Short estado, LocalDate fechaInicio, LocalDate fechaFin);
 
     StatusResponse updateDateAndSendEmails(String id, LocalDate fechaLlegada, LocalTime horaLlegada);
+
+    Contenedor findByTramiteAndId(String tramite, String id);
 }

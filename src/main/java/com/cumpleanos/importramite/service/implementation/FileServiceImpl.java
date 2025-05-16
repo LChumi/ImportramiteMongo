@@ -59,7 +59,7 @@ public class FileServiceImpl {
             productoList = mapRowsToProducts(sheet, evaluator, tramiteId, contenedorId);
 
             Contenedor contenedor = Contenedor.builder()
-                    .id(contenedorId)
+                    .contenedorId(contenedorId)
                     .productIds(productoList)
                     .finalizado(false)
                     .bloqueado(false)
@@ -86,17 +86,17 @@ public class FileServiceImpl {
             // Agrega el contenedor si la lista está vacía o si ya tiene contenedores
             if (tramite.getContenedoresIds() == null || tramite.getContenedoresIds().isEmpty()) {
                 tramite.setContenedoresIds(new ArrayList<>());
-                tramite.getContenedoresIds().add(c.getId());
+                tramite.getContenedoresIds().add(c.getContenedorId());
             } else {
                 boolean contenedorExistente = false;
                 for (String cont : tramite.getContenedoresIds()) {
-                    if (cont.equals(c.getId())) {
+                    if (cont.equals(c.getContenedorId())) {
                         contenedorExistente = true;
                         break;
                     }
                 }
                 if (!contenedorExistente) {
-                    tramite.getContenedoresIds().add(c.getId());
+                    tramite.getContenedoresIds().add(c.getContenedorId());
                 }
             }
 

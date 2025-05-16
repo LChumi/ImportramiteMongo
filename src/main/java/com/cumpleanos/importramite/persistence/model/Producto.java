@@ -25,6 +25,7 @@ public class Producto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Setter(AccessLevel.NONE)
     private String id;
     private String barcode;
     private String contenedorId;
