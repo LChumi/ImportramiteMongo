@@ -184,7 +184,6 @@ public class FileServiceImpl {
         }
     }
 
-
     public String sendTramiteFinal(String tramiteId) {
         try {
             Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite no registrado en el sistema"));
@@ -205,7 +204,6 @@ public class FileServiceImpl {
             throw new RuntimeException("Error sending email", e);
         }
     }
-
 
     public String sendTramiteEmail(String tramiteId) {
         try {
