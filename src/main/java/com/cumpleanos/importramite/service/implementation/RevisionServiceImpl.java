@@ -52,7 +52,7 @@ public class RevisionServiceImpl implements IRevisionService {
 
         if (!allCompleted) {
             for (Contenedor contenedor : contenedores) {
-                if (contenedor.getId().equals(finalContenedorId)) {
+                if (contenedor.getContenedorId().equals(finalContenedorId)) {
                     contenedor.setEndHour(LocalTime.now());
                     contenedor.setFinalizado(true);
                 }

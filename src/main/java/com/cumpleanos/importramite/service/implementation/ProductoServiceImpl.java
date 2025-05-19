@@ -27,7 +27,7 @@ public class ProductoServiceImpl extends GenericServiceImpl<Producto, String> im
         String tramiteId = tramiteStr.trim();
         String contenedorId = contenedorStr.trim();
 
-        return repository.findByTramiteIdAndContenedorIdOrderBySecuencia(tramiteId, contenedorId).orElseThrow(() -> new DocumentNotFoundException("No se encontraron productos para el trámite: " + tramiteId + " y el contenedor: " + contenedorId));
+        return repository.findByTramiteIdAndContenedorId(tramiteId, contenedorId).orElseThrow(() -> new DocumentNotFoundException("No se encontraron productos para el trámite: " + tramiteId + " y el contenedor: " + contenedorId));
     }
 
     @Override

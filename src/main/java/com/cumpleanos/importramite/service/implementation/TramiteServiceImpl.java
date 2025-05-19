@@ -58,7 +58,7 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
         StatusResponse response = null;
         List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " not found"));
         for (Contenedor cont : contenedores) {
-            if (cont.getId().equals(contenedor)) {
+            if (cont.getContenedorId().equals(contenedor)) {
                 response = lockUnlockContenedor(cont, usr);
                 contenedorRepository.save(cont);
                 break;
