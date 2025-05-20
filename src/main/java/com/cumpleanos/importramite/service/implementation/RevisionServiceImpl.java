@@ -196,6 +196,9 @@ public class RevisionServiceImpl implements IRevisionService {
             // Sumar cantidad
             revision.setCantidadRevision(revision.getCantidadRevision() + 1);
             revision.getHistorialRevision().add(historial(true));
+            if (revision.getEstadoRevision() != null && revision.getEstadoRevision().equalsIgnoreCase(SIN_REGISTRO.name())) {
+                revision.setEstadoRevision(SIN_REGISTRO.name());
+            }
             revision.setEstadoRevision(AGREGADO.name());
         } else {
             // Restar cantidad
