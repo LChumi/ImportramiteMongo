@@ -16,4 +16,6 @@ public interface IRevisionService {
     List<Producto> updateRevisionWithTramiteQuantities(String tramiteId, String contenedorId);
 
     List<Contenedor> listContenedoresByTramite(String tramiteId);
+
+    List<Producto> findByTramiteId(String tramiteId, String contenedorId);
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin("*")
 @RestController
 @RequestMapping("revision")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -43,5 +43,11 @@ public class RevisionController {
     public ResponseEntity<List<Contenedor>> listContenedoresByTramite(@PathVariable String tramiteId) {
         List<Contenedor> contenedores = service.listContenedoresByTramite(tramiteId);
         return ResponseEntity.ok(contenedores);
+    }
+
+    @GetMapping("/productos/{tramiteId}/{contenedorId}")
+    public ResponseEntity<List<Producto>> findByTramiteIdAndContenedorId(@PathVariable String tramiteId, @PathVariable String contenedorId) {
+        List<Producto> productos = service.findByTramiteId(tramiteId, contenedorId);
+        return ResponseEntity.ok(productos);
     }
 }

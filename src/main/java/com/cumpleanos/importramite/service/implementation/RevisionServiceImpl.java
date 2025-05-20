@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.cumpleanos.importramite.utils.ProductoStatus.*;
 import static com.cumpleanos.importramite.utils.StringUtils.historial;
@@ -122,6 +123,17 @@ public class RevisionServiceImpl implements IRevisionService {
         return contenedorRepository.findByTramiteId(tramiteId).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramiteId + " not found"));
     }
 
+    @Override
+    public List<Producto> findByTramiteId(String tramiteId, String contenedorId) {
+        List<Producto> lista =  productoService.findByTramiteIdAndContenedorId(tramiteId, contenedorId);
+        return lista.stream()
+                .filter(p -> p.getCantidadRevision() != null &&
+                        p.getEstadoRevision() != null &&
+                        p.getUsuarioRevision() != null &&
+                        p.getHistorialRevision() != null)
+                        .collect(Collectors.toList());
+    }
+
 
     /**
      * Metodo para crear o actualizar datos de la tabal revision
@@ -138,14 +150,15 @@ public class RevisionServiceImpl implements IRevisionService {
         String contenedorId = StringUtils.trimWhitespace(request.contenedor());
 
         Tramite tramite = tramiteRepository.findById(tramiteId)
-                .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
+                .orElseThrow(() -> new DocumentNotFoundException("Trámite no encontrado"));
 
         if (tramite.getProceso() == 1) {
             tramite.setProceso((short) 2);
             tramiteRepository.save(tramite);
         }
 
-        Contenedor contenedor = contenedorRepository.findById(contenedorId).orElseThrow(() -> new DocumentNotFoundException("Contenedor no encontrado"));
+        Contenedor contenedor = contenedorRepository.findByContenedorId(contenedorId)
+                .orElseThrow(() -> new DocumentNotFoundException("Contenedor no encontrado: " + contenedorId));
 
         if (contenedor.getStartDate() == null && contenedor.getStartHour() == null) {
             contenedor.setStartDate(LocalDate.now());
@@ -155,34 +168,48 @@ public class RevisionServiceImpl implements IRevisionService {
 
         Producto revision = productoService.findByBarcodeAndTramiteIdAndContenedorId(barra, tramiteId, contenedorId);
 
-        if (revision.getBarcode() == null || revision.getBarcode().isEmpty()) {
-            //Crear nueva revision
+        boolean esNuevo = revision.getBarcode() == null || revision.getBarcode().isEmpty();
+
+        if (esNuevo) {
+            // Crear nueva revisión
             revision.setBarcode(barra);
             revision.setContenedorId(contenedorId);
             revision.setTramiteId(tramiteId);
             revision.setNombre(PRODUCTO_SIN_REGISTRO.name());
-            revision.setCantidadRevision(1);
+            revision.setCantidadRevision(0);
             revision.setUsuarioRevision(request.usuario());
             revision.setEstadoRevision(SIN_REGISTRO.name());
             revision.setHistorialRevision(new ArrayList<>());
-            revision.getHistorialRevision().add(historial(true));
             revision.generateId();
+        }
+
+        revision.setUsuarioRevision(request.usuario());
+        // Asegurar inicialización segura antes de operar
+        if (revision.getCantidadRevision() == null) {
+            revision.setCantidadRevision(0);
+        }
+        if (revision.getHistorialRevision() == null) {
+            revision.setHistorialRevision(new ArrayList<>());
+        }
+
+        if (request.status()) {
+            // Sumar cantidad
+            revision.setCantidadRevision(revision.getCantidadRevision() + 1);
+            revision.getHistorialRevision().add(historial(true));
+            revision.setEstadoRevision(AGREGADO.name());
         } else {
-            if (request.status()) {
-                revision.setCantidadRevision(revision.getCantidadRevision() + 1);
-                revision.getHistorialRevision().add(historial(true));
-                revision.setEstadoRevision(AGREGADO.name());
+            // Restar cantidad
+            int nuevaCantidad = revision.getCantidadRevision() - 1;
+            if (nuevaCantidad >= 0) {
+                revision.setCantidadRevision(nuevaCantidad);
+                revision.getHistorialRevision().add(historial(false));
+                revision.setEstadoRevision(ELIMINADO.name());
             } else {
-                int nuevaCantidad = revision.getCantidadRevision() - 1;
-                if (nuevaCantidad >= 0) {
-                    revision.setCantidadRevision(nuevaCantidad);
-                    revision.getHistorialRevision().add(historial(false));
-                    revision.setEstadoRevision(ELIMINADO.name());
-                } else {
-                    throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
-                }
+                throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
             }
         }
+
         return productoService.save(revision);
     }
+
 }
