@@ -39,8 +39,7 @@ public class RevisionServiceImpl implements IRevisionService {
      * @param tramiteId el ID del trámite registrado
      * @return devuelve la lista de revision actualizada comparando las cantidades de trámite y de revision actualizando estados
      */
-    @Override
-    public List<Producto> validateAndProcessTramite(String tramiteId, String contenedorId) {
+    public void validateAndProcessTramite(String tramiteId, String contenedorId) {
         String finalTramiteId = tramiteId.trim();
         String finalContenedorId = contenedorId.trim();
         Tramite tramite = tramiteRepository.findById(finalTramiteId)
@@ -69,7 +68,6 @@ public class RevisionServiceImpl implements IRevisionService {
             tramite.setProceso((short) 3);
             tramiteRepository.save(tramite);
         }
-        return productoService.findByTramiteIdAndContenedorId(finalTramiteId, finalContenedorId);
     }
 
     /**
@@ -86,7 +84,6 @@ public class RevisionServiceImpl implements IRevisionService {
 
         List<Producto> productos = productoService.findByTramiteIdAndContenedorId(tramiteStr, contenedorStr);
 
-
         for (Producto producto : productos) {
 
             if (producto.getCantidadRevision() == null || producto.getCantidadRevision() == 0) {
@@ -97,6 +94,9 @@ public class RevisionServiceImpl implements IRevisionService {
                 producto.getHistorialRevision().add(historial(true));
                 producto.setSecuencia(0);
             } else {
+                if (producto.getBultos() == null){
+                    producto.setBultos(0);
+                }
                 int cantidadPedida = producto.getBultos();
                 int diferencia = producto.getBultos() - producto.getCantidadRevision();
                 producto.setCantidadDiferenciaRevision(Math.abs(diferencia));
@@ -109,12 +109,13 @@ public class RevisionServiceImpl implements IRevisionService {
                     producto.setEstadoRevision(FALTANTE.name());
                 }
             }
-
             productoService.save(producto);
         }
 
         tramite.setProceso((short) 3);
         tramiteRepository.save(tramite);
+
+        validateAndProcessTramite(tramiteStr, contenedorStr);
         return productoService.findByTramiteIdAndContenedorId(tramiteStr, contenedorStr);
     }
 
@@ -134,7 +135,6 @@ public class RevisionServiceImpl implements IRevisionService {
                         .collect(Collectors.toList());
     }
 
-
     /**
      * Metodo para crear o actualizar datos de la tabal revision
      *
@@ -144,6 +144,7 @@ public class RevisionServiceImpl implements IRevisionService {
     @Transactional
     @Override
     public Producto updateCantidadByBarra(RevisionRequest request) {
+
 
         String tramiteId = StringUtils.trimWhitespace(request.tramiteId());
         String barra = StringUtils.trimWhitespace(request.barra());
