@@ -4,6 +4,7 @@ import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
+import com.cumpleanos.importramite.persistence.records.StatusResponse;
 import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
@@ -39,7 +40,7 @@ public class RevisionServiceImpl implements IRevisionService {
      * @param tramiteId el ID del trámite registrado
      * @return devuelve la lista de revision actualizada comparando las cantidades de trámite y de revision actualizando estados
      */
-    public void validateAndProcessTramite(String tramiteId, String contenedorId) {
+    public StatusResponse validateAndProcessTramite(String tramiteId, String contenedorId) {
         String finalTramiteId = tramiteId.trim();
         String finalContenedorId = contenedorId.trim();
         Tramite tramite = tramiteRepository.findById(finalTramiteId)
@@ -54,10 +55,11 @@ public class RevisionServiceImpl implements IRevisionService {
             for (Contenedor contenedor : contenedores) {
                 if (contenedor.getContenedorId().equals(finalContenedorId)) {
                     contenedor.setEndHour(LocalTime.now());
+                    contenedor.setBloqueado(true);
                     contenedor.setFinalizado(true);
+                    contenedorRepository.save(contenedor);
                 }
             }
-            tramiteRepository.save(tramite);
 
             //Verificar Nuevamente los contenedores
             allCompleted = contenedores.stream()
@@ -68,6 +70,7 @@ public class RevisionServiceImpl implements IRevisionService {
             tramite.setProceso((short) 3);
             tramiteRepository.save(tramite);
         }
+        return null;
     }
 
     /**
@@ -114,7 +117,6 @@ public class RevisionServiceImpl implements IRevisionService {
         tramite.setProceso((short) 3);
         tramiteRepository.save(tramite);
 
-        validateAndProcessTramite(tramiteStr, contenedorStr);
         return productoService.findByTramiteIdAndContenedorId(tramiteStr, contenedorStr);
     }
 
