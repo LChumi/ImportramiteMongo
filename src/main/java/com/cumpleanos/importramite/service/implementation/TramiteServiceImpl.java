@@ -93,7 +93,7 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
 
     private StatusResponse lockUnlockContenedor(Contenedor cont, String usr) {
         if (cont.getFinalizado()){
-            return new StatusResponse("El contenedor finalizado.", true);
+            return new StatusResponse("finalizado.", true);
         }
 
         if (cont.getUsrBloquea() == null || cont.getUsrBloquea().isEmpty()) {
@@ -101,13 +101,13 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
                 cont.setUsrBloquea(usr);
                 cont.setBloqueado(true);
                 contenedorRepository.save(cont);
-                return new StatusResponse("Contenedor Bloqueado.", true);
+                return new StatusResponse("bloqueado", true);
             }
         } else if (cont.getBloqueado() && cont.getUsrBloquea().equals(usr)) {
             cont.setUsrBloquea(null);
             cont.setBloqueado(false);
             contenedorRepository.save(cont);
-            return new StatusResponse("Contenedor Desbloqueado.", true);
+            return new StatusResponse("desbloqueado", true);
         }
 
         return new StatusResponse("Error: usuario no autorizado para desbloquear este contenedor.", false);

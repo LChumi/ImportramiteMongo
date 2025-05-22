@@ -21,7 +21,7 @@ public class RevisionController {
     private final IRevisionService service;
 
     @GetMapping("/tramite/{tramiteId}/contenedor/{contenedorId}/productos/revision")
-    public ResponseEntity<List<Producto>> validateAndProcessTramite(@PathVariable String tramiteId, @PathVariable String contenedorId) {
+    public ResponseEntity<List<Producto>> processProductRevision(@PathVariable String tramiteId, @PathVariable String contenedorId) {
         List<Producto> verified = service.processProductRevision(tramiteId, contenedorId);
         return ResponseEntity.ok(verified);
     }
