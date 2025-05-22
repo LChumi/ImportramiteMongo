@@ -142,7 +142,7 @@ public class ExcelService {
         wrapStyle.setWrapText(true);
 
         String[] valores = {
-                producto.getId(),
+                producto.getBarcode(),
                 producto.getId1(),
                 producto.getNombre(),
                 String.valueOf(producto.getBultos()),

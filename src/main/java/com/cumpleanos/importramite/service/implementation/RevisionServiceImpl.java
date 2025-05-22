@@ -100,10 +100,9 @@ public class RevisionServiceImpl implements IRevisionService {
                 int cantidadPedida = producto.getBultos();
                 int diferencia = producto.getBultos() - producto.getCantidadRevision();
                 producto.setCantidadDiferenciaRevision(Math.abs(diferencia));
-                producto.setCantidadRevision(producto.getCantidadRevision() + cantidadPedida);
                 if (diferencia == 0) {
                     producto.setEstadoRevision(COMPLETO.name());
-                } else if (diferencia > 0) {
+                } else if (diferencia < 0) {
                     producto.setEstadoRevision(SOBRANTE.name());
                 } else {
                     producto.setEstadoRevision(FALTANTE.name());
@@ -182,34 +181,34 @@ public class RevisionServiceImpl implements IRevisionService {
             revision.setEstadoRevision(SIN_REGISTRO.name());
             revision.setHistorialRevision(new ArrayList<>());
             revision.generateId();
-        }
-
-        revision.setUsuarioRevision(request.usuario());
-        // Asegurar inicialización segura antes de operar
-        if (revision.getCantidadRevision() == null) {
-            revision.setCantidadRevision(0);
-        }
-        if (revision.getHistorialRevision() == null) {
-            revision.setHistorialRevision(new ArrayList<>());
-        }
-
-        if (request.status()) {
-            // Sumar cantidad
-            revision.setCantidadRevision(revision.getCantidadRevision() + 1);
-            revision.getHistorialRevision().add(historial(true));
-            if (revision.getEstadoRevision() != null && revision.getEstadoRevision().equalsIgnoreCase(SIN_REGISTRO.name())) {
-                revision.setEstadoRevision(SIN_REGISTRO.name());
-            }
-            revision.setEstadoRevision(AGREGADO.name());
         } else {
-            // Restar cantidad
-            int nuevaCantidad = revision.getCantidadRevision() - 1;
-            if (nuevaCantidad >= 0) {
-                revision.setCantidadRevision(nuevaCantidad);
-                revision.getHistorialRevision().add(historial(false));
-                revision.setEstadoRevision(ELIMINADO.name());
+            revision.setUsuarioRevision(request.usuario());
+            // Asegurar inicialización segura antes de operar
+            if (revision.getCantidadRevision() == null) {
+                revision.setCantidadRevision(0);
+            }
+            if (revision.getHistorialRevision() == null) {
+                revision.setHistorialRevision(new ArrayList<>());
+            }
+
+            if (request.status()) {
+                // Sumar cantidad
+                revision.setCantidadRevision(revision.getCantidadRevision() + 1);
+                revision.getHistorialRevision().add(historial(true));
+                if (revision.getEstadoRevision() != null && revision.getEstadoRevision().equalsIgnoreCase(SIN_REGISTRO.name())) {
+                    revision.setEstadoRevision(SIN_REGISTRO.name());
+                }
+                revision.setEstadoRevision(AGREGADO.name());
             } else {
-                throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
+                // Restar cantidad
+                int nuevaCantidad = revision.getCantidadRevision() - 1;
+                if (nuevaCantidad >= 0) {
+                    revision.setCantidadRevision(nuevaCantidad);
+                    revision.getHistorialRevision().add(historial(false));
+                    revision.setEstadoRevision(ELIMINADO.name());
+                } else {
+                    throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
+                }
             }
         }
 

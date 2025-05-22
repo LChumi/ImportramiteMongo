@@ -16,7 +16,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Slf4j
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin("*")
 @RestController
 @RequestMapping("tramite")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})

@@ -3,7 +3,6 @@ package com.cumpleanos.importramite.presentation.controller;
 import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
-import com.cumpleanos.importramite.persistence.records.StatusResponse;
 import com.cumpleanos.importramite.service.interfaces.IRevisionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
