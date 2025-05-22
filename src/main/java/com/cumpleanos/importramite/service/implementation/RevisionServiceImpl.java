@@ -38,9 +38,8 @@ public class RevisionServiceImpl implements IRevisionService {
      * validando primero todos los contenedores disponibles
      *
      * @param tramiteId el ID del trámite registrado
-     * @return devuelve la lista de revision actualizada comparando las cantidades de trámite y de revision actualizando estados
      */
-    public StatusResponse validateAndProcessTramite(String tramiteId, String contenedorId) {
+    public StatusResponse processTramiteCompletion(String tramiteId, String contenedorId) {
         String finalTramiteId = tramiteId.trim();
         String finalContenedorId = contenedorId.trim();
         Tramite tramite = tramiteRepository.findById(finalTramiteId)
@@ -69,8 +68,9 @@ public class RevisionServiceImpl implements IRevisionService {
         if (allCompleted) {
             tramite.setProceso((short) 3);
             tramiteRepository.save(tramite);
+            return new StatusResponse("Todos los contenedores fueron finalizados", true);
         }
-        return null;
+        return new StatusResponse("Contenedor " + contenedorId + " finalizado, pero aún hay otros pendientes.", false);
     }
 
     /**
@@ -81,10 +81,7 @@ public class RevisionServiceImpl implements IRevisionService {
      * @return lista de productos con sus respectivas actualizaciones
      */
     @Override
-    public List<Producto> updateRevisionWithTramiteQuantities(String tramiteStr, String contenedorStr) {
-        Tramite tramite = tramiteRepository.findById(tramiteStr.trim())
-                .orElseThrow(() -> new DocumentNotFoundException("Tramite no encontrado"));
-
+    public List<Producto> processProductRevision(String tramiteStr, String contenedorStr) {
         List<Producto> productos = productoService.findByTramiteIdAndContenedorId(tramiteStr, contenedorStr);
 
         for (Producto producto : productos) {
@@ -100,7 +97,6 @@ public class RevisionServiceImpl implements IRevisionService {
                 if (producto.getBultos() == null){
                     producto.setBultos(0);
                 }
-                int cantidadPedida = producto.getBultos();
                 int diferencia = producto.getBultos() - producto.getCantidadRevision();
                 producto.setCantidadDiferenciaRevision(Math.abs(diferencia));
                 if (diferencia == 0) {
@@ -113,10 +109,7 @@ public class RevisionServiceImpl implements IRevisionService {
             }
             productoService.save(producto);
         }
-
-        tramite.setProceso((short) 3);
-        tramiteRepository.save(tramite);
-
+        processTramiteCompletion(tramiteStr, contenedorStr);
         return productoService.findByTramiteIdAndContenedorId(tramiteStr, contenedorStr);
     }
 

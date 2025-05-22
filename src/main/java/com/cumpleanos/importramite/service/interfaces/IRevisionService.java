@@ -12,7 +12,9 @@ public interface IRevisionService {
 
     Producto updateCantidadByBarra(RevisionRequest request);
 
-    List<Producto> updateRevisionWithTramiteQuantities(String tramiteId, String contenedorId);
+    StatusResponse processTramiteCompletion(String tramiteId, String contenedorId);
+
+    List<Producto> processProductRevision(String tramiteId, String contenedorId);
 
     List<Contenedor> listContenedoresByTramite(String tramiteId);
 

@@ -3,6 +3,7 @@ package com.cumpleanos.importramite.presentation.controller;
 import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
+import com.cumpleanos.importramite.persistence.records.StatusResponse;
 import com.cumpleanos.importramite.service.interfaces.IRevisionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,18 @@ public class RevisionController {
 
     private final IRevisionService service;
 
-    @GetMapping("validate/{tramiteId}/{containerId}")
-    public ResponseEntity<List<Producto>> validateAndProcessTramite(@PathVariable String tramiteId, @PathVariable String containerId) {
-        List<Producto> verified = service.updateRevisionWithTramiteQuantities(tramiteId, containerId);
+    @GetMapping("/tramite/{tramiteId}/contenedor/{contenedorId}/productos/revision")
+    public ResponseEntity<List<Producto>> validateAndProcessTramite(@PathVariable String tramiteId, @PathVariable String contenedorId) {
+        List<Producto> verified = service.processProductRevision(tramiteId, contenedorId);
         return ResponseEntity.ok(verified);
     }
+
+    @GetMapping("/tramite/{tramiteId}/contenedor/{contenedorId}/finalizar")
+    public ResponseEntity<StatusResponse> processTramiteCompletion(@PathVariable String tramiteId, @PathVariable String contenedorId) {
+        StatusResponse status = service.processTramiteCompletion(tramiteId, contenedorId);
+        return ResponseEntity.ok(status);
+    }
+
 
     @PutMapping("/updateQuantity")
     public ResponseEntity<Producto> updateCantidadByBarra(
