@@ -55,16 +55,16 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
 
     @Override
     public StatusResponse findTramiteBloqueaContenedor(String tramite, String contenedor, String usr) {
-        StatusResponse response = null;
-        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " not found"));
+        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramite)
+                .orElseThrow(() -> new DocumentNotFoundException("Trámite " + tramite + " no encontrado"));
+
         for (Contenedor cont : contenedores) {
             if (cont.getContenedorId().equals(contenedor)) {
-                response = lockUnlockContenedor(cont, usr);
-                contenedorRepository.save(cont);
-                break;
+                return lockUnlockContenedor(cont, usr);
             }
         }
-        return response;
+
+        return new StatusResponse("Contenedor no encontrado en el trámite.", false);
     }
 
     @Override
@@ -92,20 +92,25 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     }
 
     private StatusResponse lockUnlockContenedor(Contenedor cont, String usr) {
-        if (cont.getUsrBloquea() == null) {
-            cont.setUsrBloquea("");
+        if (cont.getFinalizado()){
+            return new StatusResponse("El contenedor finalizado.", true);
         }
-        if (!cont.getBloqueado() && cont.getUsrBloquea().isEmpty()) {
-            cont.setUsrBloquea(usr);
-            cont.setBloqueado(true);
-            return new StatusResponse("bloqueado", true);
+
+        if (cont.getUsrBloquea() == null || cont.getUsrBloquea().isEmpty()) {
+            if (!cont.getBloqueado()) {
+                cont.setUsrBloquea(usr);
+                cont.setBloqueado(true);
+                contenedorRepository.save(cont);
+                return new StatusResponse("Contenedor Bloqueado.", true);
+            }
         } else if (cont.getBloqueado() && cont.getUsrBloquea().equals(usr)) {
             cont.setUsrBloquea(null);
             cont.setBloqueado(false);
-            return new StatusResponse("desbloqueado", true);
-        } else {
-            return new StatusResponse("error", false);
+            contenedorRepository.save(cont);
+            return new StatusResponse("Contenedor Desbloqueado.", true);
         }
+
+        return new StatusResponse("Error: usuario no autorizado para desbloquear este contenedor.", false);
     }
 
 
