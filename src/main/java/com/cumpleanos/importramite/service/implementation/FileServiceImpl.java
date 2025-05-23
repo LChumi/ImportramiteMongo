@@ -208,7 +208,7 @@ public class FileServiceImpl {
     public String sendTramiteEmail(String tramiteId) {
         try {
             Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new RuntimeException(tramiteId + " no encontrado"));
-            String asunto = "Llegada del " + tramite.getId().toUpperCase() + " - al puerto de Guayaquil";
+            String asunto = "Llegada del Tramite " + tramite.getId().toUpperCase() + " - al puerto de Guayaquil";
             String mensaje = MENSAJE_TRAMITE(tramite.getId(), String.valueOf(tramite.getFechaLlegada()), String.valueOf(tramite.getContenedoresIds().size()));
             byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
             String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
