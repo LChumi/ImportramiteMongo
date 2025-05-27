@@ -139,7 +139,6 @@ public class RevisionServiceImpl implements IRevisionService {
     @Override
     public Producto updateCantidadByBarra(RevisionRequest request) {
 
-
         String tramiteId = StringUtils.trimWhitespace(request.tramiteId());
         String barra = StringUtils.trimWhitespace(request.barra());
         String contenedorId = StringUtils.trimWhitespace(request.contenedor());
@@ -175,6 +174,7 @@ public class RevisionServiceImpl implements IRevisionService {
             revision.setUsuarioRevision(request.usuario());
             revision.setEstadoRevision(SIN_REGISTRO.name());
             revision.setHistorialRevision(new ArrayList<>());
+            revision.getHistorialRevision().add(historial(true));
             revision.generateId();
         } else {
             revision.setUsuarioRevision(request.usuario());
@@ -184,6 +184,7 @@ public class RevisionServiceImpl implements IRevisionService {
             }
             if (revision.getHistorialRevision() == null) {
                 revision.setHistorialRevision(new ArrayList<>());
+
             }
 
             if (request.status()) {

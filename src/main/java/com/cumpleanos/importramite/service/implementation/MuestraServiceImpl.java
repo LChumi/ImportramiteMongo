@@ -41,13 +41,14 @@ public class MuestraServiceImpl implements IMuestraService {
             throw new DocumentNotFoundException("Producto no encontrado");
         }
 
-        if (p.getHistorialBarrasMuestra() == null || p.getHistorialBarrasMuestra().isEmpty()) {
-            p.setHistorialRevision(new ArrayList<>());
+        if (p.getHistorialBarrasMuestra() == null) {
+            p.setHistorialBarrasMuestra(new ArrayList<>());
         }
+
         if (p.getBarraMuestra() == null || p.getBarraMuestra().isEmpty()) {
             p.setBarraMuestra(request.muestra());
             p.setCantidadMuestra(1);
-            p.getHistorialBarrasMuestra().add(historial(true));
+            p.getHistorialBarrasMuestra().add("BARRA: " + p.getBarraMuestra() + historial(true));
         } else {
             if (request.status()) {
                 p.setCantidadMuestra(p.getCantidadMuestra() + 1);
@@ -103,7 +104,7 @@ public class MuestraServiceImpl implements IMuestraService {
     private static boolean validateMuestra(Producto p) {
         return p.getHistorialBarrasMuestra() != null &&
                 p.getHistorialBarrasMuestra().stream()
-                        .map(StringUtils::extraerBarra)
+                        .map(StringUtils::extraerBarra) // Extrae la barra
                         .collect(Collectors.toSet()).size() == 1;
     }
 

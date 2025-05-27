@@ -21,9 +21,9 @@ public class StringUtils {
 
     public static String historial(boolean status) {
         if (status) {
-            return obtenerHora() + AGREGADO.name();
+            return " | " + obtenerHora() + " | " + AGREGADO.name();
         } else {
-            return obtenerHora() + ELIMINADO.name();
+            return  " | " + obtenerHora() + " | " + ELIMINADO.name();
         }
     }
 
@@ -45,10 +45,15 @@ public class StringUtils {
      * @param texto BARRA: cod_barras
      * @return codigo de barras
      */
-    public static String extraerBarra(String texto) {
+    public static String extraerBarraPattern(String texto) {
         Pattern pattern = Pattern.compile("BARRA: (\\d+)");
         Matcher matcher = pattern.matcher(texto);
         return matcher.find() ? matcher.group(1) : null;
     }
+
+    public static String extraerBarra(String texto) {
+        return texto.split(":")[1].split("\\|")[0].trim();
+    }
+
 
 }
