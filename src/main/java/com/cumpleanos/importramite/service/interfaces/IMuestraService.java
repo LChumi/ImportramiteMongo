@@ -10,4 +10,6 @@ public interface IMuestraService {
     Producto saveAndCompare(MuestraRequest request);
 
     List<Producto> updateWithRevision(String tramite, String contenedor);
+
+    List<Producto> getMuestras(String tramite, String contenedor);
 }

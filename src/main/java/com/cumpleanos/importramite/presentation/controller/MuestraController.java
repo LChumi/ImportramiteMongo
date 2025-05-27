@@ -30,4 +30,10 @@ public class MuestraController {
         return ResponseEntity.ok(muestras);
     }
 
+    @GetMapping("productos/{tramite}/{contenedor}")
+    public ResponseEntity<List<Producto>> getProductosMuestra(@PathVariable String tramite, @PathVariable String contenedor) {
+        List<Producto> productos = service.getMuestras(tramite, contenedor);
+        return ResponseEntity.ok(productos);
+    }
+
 }
