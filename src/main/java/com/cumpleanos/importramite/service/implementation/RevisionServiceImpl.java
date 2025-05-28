@@ -104,7 +104,7 @@ public class RevisionServiceImpl implements IRevisionService {
                     producto.setBultos(0);
                     producto.setEstadoRevision(SIN_REGISTRO.name());
                     producto.setCantidadDiferenciaRevision(cantidadRevision);
-                } else {
+                } else if (!producto.getEstadoRevision().equalsIgnoreCase(SIN_REGISTRO.name())) {
                     int diferencia = bultos - cantidadRevision;
                     producto.setCantidadDiferenciaRevision(Math.abs(diferencia));
                     if (diferencia == 0) {
