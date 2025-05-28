@@ -53,7 +53,7 @@ public class RevisionServiceImpl implements IRevisionService {
         if (!allCompleted) {
             for (Contenedor contenedor : contenedores) {
                 if (contenedor.getContenedorId().equals(finalContenedorId)) {
-                    if (contenedor.getEndHour() == null){
+                    if (contenedor.getEndHour() == null) {
                         contenedor.setEndHour(LocalTime.now());
                     }
 
@@ -116,7 +116,6 @@ public class RevisionServiceImpl implements IRevisionService {
                     }
                 }
             }
-
             productoService.save(producto);
         }
 
@@ -131,13 +130,13 @@ public class RevisionServiceImpl implements IRevisionService {
 
     @Override
     public List<Producto> findByTramiteId(String tramiteId, String contenedorId) {
-        List<Producto> lista =  productoService.findByTramiteIdAndContenedorId(tramiteId, contenedorId);
+        List<Producto> lista = productoService.findByTramiteIdAndContenedorId(tramiteId, contenedorId);
         return lista.stream()
                 .filter(p -> p.getCantidadRevision() != null &&
                         p.getEstadoRevision() != null &&
                         p.getUsuarioRevision() != null &&
                         p.getHistorialRevision() != null)
-                        .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -195,7 +194,6 @@ public class RevisionServiceImpl implements IRevisionService {
             }
             if (revision.getHistorialRevision() == null) {
                 revision.setHistorialRevision(new ArrayList<>());
-
             }
 
             if (request.status()) {

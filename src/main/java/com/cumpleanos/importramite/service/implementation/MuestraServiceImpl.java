@@ -98,7 +98,7 @@ public class MuestraServiceImpl implements IMuestraService {
         return productoService.findByTramiteIdAndContenedorId(tramite, contenedor).stream()
                 .filter(p -> p.getBarraMuestra() != null &&
                         p.getCantidadMuestra() != null
-                        ).collect(Collectors.toList());
+                ).collect(Collectors.toList());
     }
 
     private static boolean validateMuestra(Producto p) {

@@ -91,8 +91,13 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
         return contenedorRepository.findByTramiteIdAndContenedorId(tramite, id).orElseThrow(() -> new DocumentNotFoundException("No se encontraron datos de contenedores"));
     }
 
+    @Override
+    public List<Producto> findByTramiteAndContenedor(String tramite, String contenedor) {
+        return productoRepository.findByTramiteIdAndContenedorId(tramite, contenedor).orElseThrow(() -> new DocumentNotFoundException("No se encontraron datos de productos"));
+    }
+
     private StatusResponse lockUnlockContenedor(Contenedor cont, String usr) {
-        if (cont.getFinalizado()){
+        if (cont.getFinalizado()) {
             return new StatusResponse("finalizado.", true);
         }
 

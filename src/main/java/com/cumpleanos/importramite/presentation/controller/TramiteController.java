@@ -106,4 +106,10 @@ public class TramiteController {
         return ResponseEntity.ok(c);
     }
 
+     @GetMapping("/productos/{tramite}/{contenedor}")
+    public ResponseEntity<List<Producto>> getProductosByTramiteAndContenedor(@PathVariable String tramite, @PathVariable String contenedor) {
+        List<Producto> productos = service.findByTramiteAndContenedor(tramite.trim(), contenedor.trim());
+        return ResponseEntity.ok(productos);
+    }
+
 }
