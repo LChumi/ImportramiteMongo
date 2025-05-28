@@ -32,7 +32,6 @@ public class RevisionController {
         return ResponseEntity.ok(status);
     }
 
-
     @PutMapping("/updateQuantity")
     public ResponseEntity<Producto> updateCantidadByBarra(
             @RequestBody RevisionRequest request

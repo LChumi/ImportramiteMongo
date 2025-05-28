@@ -53,7 +53,10 @@ public class RevisionServiceImpl implements IRevisionService {
         if (!allCompleted) {
             for (Contenedor contenedor : contenedores) {
                 if (contenedor.getContenedorId().equals(finalContenedorId)) {
-                    contenedor.setEndHour(LocalTime.now());
+                    if (contenedor.getEndHour() == null){
+                        contenedor.setEndHour(LocalTime.now());
+                    }
+
                     contenedor.setBloqueado(true);
                     contenedor.setFinalizado(true);
                     contenedorRepository.save(contenedor);
