@@ -139,6 +139,16 @@ public class RevisionServiceImpl implements IRevisionService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Producto getProducto(String tramite, String contenedor, String barcode) {
+        String idProducto = tramite + "_" + contenedor + "_" + barcode;
+        Producto p = productoService.findById(idProducto);
+        if (p == null) {
+            throw new DocumentNotFoundException("Producto no encontrado");
+        }
+        return p;
+    }
+
     /**
      * Metodo para crear o actualizar datos de la tabal revision
      *

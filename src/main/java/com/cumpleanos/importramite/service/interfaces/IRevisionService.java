@@ -19,4 +19,6 @@ public interface IRevisionService {
     List<Contenedor> listContenedoresByTramite(String tramiteId);
 
     List<Producto> findByTramiteId(String tramiteId, String contenedorId);
+
+    Producto getProducto(String tramite, String contenedor, String barcode);
 }
