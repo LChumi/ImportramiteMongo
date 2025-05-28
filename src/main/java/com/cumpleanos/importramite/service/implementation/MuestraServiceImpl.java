@@ -62,6 +62,7 @@ public class MuestraServiceImpl implements IMuestraService {
                 }
             }
         }
+        p.setUsuarioMuestra(request.usuario());
         p.setStatusMuestra(validateMuestra(p));
         return productoService.save(p);
     }

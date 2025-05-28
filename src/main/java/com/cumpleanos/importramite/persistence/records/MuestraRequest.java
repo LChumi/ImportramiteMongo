@@ -5,5 +5,6 @@ public record MuestraRequest (
     String muestra,
     String tramiteId,
     String contenedor,
+    String usuario,
     boolean status
 ){}
