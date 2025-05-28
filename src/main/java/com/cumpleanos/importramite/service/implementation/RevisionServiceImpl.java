@@ -140,13 +140,14 @@ public class RevisionServiceImpl implements IRevisionService {
     }
 
     @Override
-    public Producto getProducto(String tramite, String contenedor, String barcode) {
+    public StatusResponse getProducto(String tramite, String contenedor, String barcode) {
         String idProducto = tramite + "_" + contenedor + "_" + barcode;
         Producto p = productoService.findById(idProducto);
         if (p == null) {
-            throw new DocumentNotFoundException("Producto no encontrado");
+            return new StatusResponse("Producto no encontrado", false);
+        }else{
+            return new StatusResponse("Producto encontrado", true);
         }
-        return p;
     }
 
     /**

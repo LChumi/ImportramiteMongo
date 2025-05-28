@@ -53,8 +53,8 @@ public class RevisionController {
     }
 
     @GetMapping("/producto/existe/{barcode}/{tramite}/{contenedor}")
-    public ResponseEntity<Producto> productExist(@PathVariable String barcode, @PathVariable String tramite, @PathVariable String contenedor) {
-        Producto producto = service.getProducto(tramite, contenedor, barcode);
-        return ResponseEntity.ok(producto);
+    public ResponseEntity<StatusResponse> productExist(@PathVariable String barcode, @PathVariable String tramite, @PathVariable String contenedor) {
+        StatusResponse response = service.getProducto(tramite, contenedor, barcode);
+        return ResponseEntity.ok(response);
     }
 }

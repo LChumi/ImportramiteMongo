@@ -20,5 +20,5 @@ public interface IRevisionService {
 
     List<Producto> findByTramiteId(String tramiteId, String contenedorId);
 
-    Producto getProducto(String tramite, String contenedor, String barcode);
+    StatusResponse getProducto(String tramite, String contenedor, String barcode);
 }
