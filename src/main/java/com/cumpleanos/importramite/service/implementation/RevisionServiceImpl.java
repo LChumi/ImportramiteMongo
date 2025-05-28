@@ -89,29 +89,37 @@ public class RevisionServiceImpl implements IRevisionService {
 
         for (Producto producto : productos) {
 
-            if (producto.getCantidadRevision() == null || producto.getCantidadRevision() == 0) {
+            Integer cantidadRevision = producto.getCantidadRevision();
+            Integer bultos = producto.getBultos();
+
+            if (cantidadRevision == null || cantidadRevision == 0) {
                 producto.setEstadoRevision(NO_LLEGO.name());
                 producto.setCantidadRevision(0);
-                producto.setCantidadDiferenciaRevision(producto.getBultos());
+                producto.setCantidadDiferenciaRevision(bultos != null ? bultos : 0);
                 producto.setHistorialRevision(new ArrayList<>());
                 producto.getHistorialRevision().add(historial(true));
                 producto.setSecuencia(0);
             } else {
-                if (producto.getBultos() == null){
+                if (bultos == null) {
                     producto.setBultos(0);
-                }
-                int diferencia = producto.getBultos() - producto.getCantidadRevision();
-                producto.setCantidadDiferenciaRevision(Math.abs(diferencia));
-                if (diferencia == 0) {
-                    producto.setEstadoRevision(COMPLETO.name());
-                } else if (diferencia < 0) {
-                    producto.setEstadoRevision(SOBRANTE.name());
+                    producto.setEstadoRevision(SIN_REGISTRO.name());
+                    producto.setCantidadDiferenciaRevision(cantidadRevision);
                 } else {
-                    producto.setEstadoRevision(FALTANTE.name());
+                    int diferencia = bultos - cantidadRevision;
+                    producto.setCantidadDiferenciaRevision(Math.abs(diferencia));
+                    if (diferencia == 0) {
+                        producto.setEstadoRevision(COMPLETO.name());
+                    } else if (diferencia < 0) {
+                        producto.setEstadoRevision(SOBRANTE.name());
+                    } else {
+                        producto.setEstadoRevision(FALTANTE.name());
+                    }
                 }
             }
+
             productoService.save(producto);
         }
+
         processTramiteCompletion(tramiteStr, contenedorStr);
         return productoService.findByTramiteIdAndContenedorId(tramiteStr, contenedorStr);
     }
@@ -173,7 +181,7 @@ public class RevisionServiceImpl implements IRevisionService {
             revision.setContenedorId(contenedorId);
             revision.setTramiteId(tramiteId);
             revision.setNombre(PRODUCTO_SIN_REGISTRO.name());
-            revision.setCantidadRevision(0);
+            revision.setCantidadRevision(1);
             revision.setUsuarioRevision(request.usuario());
             revision.setEstadoRevision(SIN_REGISTRO.name());
             revision.setHistorialRevision(new ArrayList<>());
