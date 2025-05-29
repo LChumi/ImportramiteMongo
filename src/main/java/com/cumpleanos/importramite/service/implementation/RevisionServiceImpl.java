@@ -145,7 +145,7 @@ public class RevisionServiceImpl implements IRevisionService {
         Producto p = productoService.findById(idProducto);
         if (p == null) {
             return new StatusResponse("Producto no encontrado", false);
-        }else{
+        } else {
             return new StatusResponse("Producto encontrado", true);
         }
     }
@@ -211,9 +211,9 @@ public class RevisionServiceImpl implements IRevisionService {
                 // Sumar cantidad
                 revision.setCantidadRevision(revision.getCantidadRevision() + 1);
                 revision.getHistorialRevision().add(historial(true));
-                if (revision.getEstadoRevision()!= null && revision.getEstadoRevision().equalsIgnoreCase(SIN_REGISTRO.name())) {
+                if (revision.getEstadoRevision() != null && revision.getEstadoRevision().equalsIgnoreCase(SIN_REGISTRO.name())) {
                     revision.setEstadoRevision(SIN_REGISTRO.name());
-                }else{
+                } else {
                     revision.setEstadoRevision(AGREGADO.name());
                 }
 

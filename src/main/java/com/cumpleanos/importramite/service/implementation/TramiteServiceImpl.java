@@ -16,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,6 +96,14 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     @Override
     public List<Producto> findByTramiteAndContenedor(String tramite, String contenedor) {
         return productoRepository.findByTramiteIdAndContenedorId(tramite, contenedor).orElseThrow(() -> new DocumentNotFoundException("No se encontraron datos de productos"));
+    }
+
+    @Override
+    public List<Tramite> getTramitesOfTheWeek() {
+        LocalDate inicioSemana = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        LocalDate finSemana = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+
+        return repository.findByFechaArriboBetween(inicioSemana, finSemana);
     }
 
     private StatusResponse lockUnlockContenedor(Contenedor cont, String usr) {

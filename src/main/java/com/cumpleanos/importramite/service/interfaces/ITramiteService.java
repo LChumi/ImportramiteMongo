@@ -23,4 +23,6 @@ public interface ITramiteService extends IGenericService<Tramite, String> {
     Contenedor findByTramiteAndId(String tramite, String id);
 
     List<Producto> findByTramiteAndContenedor(String tramite, String contenedor);
+
+    List<Tramite> getTramitesOfTheWeek();
 }

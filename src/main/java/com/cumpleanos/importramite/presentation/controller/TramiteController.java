@@ -36,35 +36,6 @@ public class TramiteController {
         return ResponseEntity.ok(tramites);
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<Tramite> save(@RequestBody Tramite tramite) {
-        Tramite saved = service.save(tramite);
-        return ResponseEntity.ok(saved);
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Tramite> update(@PathVariable String id, @RequestBody Tramite tramite) {
-        Tramite tra = service.findById(id);
-        if (tra == null) {
-            return ResponseEntity.notFound().build();
-        }
-        tra.setFechaLlegada(tramite.getFechaLlegada());
-        tra.setProceso(tramite.getProceso());
-        tra.setFechaArribo(tramite.getFechaArribo());
-        tra.setHoraArribo(tramite.getHoraArribo());
-        return ResponseEntity.ok(service.save(tra));
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        Tramite tra = service.findById(id.trim());
-        if (tra == null) {
-            return ResponseEntity.notFound().build();
-        }
-        service.delete(id);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping("/{tramiteId}/products")
     public ResponseEntity<List<Producto>> getProductos(@PathVariable String tramiteId) {
         List<Producto> productos = service.listByTramite(tramiteId.trim());
@@ -110,6 +81,12 @@ public class TramiteController {
     public ResponseEntity<List<Producto>> getProductosByTramiteAndContenedor(@PathVariable String tramite, @PathVariable String contenedor) {
         List<Producto> productos = service.findByTramiteAndContenedor(tramite.trim(), contenedor.trim());
         return ResponseEntity.ok(productos);
+    }
+
+    @GetMapping("/week")
+    public ResponseEntity<List<Tramite>> getTramitesOfTheWeek() {
+        List<Tramite> tramites = service.getTramitesOfTheWeek();
+        return ResponseEntity.ok(tramites);
     }
 
 }
