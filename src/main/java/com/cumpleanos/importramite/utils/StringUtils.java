@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.cumpleanos.importramite.utils.ProductoStatus.AGREGADO;
-import static com.cumpleanos.importramite.utils.ProductoStatus.ELIMINADO;
+import static com.cumpleanos.importramite.utils.ProductoStatus.RETIRADO;
 
 public class StringUtils {
     public static String trimWhitespace(String input) {
@@ -23,7 +23,7 @@ public class StringUtils {
         if (status) {
             return " | " + obtenerHora() + " | " + AGREGADO.name();
         } else {
-            return  " | " + obtenerHora() + " | " + ELIMINADO.name();
+            return  " | " + obtenerHora() + " | " + RETIRADO.name();
         }
     }
 

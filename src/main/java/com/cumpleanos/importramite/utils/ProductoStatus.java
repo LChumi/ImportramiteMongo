@@ -2,7 +2,7 @@ package com.cumpleanos.importramite.utils;
 
 public enum ProductoStatus {
     AGREGADO,
-    ELIMINADO,
+    RETIRADO,
     SIN_REGISTRO,
     NO_LLEGO,
     COMPLETO,
