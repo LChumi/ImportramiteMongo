@@ -15,8 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.cumpleanos.importramite.utils.ProductoStatus.COMPLETO;
@@ -38,6 +40,12 @@ public class MuestraServiceImpl implements IMuestraService {
         String idProducto = request.tramiteId() + "_" + request.contenedor() + "_" + request.barra();
 
         Producto p = productoService.findById(idProducto);
+        Contenedor c = contenedorRepository.findByContenedorId(request.contenedor()).orElseThrow(() -> new DocumentNotFoundException("Contenedor no encontrado: " + request.contenedor()));
+
+        if (c.getStartMuestra() == null) {
+            c.setStartMuestra(LocalTime.now());
+            contenedorRepository.save(c);
+        }
 
         if (p == null) {
             throw new DocumentNotFoundException("Producto no encontrado");
@@ -88,11 +96,24 @@ public class MuestraServiceImpl implements IMuestraService {
         }
         boolean allProductsCompleted = productos.stream().allMatch(producto -> COMPLETO.name().equals(producto.getProcesoMuestra()));
 
-        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " not found"));
-        boolean allContenedoresCompleted = contenedores.stream()
-                .allMatch(Contenedor::getFinalizado);
 
-        if (allProductsCompleted && allContenedoresCompleted) {
+
+        if (allProductsCompleted) {
+            Contenedor contenedor = contenedorRepository.findByContenedorId(contenedorId).orElseThrow(() -> new DocumentNotFoundException("Contenedor no encontrado: " + contenedorId));
+            contenedor.setMuestras(true);
+            contenedor.setEndMuestra(LocalTime.now());
+            contenedorRepository.save(contenedor);
+            tr.setProceso((short) 4);
+            tramiteRepository.save(tr);
+        }
+
+        Optional<List<Contenedor>> contenedoresOpt = contenedorRepository.findByTramiteId(tramite);
+        boolean allContenedoresCompleted = contenedoresOpt
+                .map(list -> list.stream()
+                        .allMatch(contenedor -> Boolean.TRUE.equals(contenedor.getMuestras()))) // Trata null como false
+                .orElse(false);
+
+        if (allContenedoresCompleted) {
             tr.setProceso((short) 5);
             tramiteRepository.save(tr);
         }

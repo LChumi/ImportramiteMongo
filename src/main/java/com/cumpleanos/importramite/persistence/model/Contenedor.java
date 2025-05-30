@@ -31,12 +31,17 @@ public class Contenedor implements Serializable {
     private String usrBloquea;
     private Boolean bloqueado;
     private Boolean finalizado;
+    private Boolean muestras;
     private List<String> productIds;
     private String tramiteId;
 
     //Datos de Procesamiento
     private LocalDate startDate;
+
     private LocalTime startHour;
     private LocalTime endHour;
+
+    private LocalTime startMuestra;
+    private LocalTime endMuestra;
 
 }
