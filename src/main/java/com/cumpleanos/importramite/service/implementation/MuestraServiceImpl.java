@@ -1,8 +1,10 @@
 package com.cumpleanos.importramite.service.implementation;
 
+import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.MuestraRequest;
+import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.service.interfaces.IMuestraService;
@@ -28,6 +30,7 @@ public class MuestraServiceImpl implements IMuestraService {
 
     private final TramiteRepository tramiteRepository;
     private final IProductoService productoService;
+    private final ContenedorRepository contenedorRepository;
 
     @Override
     public Producto saveAndCompare(MuestraRequest request) {
@@ -83,9 +86,13 @@ public class MuestraServiceImpl implements IMuestraService {
             }
             productoService.save(producto);
         }
-        boolean allComplete = productos.stream().allMatch(producto -> COMPLETO.name().equals(producto.getProcesoMuestra()));
+        boolean allProductsCompleted = productos.stream().allMatch(producto -> COMPLETO.name().equals(producto.getProcesoMuestra()));
 
-        if (allComplete) {
+        List<Contenedor> contenedores = contenedorRepository.findByTramiteId(tramite).orElseThrow(() -> new DocumentNotFoundException("Tramite " + tramite + " not found"));
+        boolean allContenedoresCompleted = contenedores.stream()
+                .allMatch(Contenedor::getFinalizado);
+
+        if (allProductsCompleted && allContenedoresCompleted) {
             tr.setProceso((short) 5);
             tramiteRepository.save(tr);
         }

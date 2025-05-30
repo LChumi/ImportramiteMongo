@@ -19,9 +19,18 @@ public class MapUtils {
             List<Producto> productos = repository.findByTramiteIdAndContenedorId(contenedor.getTramiteId(), contenedor.getContenedorId()).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: " + contenedor.getTramiteId() + " y el contenedor: " + contenedor));
 
             for (Producto producto : productos) {
-                productosMap.merge(producto.getId(), producto, (p1, p2) -> {
+                productosMap.merge(producto.getBarcode(), producto, (p1, p2) -> {
                     p1.setBultos(p1.getBultos() + p2.getBultos());
                     p1.setTotal(p1.getTotal() + p2.getTotal());
+                    if (p1.getCantidadRevision() != null && p2.getCantidadRevision() != null) {
+                        p1.setCantidadRevision(p1.getCantidadRevision() + p2.getCantidadRevision());
+                    }
+                    if (p1.getCantidadDiferenciaRevision() != null && p2.getCantidadDiferenciaRevision() != null) {
+                        p1.setCantidadDiferenciaRevision(p1.getCantidadDiferenciaRevision() + p2.getCantidadDiferenciaRevision());
+                    }
+                    if (p1.getCantidadMuestra() != null && p2.getCantidadMuestra() != null) {
+                        p1.setCantidadMuestra(p1.getCantidadMuestra() + p2.getCantidadMuestra());
+                    }
                     return p1;
                 });
             }
