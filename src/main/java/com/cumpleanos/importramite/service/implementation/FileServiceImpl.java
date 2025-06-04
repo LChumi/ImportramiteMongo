@@ -194,11 +194,9 @@ public class FileServiceImpl {
                     String.valueOf(tramite.getHoraArribo()),
                     String.valueOf(tramite.getContenedoresIds().size())
             );
-            byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
-            String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
-            MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
-            MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
-            emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
+
+            getAndSendExcel(tramite, asunto, mensaje);
+
             return "Ok";
         } catch (Exception e) {
             throw new RuntimeException("Error sending email", e);
@@ -208,16 +206,35 @@ public class FileServiceImpl {
     public String sendTramiteEmail(String tramiteId) {
         try {
             Tramite tramite = tramiteRepository.findById(tramiteId).orElseThrow(() -> new RuntimeException(tramiteId + " no encontrado"));
+
             String asunto = "Llegada del Tramite " + tramite.getId().toUpperCase() + " - al puerto de Guayaquil";
-            String mensaje = MENSAJE_TRAMITE(tramite.getId(), String.valueOf(tramite.getFechaLlegada()), String.valueOf(tramite.getContenedoresIds().size()));
-            byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
-            String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
-            MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
-            MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
-            emailClientService.sendEmailAdjutno(emailFile, fileExcel, nombreAdjunto);
+            String mensaje = MENSAJE_TRAMITE(
+                    tramite.getId(),
+                    String.valueOf(tramite.getFechaLlegada()),
+                    String.valueOf(tramite.getContenedoresIds().size())
+            );
+
+            getAndSendExcel(tramite, asunto, mensaje);
+
+
             return "ok";
         } catch (Exception e) {
             throw new RuntimeException("Error sending email", e);
         }
+    }
+
+    private void getAndSendExcel(Tramite tramite, String asunto, String mensaje) throws IOException {
+        byte[] excelByte = excelService.generarExcelPorContenedores(tramite);
+        String nombreAdjunto = "Tramite-" + tramite.getId() + ".xlsx";
+
+        MultipartFile fileExcel = FileUtils.converFileToMultipartFile(excelByte, nombreAdjunto);
+        MultipartFile emailFile = getEmailMultipartFile(asunto.toUpperCase(), mensaje);
+
+        List<MultipartFile> files = List.of(fileExcel);
+        ObjectMapper mapper = new ObjectMapper();
+        byte[] nombresJsonBytes = mapper.writeValueAsBytes(List.of(nombreAdjunto));
+        MultipartFile nombresFile = FileUtils.converFileToMultipartFile(nombresJsonBytes, "nombres.json");
+
+        emailClientService.enviarConAdjuntos(emailFile, files, nombresFile);
     }
 }

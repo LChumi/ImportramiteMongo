@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -15,8 +17,8 @@ public class EmailClientServiceImpl {
 
     private final EmailClient emailClient;
 
-    public void sendEmailAdjutno(MultipartFile email, MultipartFile file, String nombreAdjunto) {
-        HttpResponseHandler.handle(() -> emailClient.enviarMailAdjunto(file, nombreAdjunto, email),
-                "Error al enviar email :" + nombreAdjunto);
+    public void enviarConAdjuntos(MultipartFile email, List<MultipartFile> files, MultipartFile nombresAdjunto) {
+        HttpResponseHandler.handle(() -> emailClient.enviarConAdjuntos(email, files, nombresAdjunto ),
+                "Error al enviar con adjuntos :" + nombresAdjunto);
     }
 }
