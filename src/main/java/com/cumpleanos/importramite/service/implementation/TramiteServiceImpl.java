@@ -106,6 +106,36 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
         return repository.findByFechaArriboBetween(inicioSemana, finSemana);
     }
 
+    @Override
+    public Integer getTotal(String tramite, String contenedor) {
+        List<Producto> productos = productoRepository.findByTramiteIdAndContenedorId(tramite,contenedor).orElseThrow(() ->
+                new DocumentNotFoundException("No se encontraron datos de productos en el Tramite: " + tramite));
+
+        return productos.stream()
+                .filter(p -> p.getBultos() != null )
+                .mapToInt(Producto::getBultos)
+                .sum();
+    }
+
+    @Override
+    public Double getPercentage(String tramite, String contenedor) {
+        return productoRepository.findByTramiteIdAndContenedorId(tramite,contenedor)
+                .map(productos -> {
+                    int totalBultos = productos.stream()
+                            .filter(p ->p.getBultos() !=null)
+                            .mapToInt(Producto::getBultos)
+                            .sum();
+
+                    int totalRevision = productos.stream()
+                            .filter(p -> p.getCantidadRevision() != null)
+                            .mapToInt(Producto::getCantidadRevision)
+                            .sum();
+
+                    return (totalBultos > 0) ? (totalRevision / (double) totalBultos) * 100 : 0;
+                })
+                .orElse((double) 0);
+    }
+
     private StatusResponse lockUnlockContenedor(Contenedor cont, String usr) {
         if (cont.getFinalizado()) {
             return new StatusResponse("finalizado.", true);
@@ -127,6 +157,5 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
 
         return new StatusResponse("Error: usuario no autorizado para desbloquear este contenedor.", false);
     }
-
 
 }

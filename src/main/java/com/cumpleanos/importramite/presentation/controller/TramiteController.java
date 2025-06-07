@@ -89,4 +89,16 @@ public class TramiteController {
         return ResponseEntity.ok(tramites);
     }
 
+    @GetMapping("/total/package/{tramite}/{contenedor}")
+    public ResponseEntity<Integer> getTotalPackage(@PathVariable String tramite, @PathVariable String contenedor) {
+        Integer total = service.getTotal(tramite,contenedor);
+        return ResponseEntity.ok(total);
+    }
+
+    @GetMapping("/percentage/package/{tramite}/{contenedor}")
+    public ResponseEntity<Double> getPercentage(@PathVariable String tramite, @PathVariable String contenedor) {
+        Double total = service.getPercentage(tramite,contenedor);
+        return ResponseEntity.ok(total);
+    }
+
 }
