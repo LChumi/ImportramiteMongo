@@ -100,29 +100,29 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
 
     @Override
     public List<Tramite> getTramitesOfTheWeek() {
-        LocalDate inicioSemana = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
-        LocalDate finSemana = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+        LocalDate inicioSemana = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate finSemana = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-        return repository.findByFechaArriboBetween(inicioSemana, finSemana);
+        return repository.findByFechaArriboBetween(inicioSemana.minusDays(1), finSemana.plusDays(1));
     }
 
     @Override
     public Integer getTotal(String tramite, String contenedor) {
-        List<Producto> productos = productoRepository.findByTramiteIdAndContenedorId(tramite,contenedor).orElseThrow(() ->
+        List<Producto> productos = productoRepository.findByTramiteIdAndContenedorId(tramite, contenedor).orElseThrow(() ->
                 new DocumentNotFoundException("No se encontraron datos de productos en el Tramite: " + tramite));
 
         return productos.stream()
-                .filter(p -> p.getBultos() != null )
+                .filter(p -> p.getBultos() != null)
                 .mapToInt(Producto::getBultos)
                 .sum();
     }
 
     @Override
     public Double getPercentage(String tramite, String contenedor) {
-        return productoRepository.findByTramiteIdAndContenedorId(tramite,contenedor)
+        return productoRepository.findByTramiteIdAndContenedorId(tramite, contenedor)
                 .map(productos -> {
                     int totalBultos = productos.stream()
-                            .filter(p ->p.getBultos() !=null)
+                            .filter(p -> p.getBultos() != null)
                             .mapToInt(Producto::getBultos)
                             .sum();
 
