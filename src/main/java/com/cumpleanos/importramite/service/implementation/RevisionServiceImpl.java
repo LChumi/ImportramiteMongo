@@ -3,6 +3,7 @@ package com.cumpleanos.importramite.service.implementation;
 import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.persistence.records.ProductValidateRequest;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
 import com.cumpleanos.importramite.persistence.records.StatusResponse;
 import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
@@ -105,15 +106,7 @@ public class RevisionServiceImpl implements IRevisionService {
                     producto.setEstadoRevision(SIN_REGISTRO.name());
                     producto.setCantidadDiferenciaRevision(cantidadRevision);
                 } else if (!producto.getEstadoRevision().equalsIgnoreCase(SIN_REGISTRO.name())) {
-                    int diferencia = bultos - cantidadRevision;
-                    producto.setCantidadDiferenciaRevision(Math.abs(diferencia));
-                    if (diferencia == 0) {
-                        producto.setEstadoRevision(COMPLETO.name());
-                    } else if (diferencia < 0) {
-                        producto.setEstadoRevision(SOBRANTE.name());
-                    } else {
-                        producto.setEstadoRevision(FALTANTE.name());
-                    }
+                    getStatusByCant(cantidadRevision, producto, bultos);
                 }
             }
             productoService.save(producto);
@@ -147,6 +140,37 @@ public class RevisionServiceImpl implements IRevisionService {
             return new StatusResponse("Producto no encontrado", false);
         } else {
             return new StatusResponse("Producto encontrado", true);
+        }
+    }
+
+    @Override
+    public Producto updateProdcutoById(ProductValidateRequest request) {
+        Producto pr = productoService.findById(request.productId());
+        if (pr == null) {
+            throw new DocumentNotFoundException("El producto no existe");
+        }
+        pr.setCantidadValidada(request.cantidad());
+
+        Integer cantidad = pr.getBultos();
+
+        if (cantidad == null) {
+            pr.setEstadoRevision(SOBRANTE.name());
+        } else{
+            getStatusByCant(request.cantidad(), pr, cantidad);
+        }
+        return productoService.save(pr);
+    }
+
+    private void getStatusByCant(Integer cantidadValidada, Producto pr, Integer cantidad) {
+        int diferencia = cantidad - cantidadValidada;
+
+        pr.setCantidadDiferenciaRevision(Math.abs(diferencia));
+        if (diferencia == 0) {
+            pr.setEstadoRevision(COMPLETO.name());
+        } else if (diferencia < 0) {
+            pr.setEstadoRevision(SOBRANTE.name());
+        } else {
+            pr.setEstadoRevision(FALTANTE.name());
         }
     }
 
