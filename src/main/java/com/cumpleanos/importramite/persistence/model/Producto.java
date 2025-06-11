@@ -54,7 +54,11 @@ public class Producto implements Serializable {
     private String estadoRevision;
     private String usuarioRevision;
     private List<String> historialRevision;
+
+    //Validacion
     private Integer cantidadValidada;
+    private String usrValida;
+    private String novedad;
 
     //Datos Muestra
     private String barraMuestra;

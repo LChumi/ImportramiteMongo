@@ -158,6 +158,8 @@ public class RevisionServiceImpl implements IRevisionService {
         } else{
             getStatusByCant(request.cantidad(), pr, cantidad);
         }
+        pr.setUsrValida(request.usuario());
+        pr.setNovedad(request.novedad());
         return productoService.save(pr);
     }
 
