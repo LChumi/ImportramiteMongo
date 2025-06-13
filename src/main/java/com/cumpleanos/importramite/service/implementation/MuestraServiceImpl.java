@@ -4,6 +4,7 @@ import com.cumpleanos.importramite.persistence.model.Contenedor;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.MuestraRequest;
+import com.cumpleanos.importramite.persistence.records.ProductValidateRequest;
 import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
 import com.cumpleanos.importramite.persistence.repository.TramiteRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
@@ -21,8 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.cumpleanos.importramite.utils.ProductoStatus.COMPLETO;
-import static com.cumpleanos.importramite.utils.ProductoStatus.FALTANTE;
+import static com.cumpleanos.importramite.utils.ProductoStatus.*;
 import static com.cumpleanos.importramite.utils.StringUtils.historial;
 
 @Slf4j
@@ -127,6 +127,25 @@ public class MuestraServiceImpl implements IMuestraService {
                 .filter(p -> p.getBarraMuestra() != null &&
                         p.getCantidadMuestra() != null
                 ).collect(Collectors.toList());
+    }
+
+    @Override
+    public Producto updateProdcutoById(ProductValidateRequest request) {
+        Producto pr = productoService.findById(request.productId());
+        if (pr == null) {
+            throw new DocumentNotFoundException("La muestra no existe");
+        }
+        pr.setBarraMuestra("-");
+        pr.setCantidadMuestra(0);
+        pr.setProcesoMuestra("ITEM SIN MUESTRA");
+        pr.setStatusMuestra(false);
+        pr.setUsuarioMuestra(request.usuario());
+        if (pr.getNovedad() == null ||  pr.getNovedad().isEmpty()) {
+            pr.setNovedad("No se registra la muestra del producto");
+        }else {
+            pr.setNovedad(pr.getNovedad() + " No se registra la muestra del producto");
+        }
+        return productoService.save(pr);
     }
 
     private static boolean validateMuestra(Producto p) {

@@ -2,6 +2,7 @@ package com.cumpleanos.importramite.presentation.controller;
 
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.records.MuestraRequest;
+import com.cumpleanos.importramite.persistence.records.ProductValidateRequest;
 import com.cumpleanos.importramite.service.interfaces.IMuestraService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,12 @@ public class MuestraController {
     public ResponseEntity<List<Producto>> getProductosMuestra(@PathVariable String tramite, @PathVariable String contenedor) {
         List<Producto> productos = service.getMuestras(tramite, contenedor);
         return ResponseEntity.ok(productos);
+    }
+
+    @PutMapping("/producto/validate")
+    public ResponseEntity<Producto> validateProduct(@RequestBody ProductValidateRequest request){
+        Producto producto = service.updateProdcutoById(request);
+        return ResponseEntity.ok(producto);
     }
 
 }
