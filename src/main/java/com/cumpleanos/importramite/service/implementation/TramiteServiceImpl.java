@@ -107,6 +107,14 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     }
 
     @Override
+    public List<Tramite> getTramitesOfTheMonth() {
+        LocalDate inicioMes = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate finMes = LocalDate.now().with(TemporalAdjusters.lastDayOfMonth());
+
+        return repository.findByFechaArriboBetween(inicioMes.minusDays(1), finMes.plusDays(1));
+    }
+
+    @Override
     public Integer getTotal(String tramite, String contenedor) {
         List<Producto> productos = productoRepository.findByTramiteIdAndContenedorId(tramite, contenedor).orElseThrow(() ->
                 new DocumentNotFoundException("No se encontraron datos de productos en el Tramite: " + tramite));

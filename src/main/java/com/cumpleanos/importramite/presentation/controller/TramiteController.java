@@ -101,4 +101,10 @@ public class TramiteController {
         return ResponseEntity.ok(total);
     }
 
+    @GetMapping("/month")
+    public ResponseEntity<List<Tramite>> getTramitesOfTheMonth() {
+        List<Tramite> tramites = service.getTramitesOfTheMonth();
+        return ResponseEntity.ok(tramites);
+    }
+
 }

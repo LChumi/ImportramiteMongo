@@ -26,6 +26,8 @@ public interface ITramiteService extends IGenericService<Tramite, String> {
 
     List<Tramite> getTramitesOfTheWeek();
 
+    List<Tramite> getTramitesOfTheMonth();
+
     Integer getTotal(String tramite, String contenedor);
 
     Double getPercentage(String tramite, String contenedor);
