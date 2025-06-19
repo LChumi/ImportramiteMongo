@@ -13,6 +13,7 @@ import com.cumpleanos.importramite.service.interfaces.IProductoService;
 import com.cumpleanos.importramite.service.interfaces.IRevisionService;
 import com.cumpleanos.importramite.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +22,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.cumpleanos.importramite.utils.ProductoStatus.*;
 import static com.cumpleanos.importramite.utils.StringUtils.historial;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RevisionServiceImpl implements IRevisionService {
@@ -149,17 +152,31 @@ public class RevisionServiceImpl implements IRevisionService {
         if (pr == null) {
             throw new DocumentNotFoundException("El producto no existe");
         }
-        pr.setCantidadValidada(request.cantidad());
 
-        Integer cantidad = pr.getBultos();
-
-        if (cantidad == null) {
-            pr.setEstadoRevision(SOBRANTE.name());
-        } else{
-            getStatusByCant(request.cantidad(), pr, cantidad);
+        Integer nuevaCantidad = request.cantidad();
+        if (nuevaCantidad == null || nuevaCantidad == 0) {
+            log.warn("Cantidad vacía, no se registra.");
+        } else {
+            pr.setCantidadValidada(nuevaCantidad);
+            Integer cantidadExistente = pr.getBultos();
+            if (cantidadExistente == null) {
+                pr.setEstadoRevision(SOBRANTE.name());
+            } else {
+                getStatusByCant(nuevaCantidad, pr, cantidadExistente);
+            }
         }
+
+
+        if (request.novedad() == null && pr.getNovedad() == null) {
+            log.info("Producto sin novedad");
+        } else if (request.novedad() != null) {
+            String novedadActual = Optional.ofNullable(pr.getNovedad()).orElse("");
+            pr.setNovedad(novedadActual.isBlank() ? request.novedad() : novedadActual + " " + request.novedad());
+        }
+
+
         pr.setUsrValida(request.usuario());
-        pr.setNovedad(request.novedad());
+
         return productoService.save(pr);
     }
 
