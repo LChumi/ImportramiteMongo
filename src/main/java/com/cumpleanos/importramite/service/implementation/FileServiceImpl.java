@@ -162,22 +162,22 @@ public class FileServiceImpl {
     private void getProducts(Producto producto) {
         long bodega = 10000586L;
         long bodegaNarancay = 10000601L;
-        ProductoApi api = productosClientService.getProduct(bodega, producto.getBarcode());
-        ProductoApi apiNarancay = productosClientService.getProduct(bodegaNarancay, producto.getBarcode());
+        ProductoApi api = productosClientService.getProduct(bodega, producto.getBarcode(), producto.getId1());
+        ProductoApi apiNarancay = productosClientService.getProduct(bodegaNarancay, producto.getBarcode(),producto.getId1());
         if (api != null) {
-            producto.setItemAlterno(api.pro_id1());
+            producto.setItemAlterno(api.proId1());
             producto.setPvp(api.pvp());
             producto.setCxbAnterior(api.cxb());
             producto.setUbicacionBulto(api.bulto());
             producto.setUbicacionUnidad(api.unidad());
-            producto.setStockZhucay(api.stock_disponible());
-            producto.setDescripcion(api.pro_nombre());
-            producto.setBarraSistema(api.pro_id());
+            producto.setStockZhucay(api.stockDisponible());
+            producto.setDescripcion(api.nombre());
+            producto.setBarraSistema(api.proId());
             if (!Objects.equals(producto.getCxb(), api.cxb())) {
                 producto.setDiferencia(producto.getCxb() - api.cxb());
             }
             if (apiNarancay != null) {
-                producto.setStockNarancay(apiNarancay.stock_disponible());
+                producto.setStockNarancay(apiNarancay.stockDisponible());
             }
         } else {
             producto.setDescripcion("NUEVO PRODUCTO");
