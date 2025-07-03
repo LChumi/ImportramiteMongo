@@ -28,10 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.cumpleanos.importramite.utils.MessageUtil.MENSAJE_LLEGADA_BODEGA;
 import static com.cumpleanos.importramite.utils.MessageUtil.MENSAJE_TRAMITE;
@@ -145,12 +142,33 @@ public class FileServiceImpl {
                     producto.calcularTotal();
                     producto.generateId();
                     getProducts(producto);
-                    Producto p = productoRepository.save(producto);
-                    if (p.getId() == null) {
-                        throw new RuntimeException("Error al guardar el producto: " + producto);
+
+                    Optional<Producto> foundOpt = productoRepository.findByBarcodeAndTramiteIdAndContenedorId(
+                            producto.getBarcode(), tramiteId, contenedorId
+                    );
+
+                    if (foundOpt.isEmpty()) {
+                        Producto p = productoRepository.save(producto);
+                        if (p.getId() == null) {
+                            throw new RuntimeException("Error al guardar el producto: " + producto);
+                        }
+                        productos.add(p.getBarcode());
+                        log.info("Producto guardado: {}", p);
+                    } else {
+                        Producto found = foundOpt.get();
+                        log.info("Producto existente, se actualizarán los campos");
+
+                        found.setBultos(found.getBultos() + producto.getBultos());
+                        found.setCxb(found.getCxb() + producto.getCxb());
+                        found.calcularTotal();
+
+                        Producto p = productoRepository.save(found);
+                        if (p.getId() == null) {
+                            throw new RuntimeException("Error al actualizar el producto: " + found);
+                        }
+                        log.info("Producto actualizado: {}", p);
                     }
-                    productos.add(p.getBarcode());
-                    log.info("Producto guardado: {}", p);
+
                 }
             } catch (ParseException e) {
                 log.error("Error al procesar la fila:  {}", e.getMessage());
@@ -162,8 +180,10 @@ public class FileServiceImpl {
     private void getProducts(Producto producto) {
         long bodega = 10000586L;
         long bodegaNarancay = 10000601L;
-        ProductoApi api = productosClientService.getProduct(bodega, producto.getBarcode(), producto.getId1());
-        ProductoApi apiNarancay = productosClientService.getProduct(bodegaNarancay, producto.getBarcode(),producto.getId1());
+        ProductoApi api = productosClientService.getProduct(bodega, producto.getBarcode());
+        ProductoApi apiNarancay = productosClientService.getProduct(bodegaNarancay, producto.getBarcode());
+        String novedad = productosClientService.getMatches(bodega, producto.getBarcode(), producto.getId1());
+        producto.setObservacion(novedad);
         if (api != null) {
             producto.setItemAlterno(api.proId1());
             producto.setPvp(api.pvp());

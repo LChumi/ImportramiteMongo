@@ -43,7 +43,8 @@ public class ExcelService {
             "STOCK_NARANCAY",
             "DESCRIPCION",
             "BARRA_SISTEMA",
-            "DIFERENCIAS"
+            "DIFERENCIAS",
+            "OBSERVACIONES"
     };
 
     public byte[] generarExcel(Tramite tramite) throws IOException {
@@ -156,13 +157,21 @@ public class ExcelService {
                 String.valueOf(producto.getStockNarancay() != null ? producto.getStockNarancay() : 0),
                 producto.getDescripcion() != null ? producto.getDescripcion() : "",
                 producto.getBarraSistema() != null ? producto.getBarraSistema() : "",
-                String.valueOf(producto.getDiferencia() != null ? producto.getDiferencia() : 0)
+                String.valueOf(producto.getDiferencia() != null ? producto.getDiferencia() : 0),
+                producto.getObservacion() != null ? producto.getObservacion() : "",
         };
 
         for (int i = 0; i < valores.length; i++) {
             Cell cell = row.createCell(i);
             cell.setCellValue(valores[i]);
-            cell.setCellStyle((i == 8 || i == 9 || i == 12) ? wrapStyle : cellStyle); // Aplicar wrap solo en texto largo
+            // Índice 15 corresponde a la columna OBSERVACIONES
+            if (i == 15 && !valores[i].isBlank()) {
+                cell.setCellStyle(observacionStyle(sheet, valores[i]));
+            } else if (i == 8 || i == 9 || i == 12) {
+                cell.setCellStyle(wrapStyle);
+            } else {
+                cell.setCellStyle(cellStyle);
+            }
         }
 
         return rowNum;
@@ -181,6 +190,37 @@ public class ExcelService {
         style.setBorderLeft(BorderStyle.THIN);
         style.setBorderRight(BorderStyle.THIN);
         return style;
+    }
+
+    private CellStyle observacionStyle(Sheet sheet, String observacion) {
+        CellStyle observacionStyle = sheet.getWorkbook().createCellStyle();
+        Font observacionFont = sheet.getWorkbook().createFont();
+        observacionFont.setColor(IndexedColors.BLACK.getIndex());
+        observacionFont.setBold(true);
+        observacionFont.setFontHeightInPoints((short) 12);
+        observacionStyle.setFont(observacionFont);
+
+        // Color dinámico según el contenido de la observación
+        if (observacion != null) {
+            if (observacion.toUpperCase().contains("REPOSICION")) {
+                observacionStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+            } else if (observacion.toUpperCase().contains("NUEVO")) {
+                observacionStyle.setFillForegroundColor(IndexedColors.BRIGHT_GREEN.getIndex());
+            } else {
+                observacionStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+            }
+        } else {
+            observacionStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+        }
+
+        observacionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        observacionStyle.setBorderBottom(BorderStyle.THIN);
+        observacionStyle.setBorderTop(BorderStyle.THIN);
+        observacionStyle.setBorderLeft(BorderStyle.THIN);
+        observacionStyle.setBorderRight(BorderStyle.THIN);
+        observacionStyle.setWrapText(true); // por si el texto es extenso
+
+        return observacionStyle;
     }
 
 }

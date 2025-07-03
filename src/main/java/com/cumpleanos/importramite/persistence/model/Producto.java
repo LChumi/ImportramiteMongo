@@ -46,6 +46,7 @@ public class Producto implements Serializable {
     private String descripcion;
     private String barraSistema;
     private Integer diferencia;
+    private String observacion;
     private int secuencia;
 
     //Datos Revision

@@ -15,9 +15,14 @@ public class ProductosClientServiceImpl {
 
     private final ProductosClient productosClient;
 
-    public ProductoApi getProduct(long bodega, String data, String item) {
-        return HttpResponseHandler.handle(() -> productosClient.buscarProdBod(bodega, data, item),
+    public ProductoApi getProduct(long bodega, String data) {
+        return HttpResponseHandler.handle(() -> productosClient.buscarProdBod(bodega, data),
                 "Error al obtener el producto :" + data);
+    }
+
+    public String getMatches(long bodega, String data, String item) {
+        return HttpResponseHandler.handle(() -> productosClient.getMatches(bodega, data, item),
+                "Error al obtener informacion del producto :" + data);
     }
 
 }

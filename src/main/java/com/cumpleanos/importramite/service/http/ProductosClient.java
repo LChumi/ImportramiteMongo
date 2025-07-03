@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "productosview", url = "http://192.168.112.36:7569/producto")
 public interface ProductosClient {
 
-    @GetMapping("/BuscarProductoItem/{bodega}")
-    public ResponseEntity<ProductoApi> buscarProdBod(@PathVariable long bodega,@RequestParam String data,@RequestParam String item);
+    @GetMapping("/BuscarProducto/{bodega}")
+    ResponseEntity<ProductoApi> buscarProdBod(@PathVariable long bodega,@RequestParam String data);
+
+    @GetMapping("/get/matches/{bodega}")
+    ResponseEntity<String> getMatches(@PathVariable long bodega,@RequestParam String data, @RequestParam String item);
 }
