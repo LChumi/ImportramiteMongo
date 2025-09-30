@@ -7,9 +7,19 @@ spring:
 
   data:
     mongodb:
+      #uri: ${MONGO_URI:mongodb://mongo_usr:1c3p.2025..@192.168.112.233:27019/icep?authSource=admin&authMechanism=SCRAM-SHA-1}
       uri: ${MONGO_URI:mongodb://localhost:27017/icep}
 
   servlet:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+
+logging:
+  level:
+    root: info
+    com:
+      cumple:
+        pos: debug
+  file:
+    name: D:\\Server\\Spring\\ImporTramite\\tramite.log

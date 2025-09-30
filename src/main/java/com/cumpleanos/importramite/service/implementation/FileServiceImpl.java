@@ -2,10 +2,7 @@ package com.cumpleanos.importramite.service.implementation;
 
 import com.cumpleanos.importramite.persistence.api.EmailRecord;
 import com.cumpleanos.importramite.persistence.api.ProductoApi;
-import com.cumpleanos.importramite.persistence.model.Contenedor;
-import com.cumpleanos.importramite.persistence.model.Emails;
-import com.cumpleanos.importramite.persistence.model.Producto;
-import com.cumpleanos.importramite.persistence.model.Tramite;
+import com.cumpleanos.importramite.persistence.model.*;
 import com.cumpleanos.importramite.persistence.repository.ContenedorRepository;
 import com.cumpleanos.importramite.persistence.repository.EmailRepository;
 import com.cumpleanos.importramite.persistence.repository.ProductoRepository;
@@ -158,9 +155,32 @@ public class FileServiceImpl {
                         Producto found = foundOpt.get();
                         log.info("Producto existente, se actualizarán los campos");
 
-                        found.setBultos(found.getBultos() + producto.getBultos());
-                        found.setCxb(found.getCxb() + producto.getCxb());
-                        found.calcularTotal();
+                        if (found.getCantidades() == null ||  found.getCantidades().isEmpty()) {
+                            log.info("Lista de cantidades vacia creando una nueva");
+                            found.setCantidades(new  ArrayList<>());
+                            ProdcutoCantidades cantAnt = ProdcutoCantidades
+                                    .builder()
+                                    .cantidad(found.getBultos())
+                                    .cxb(found.getCxb())
+                                    .build();
+                            found.getCantidades().add(cantAnt);
+
+                            ProdcutoCantidades cantNueva = ProdcutoCantidades
+                                    .builder()
+                                    .cantidad(producto.getBultos())
+                                    .cxb(producto.getCxb())
+                                    .build();
+                            found.getCantidades().add(cantNueva);
+                            found.calcularTotal();
+                        } else {
+                            ProdcutoCantidades cantNueva = ProdcutoCantidades
+                                    .builder()
+                                    .cantidad(producto.getBultos())
+                                    .cxb(producto.getCxb())
+                                    .build();
+                            found.getCantidades().add(cantNueva);
+                            found.calcularTotal();
+                        }
 
                         Producto p = productoRepository.save(found);
                         if (p.getId() == null) {

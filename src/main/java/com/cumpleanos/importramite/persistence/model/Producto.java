@@ -18,7 +18,6 @@ import java.util.List;
 @CompoundIndex(name = "barcode_unique_contenedor_tramite_idx",
         def = "{'barcode' : 1, 'contenedorId': 1, 'tramiteId': 1}",
         unique = true)
-
 public class Producto implements Serializable {
 
     @Serial
@@ -49,6 +48,8 @@ public class Producto implements Serializable {
     private String observacion;
     private int secuencia;
 
+    private List<ProdcutoCantidades> cantidades;
+
     //Datos Revision
     private Integer cantidadRevision;
     private Integer cantidadDiferenciaRevision;
@@ -70,10 +71,42 @@ public class Producto implements Serializable {
     private Boolean statusMuestra;
 
     public void calcularTotal() {
-        if (this.bultos != null && this.cxb != null) {
-            this.total = this.bultos * this.cxb;
+
+        if (cantidades == null || cantidades.isEmpty()) {
+            if (this.bultos != null && this.cxb != null) {
+                this.total = this.bultos * this.cxb;
+            } else {
+                this.total = 0; // O maneja el caso de error como prefieras
+            }
+            return;
+        }
+
+        boolean mismoCxb = cantidades.stream()
+                .map(ProdcutoCantidades::getCxb)
+                .distinct()
+                .count() == 1;
+
+        int totalBultos = cantidades.stream()
+                .mapToInt(ProdcutoCantidades::getCantidad)
+                .sum();
+
+        if (mismoCxb) {
+            int cxb = cantidades.get(0).getCxb();
+            this.setCxb(cxb);
+            this.setBultos(totalBultos);
+            this.setTotal(cxb * totalBultos);
         } else {
-            this.total = 0; // O maneja el caso de error como prefieras
+            int total = cantidades.stream()
+                    .mapToInt(pc -> pc.getCantidad() * pc.getCxb())
+                    .sum();
+
+            int maxCxb = cantidades.stream()
+                    .mapToInt(ProdcutoCantidades::getCxb)
+                    .max()
+                    .orElse(0);
+            this.setCxb(maxCxb);
+            this.setBultos(totalBultos);
+            this.setTotal(total);
         }
     }
 
