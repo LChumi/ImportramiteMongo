@@ -67,7 +67,7 @@ public class TramiteController {
 
     @GetMapping("/update/date")
     public ResponseEntity<StatusResponse> updateDates(@RequestParam LocalDate fechaArribo, @RequestParam LocalTime horaArribo, @RequestParam String id) {
-        StatusResponse status = service.updateDateAndSendEmails(id.trim(), fechaArribo, horaArribo);
+        StatusResponse status = service.updateDateTramite(id.trim(), fechaArribo, horaArribo);
         return ResponseEntity.ok(status);
     }
 

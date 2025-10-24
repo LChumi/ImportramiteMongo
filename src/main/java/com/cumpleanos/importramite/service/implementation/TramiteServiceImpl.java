@@ -29,7 +29,6 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
 
     private final TramiteRepository repository;
     private final TramiteRepositoryCustom repositoryCustom;
-    private final FileServiceImpl fileService;
     private final ContenedorRepository contenedorRepository;
     private final ProductoRepository productoRepository;
 
@@ -75,8 +74,7 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
     }
 
     @Override
-    public StatusResponse updateDateAndSendEmails(String id, LocalDate fechaLlegada, LocalTime horaLlegada) {
-        String response;
+    public StatusResponse updateDateTramite(String id, LocalDate fechaLlegada, LocalTime horaLlegada) {
         Tramite found = repository.findById(id).orElseThrow(() -> new DocumentNotFoundException("No se encontraron datos a actualizar"));
         found.setFechaArribo(fechaLlegada);
         found.setHoraArribo(horaLlegada);
@@ -84,8 +82,7 @@ public class TramiteServiceImpl extends GenericServiceImpl<Tramite, String> impl
         if (saved.getFechaArribo() == null) {
             throw new DocumentNotFoundException("El documento no tiene fecha de arribo");
         }
-        response = fileService.sendTramiteFinal(saved.getId());
-        return new StatusResponse(response, true);
+        return new StatusResponse("Fecha de arribo Actualizada", true);
     }
 
     @Override

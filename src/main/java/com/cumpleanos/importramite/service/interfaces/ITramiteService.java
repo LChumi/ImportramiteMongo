@@ -18,7 +18,7 @@ public interface ITramiteService extends IGenericService<Tramite, String> {
 
     List<Tramite> buscarTramites(String id, Short estado, LocalDate fechaInicio, LocalDate fechaFin);
 
-    StatusResponse updateDateAndSendEmails(String id, LocalDate fechaLlegada, LocalTime horaLlegada);
+    StatusResponse updateDateTramite(String id, LocalDate fechaLlegada, LocalTime horaLlegada);
 
     Contenedor findByTramiteAndId(String tramite, String id);
 
