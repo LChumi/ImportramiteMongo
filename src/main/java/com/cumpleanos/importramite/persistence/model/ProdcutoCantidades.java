@@ -8,4 +8,6 @@ import lombok.Data;
 public class ProdcutoCantidades {
     private int cantidad;
     private int cxb;
+    private String observacion;
+    private int cantRevision;
 }

@@ -56,6 +56,7 @@ public class Producto implements Serializable {
     private String estadoRevision;
     private String usuarioRevision;
     private List<String> historialRevision;
+    private List<String> observacionRevision;
 
     //Validacion
     private Integer cantidadValidada;
