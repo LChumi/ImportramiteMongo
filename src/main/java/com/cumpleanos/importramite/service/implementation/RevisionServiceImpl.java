@@ -1,6 +1,7 @@
 package com.cumpleanos.importramite.service.implementation;
 
 import com.cumpleanos.importramite.persistence.model.Contenedor;
+import com.cumpleanos.importramite.persistence.model.ProdcutoCantidades;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.ProductValidateRequest;
@@ -178,6 +179,19 @@ public class RevisionServiceImpl implements IRevisionService {
         pr.setUsrValida(request.usuario());
 
         return productoService.save(pr);
+    }
+
+    @Override
+    public List<ProdcutoCantidades> getCantidades(String tramite, String contenedor, String barcode) {
+        String idProducto = tramite + "_" + contenedor + "_" + barcode;
+        Producto p = productoService.findById(idProducto);
+        if (p == null) {
+            throw new DocumentNotFoundException("El producto no existe");
+        }
+        if (!p.getCantidades().isEmpty()){
+            return p.getCantidades();
+        }
+        return null;
     }
 
     private void getStatusByCant(Integer cantidadValidada, Producto pr, Integer cantidad) {

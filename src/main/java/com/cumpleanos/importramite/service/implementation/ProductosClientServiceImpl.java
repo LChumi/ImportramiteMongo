@@ -25,4 +25,9 @@ public class ProductosClientServiceImpl {
                 "Error al obtener informacion del producto :" + data);
     }
 
+    public String exitInCompany(Long empresa, String barra, String item) {
+        return HttpResponseHandler.handle(() -> productosClient.existIntoCompany(empresa, barra, item),
+                "Error al obtener el producto :" + item);
+    }
+
 }

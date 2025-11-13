@@ -46,6 +46,9 @@ public class Producto implements Serializable {
     private String barraSistema;
     private Integer diferencia;
     private String observacion;
+    private String IPC;
+    private String PNCE;
+    private String IEPNC;
     private int secuencia;
 
     private List<ProdcutoCantidades> cantidades;

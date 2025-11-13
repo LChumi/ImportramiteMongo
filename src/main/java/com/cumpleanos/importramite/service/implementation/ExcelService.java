@@ -44,7 +44,10 @@ public class ExcelService {
             "DESCRIPCION",
             "BARRA_SISTEMA",
             "DIFERENCIAS",
-            "OBSERVACIONES"
+            "OBSERVACIONES",
+            "IPC",
+            "PNCE",
+            "IEPN"
     };
 
     public byte[] generarExcel(Tramite tramite) throws IOException {
@@ -159,13 +162,16 @@ public class ExcelService {
                 producto.getBarraSistema() != null ? producto.getBarraSistema() : "",
                 String.valueOf(producto.getDiferencia() != null ? producto.getDiferencia() : 0),
                 producto.getObservacion() != null ? producto.getObservacion() : "",
+                producto.getIPC() != null ? producto.getIPC() : "",
+                producto.getPNCE() != null ? producto.getPNCE() : "",
+                producto.getIEPNC() != null ? producto.getIEPNC() : "",
         };
 
         for (int i = 0; i < valores.length; i++) {
             Cell cell = row.createCell(i);
             cell.setCellValue(valores[i]);
             // Índice 15 corresponde a la columna OBSERVACIONES
-            if (i == 15 && !valores[i].isBlank()) {
+            if (i >= 15 && !valores[i].isBlank()) {
                 cell.setCellStyle(observacionStyle(sheet, valores[i]));
             } else if (i == 8 || i == 9 || i == 12) {
                 cell.setCellStyle(wrapStyle);

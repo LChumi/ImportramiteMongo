@@ -15,4 +15,7 @@ public interface ProductosClient {
 
     @GetMapping("/get/matches/{bodega}")
     ResponseEntity<String> getMatches(@PathVariable long bodega,@RequestParam String data, @RequestParam String item);
+
+    @GetMapping("/exist/empresa/{empresa}")
+    ResponseEntity<String> existIntoCompany(@PathVariable Long empresa,@RequestParam String barra, @RequestParam String item);
 }

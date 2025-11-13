@@ -1,6 +1,7 @@
 package com.cumpleanos.importramite.presentation.controller;
 
 import com.cumpleanos.importramite.persistence.model.Contenedor;
+import com.cumpleanos.importramite.persistence.model.ProdcutoCantidades;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.records.ProductValidateRequest;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
@@ -63,6 +64,12 @@ public class RevisionController {
     public ResponseEntity<Producto> validateProduct(@RequestBody ProductValidateRequest request){
         Producto producto = service.updateProdcutoById(request);
         return ResponseEntity.ok(producto);
+    }
+
+    @GetMapping("/get-cantidades/{barcode}/{tramite}/{contenedor}")
+    public ResponseEntity<List<ProdcutoCantidades>> getCantidades(@PathVariable String barcode, @PathVariable String tramite, @PathVariable String contenedor){
+        List<ProdcutoCantidades> cantidades = service.getCantidades(tramite, contenedor, barcode);
+        return ResponseEntity.ok(cantidades);
     }
 
 }

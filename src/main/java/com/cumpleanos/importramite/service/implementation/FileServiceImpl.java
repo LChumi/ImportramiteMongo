@@ -203,7 +203,13 @@ public class FileServiceImpl {
         ProductoApi api = productosClientService.getProduct(bodega, producto.getBarcode());
         ProductoApi apiNarancay = productosClientService.getProduct(bodegaNarancay, producto.getBarcode());
         String novedad = productosClientService.getMatches(bodega, producto.getBarcode(), producto.getId1());
+        String emp2 = productosClientService.exitInCompany(2L ,  producto.getBarcode(), producto.getId1());
+        String emp3 = productosClientService.exitInCompany(3L , producto.getBarcode(), producto.getId1());
+        String emp4 = productosClientService.exitInCompany(4L, producto.getBarcode(), producto.getId1());
         producto.setObservacion(novedad);
+        producto.setIPC(emp2);
+        producto.setPNCE(emp3);
+        producto.setIEPNC(emp4);
         if (api != null) {
             producto.setItemAlterno(api.proId1());
             producto.setPvp(api.pvp());
