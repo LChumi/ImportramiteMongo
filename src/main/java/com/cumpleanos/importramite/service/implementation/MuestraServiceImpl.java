@@ -96,8 +96,6 @@ public class MuestraServiceImpl implements IMuestraService {
         }
         boolean allProductsCompleted = productos.stream().allMatch(producto -> COMPLETO.name().equals(producto.getProcesoMuestra()));
 
-
-
         if (allProductsCompleted) {
             Contenedor contenedor = contenedorRepository.findByContenedorId(contenedorId).orElseThrow(() -> new DocumentNotFoundException("Contenedor no encontrado: " + contenedorId));
             contenedor.setMuestras(true);

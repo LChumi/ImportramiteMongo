@@ -158,7 +158,8 @@ public class RevisionServiceImpl implements IRevisionService {
         if (nuevaCantidad == null || nuevaCantidad == 0) {
             log.warn("Cantidad vacía, no se registra.");
         } else {
-            pr.setCantidadValidada(nuevaCantidad);
+            pr.getHistorialRevision().add("CANTIDAD MODIFICADA ANTERIOR: "+ pr.getCantidadRevision() + " NUEVA: " + nuevaCantidad);
+            pr.setCantidadRevision(nuevaCantidad);
             Integer cantidadExistente = pr.getBultos();
             if (cantidadExistente == null) {
                 pr.setEstadoRevision(SOBRANTE.name());
@@ -167,14 +168,12 @@ public class RevisionServiceImpl implements IRevisionService {
             }
         }
 
-
         if (request.novedad() == null && pr.getNovedad() == null) {
             log.info("Producto sin novedad");
         } else if (request.novedad() != null) {
             String novedadActual = Optional.ofNullable(pr.getNovedad()).orElse("");
             pr.setNovedad(novedadActual.isBlank() ? request.novedad() : novedadActual + " " + request.novedad());
         }
-
 
         pr.setUsrValida(request.usuario());
 
@@ -203,7 +202,7 @@ public class RevisionServiceImpl implements IRevisionService {
         } else if (diferencia < 0) {
             pr.setEstadoRevision(SOBRANTE.name());
         } else {
-            pr.setEstadoRevision(FALTANTE.name());
+            pr.setEstadoRevision(INCOMPLETO.name());
         }
     }
 
@@ -271,9 +270,8 @@ public class RevisionServiceImpl implements IRevisionService {
                 if (revision.getEstadoRevision() != null && revision.getEstadoRevision().equalsIgnoreCase(SIN_REGISTRO.name())) {
                     revision.setEstadoRevision(SIN_REGISTRO.name());
                 } else {
-                    revision.setEstadoRevision(AGREGADO.name());
+                    getStatusByCant(revision.getCantidadRevision(), revision, revision.getBultos());
                 }
-
             } else {
                 // Restar cantidad
                 int nuevaCantidad = revision.getCantidadRevision() - 1;
