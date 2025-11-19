@@ -63,7 +63,7 @@ public class Producto implements Serializable {
 
     //Validacion
     private String usrValida;
-    private String novedad;
+    private List<String> novedad;
 
     //Datos Muestra
     private String barraMuestra;

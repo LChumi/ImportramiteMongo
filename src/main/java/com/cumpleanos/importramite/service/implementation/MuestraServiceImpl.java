@@ -138,11 +138,19 @@ public class MuestraServiceImpl implements IMuestraService {
         pr.setProcesoMuestra("ITEM SIN MUESTRA");
         pr.setStatusMuestra(false);
         pr.setUsuarioMuestra(request.usuario());
-        if (pr.getNovedad() == null ||  pr.getNovedad().isEmpty()) {
-            pr.setNovedad("No se registra la muestra del producto");
-        }else {
-            pr.setNovedad(pr.getNovedad() + " No se registra la muestra del producto");
+        if (pr.getNovedad() == null || pr.getNovedad().isEmpty()) {
+            // Si la lista no existe o está vacía, inicializa y agrega el mensaje
+            List<String> novedades = new ArrayList<>();
+            novedades.add("No se registra la muestra del producto");
+            pr.setNovedad(novedades);
+        } else {
+            // Si ya existe la lista, simplemente agrega el nuevo mensaje
+            pr.getNovedad().add("No se registra la muestra del producto");
         }
+
+        List<String> novedades = Optional.ofNullable(pr.getNovedad()).orElse(new ArrayList<>());
+        novedades.add(request.novedad());
+        pr.setNovedad(novedades);
         return productoService.save(pr);
     }
 

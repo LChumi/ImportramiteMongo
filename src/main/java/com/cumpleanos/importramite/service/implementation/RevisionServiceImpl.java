@@ -168,11 +168,12 @@ public class RevisionServiceImpl implements IRevisionService {
             }
         }
 
-        if (request.novedad() == null && pr.getNovedad() == null) {
+        if (request.novedad() == null && (pr.getNovedad() == null || pr.getNovedad().isEmpty())) {
             log.info("Producto sin novedad");
         } else if (request.novedad() != null) {
-            String novedadActual = Optional.ofNullable(pr.getNovedad()).orElse("");
-            pr.setNovedad(novedadActual.isBlank() ? request.novedad() : novedadActual + " " + request.novedad());
+            List<String> novedades = Optional.ofNullable(pr.getNovedad()).orElse(new ArrayList<>());
+            novedades.add(request.novedad());
+            pr.setNovedad(novedades);
         }
 
         pr.setUsrValida(request.usuario());
