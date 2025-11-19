@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -188,11 +189,14 @@ public class RevisionServiceImpl implements IRevisionService {
         if (p == null) {
             throw new DocumentNotFoundException("El producto no existe");
         }
-        if (!p.getCantidades().isEmpty()){
-            return p.getCantidades();
+
+        List<ProdcutoCantidades> cantidades = p.getCantidades();
+        if (cantidades != null && !cantidades.isEmpty()) {
+            return cantidades;
         }
-        return null;
+        return Collections.emptyList(); // mejor que devolver null
     }
+
 
     private void getStatusByCant(Integer cantidadValidada, Producto pr, Integer cantidad) {
         int diferencia = cantidad - cantidadValidada;
