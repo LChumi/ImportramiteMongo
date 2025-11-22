@@ -220,7 +220,6 @@ public class RevisionServiceImpl implements IRevisionService {
     @Transactional
     @Override
     public Producto updateCantidadByBarra(RevisionRequest request) {
-
         String tramiteId = StringUtils.trimWhitespace(request.tramiteId());
         String barra = StringUtils.trimWhitespace(request.barra());
         String contenedorId = StringUtils.trimWhitespace(request.contenedor());
@@ -247,50 +246,75 @@ public class RevisionServiceImpl implements IRevisionService {
         boolean esNuevo = revision.getBarcode() == null || revision.getBarcode().isEmpty();
 
         if (esNuevo) {
-            // Crear nueva revisión
-            revision.setBarcode(barra);
-            revision.setContenedorId(contenedorId);
-            revision.setTramiteId(tramiteId);
-            revision.setNombre(PRODUCTO_SIN_REGISTRO.name());
-            revision.setCantidadRevision(1);
-            revision.setUsuarioRevision(request.usuario());
-            revision.setEstadoRevision(SIN_REGISTRO.name());
-            revision.setHistorialRevision(new ArrayList<>());
-            revision.getHistorialRevision().add(historial(true));
-            revision.generateId();
+            inicializarNuevoProducto(revision, barra, tramiteId, contenedorId, request.usuario());
         } else {
             revision.setUsuarioRevision(request.usuario());
-            // Asegurar inicialización segura antes de operar
-            if (revision.getCantidadRevision() == null) {
-                revision.setCantidadRevision(0);
-            }
-            if (revision.getHistorialRevision() == null) {
-                revision.setHistorialRevision(new ArrayList<>());
-            }
+            revision.setCantidadRevision(Optional.ofNullable(revision.getCantidadRevision()).orElse(0));
+            revision.setHistorialRevision(Optional.ofNullable(revision.getHistorialRevision()).orElse(new ArrayList<>()));
 
-            if (request.status()) {
-                // Sumar cantidad
-                revision.setCantidadRevision(revision.getCantidadRevision() + 1);
-                revision.getHistorialRevision().add(historial(true));
-                if (revision.getEstadoRevision() != null && revision.getEstadoRevision().equalsIgnoreCase(SIN_REGISTRO.name())) {
-                    revision.setEstadoRevision(SIN_REGISTRO.name());
-                } else {
-                    getStatusByCant(revision.getCantidadRevision(), revision, revision.getBultos());
-                }
-            } else {
-                // Restar cantidad
-                int nuevaCantidad = revision.getCantidadRevision() - 1;
-                if (nuevaCantidad >= 0) {
-                    revision.setCantidadRevision(nuevaCantidad);
-                    revision.getHistorialRevision().add(historial(false));
-                    revision.setEstadoRevision(RETIRADO.name());
-                } else {
-                    throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
-                }
-            }
+            aplicarIncrementoGlobal(revision, request.status());
+            updateCantidades(revision, request);
         }
 
         return productoService.save(revision);
     }
 
+    private void inicializarNuevoProducto(Producto revision, String barra, String tramiteId, String contenedorId, String usuario) {
+        revision.setBarcode(barra);
+        revision.setContenedorId(contenedorId);
+        revision.setTramiteId(tramiteId);
+        revision.setNombre(PRODUCTO_SIN_REGISTRO.name());
+        revision.setCantidadRevision(1);
+        revision.setUsuarioRevision(usuario);
+        revision.setEstadoRevision(SIN_REGISTRO.name());
+        revision.setHistorialRevision(new ArrayList<>());
+        revision.getHistorialRevision().add(historial(true));
+        revision.generateId();
+    }
+
+    private void aplicarIncrementoGlobal(Producto revision, boolean status) {
+        if (status) {
+            revision.setCantidadRevision(revision.getCantidadRevision() + 1);
+            revision.getHistorialRevision().add(historial(true));
+            if (SIN_REGISTRO.name().equalsIgnoreCase(revision.getEstadoRevision())) {
+                revision.setEstadoRevision(SIN_REGISTRO.name());
+            } else {
+                getStatusByCant(revision.getCantidadRevision(), revision, revision.getBultos());
+            }
+        } else {
+            int nuevaCantidad = revision.getCantidadRevision() - 1;
+            if (nuevaCantidad >= 0) {
+                revision.setCantidadRevision(nuevaCantidad);
+                revision.getHistorialRevision().add(historial(false));
+                revision.setEstadoRevision(RETIRADO.name());
+            } else {
+                throw new DocumentNotFoundException("Cantidad no puede ser menor que cero");
+            }
+        }
+    }
+
+    private void updateCantidades(Producto p, RevisionRequest r) {
+        if (r.cantidad() != null && r.cxb() != null && p.getCantidades() != null && !p.getCantidades().isEmpty()) {
+            p.getCantidades().stream()
+                    .filter(c -> c.getCantidad() == r.cantidad() && c.getCxb() == r.cxb())
+                    .findFirst()
+                    .ifPresent(cant -> {
+                        int revisionActual = Optional.of(cant.getCantRevision()).orElse(0);
+                        if (r.status()) {
+                            cant.setCantRevision(revisionActual + 1);
+                        } else {
+                            if (revisionActual > 0) {
+                                cant.setCantRevision(revisionActual - 1);
+                            } else {
+                                throw new DocumentNotFoundException("La revisión no puede ser menor que cero");
+                            }
+                        }
+
+                        if (r.obsCxb() != null && !r.obsCxb().isEmpty()) {
+                            String obs = Optional.ofNullable(cant.getObservacion()).orElse("");
+                            cant.setObservacion(obs.isEmpty() ? r.obsCxb() : obs + " | " + r.obsCxb());
+                        }
+                    });
+        }
+    }
 }

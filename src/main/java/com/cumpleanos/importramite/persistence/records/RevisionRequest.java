@@ -5,5 +5,9 @@ public record RevisionRequest (
         String contenedor,
         String barra,
         String usuario,
-        Boolean status)
+        Boolean status,
+        Integer cantidad,
+        Integer cxb,
+        String obsCxb
+        )
 {}

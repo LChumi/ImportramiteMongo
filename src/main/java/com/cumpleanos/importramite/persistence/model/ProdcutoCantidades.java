@@ -10,4 +10,5 @@ public class ProdcutoCantidades {
     private int cxb;
     private String observacion;
     private int cantRevision;
+    private Boolean status;
 }
