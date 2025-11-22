@@ -2,15 +2,16 @@ FROM eclipse-temurin:17-jdk
 
 ARG JAR_FILE=target/*.jar
 
-#Usuario no root con UID fijo
-RUN useradd -m -u 1000 appuser \
-    && mkdir -p /app \
-    && chown -R appuser:appuser /app
+# Crear usuario no root (sin UID fijo)
+RUN useradd -m appuser \
+    && mkdir -p /app
 
-# Copiar jar
-COPY ${JAR_FILE} /app/app.jar
-RUN chown appuser:appuser /app/app.jar
+WORKDIR /app
+
+# Copiar jar y asignar permisos
+COPY ${JAR_FILE} app.jar
+RUN chown -R appuser:appuser /app
 
 USER appuser
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
