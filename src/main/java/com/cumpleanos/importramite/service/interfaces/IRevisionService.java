@@ -2,7 +2,7 @@ package com.cumpleanos.importramite.service.interfaces;
 
 
 import com.cumpleanos.importramite.persistence.model.Contenedor;
-import com.cumpleanos.importramite.persistence.model.ProdcutoCantidades;
+import com.cumpleanos.importramite.persistence.model.ProductoCantidades;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.records.ProductValidateRequest;
 import com.cumpleanos.importramite.persistence.records.RevisionRequest;
@@ -26,5 +26,5 @@ public interface IRevisionService {
 
     Producto updateProdcutoById(ProductValidateRequest request);
 
-    List<ProdcutoCantidades> getCantidades(String tramite, String contenedor, String barcode);
+    List<ProductoCantidades> getCantidades(String tramite, String contenedor, String barcode);
 }

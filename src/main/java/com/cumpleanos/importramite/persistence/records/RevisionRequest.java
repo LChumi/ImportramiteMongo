@@ -8,6 +8,7 @@ public record RevisionRequest (
         Boolean status,
         Integer cantidad,
         Integer cxb,
-        String obsCxb
+        String obsCxb,
+        Integer cxbNov
         )
 {}

@@ -1,7 +1,7 @@
 package com.cumpleanos.importramite.service.implementation;
 
 import com.cumpleanos.importramite.persistence.model.Contenedor;
-import com.cumpleanos.importramite.persistence.model.ProdcutoCantidades;
+import com.cumpleanos.importramite.persistence.model.ProductoCantidades;
 import com.cumpleanos.importramite.persistence.model.Producto;
 import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.records.ProductValidateRequest;
@@ -183,14 +183,14 @@ public class RevisionServiceImpl implements IRevisionService {
     }
 
     @Override
-    public List<ProdcutoCantidades> getCantidades(String tramite, String contenedor, String barcode) {
+    public List<ProductoCantidades> getCantidades(String tramite, String contenedor, String barcode) {
         String idProducto = tramite + "_" + contenedor + "_" + barcode;
         Producto p = productoService.findById(idProducto);
         if (p == null) {
             throw new DocumentNotFoundException("El producto no existe");
         }
 
-        List<ProdcutoCantidades> cantidades = p.getCantidades();
+        List<ProductoCantidades> cantidades = p.getCantidades();
         if (cantidades != null && !cantidades.isEmpty()) {
             return cantidades;
         }
@@ -295,26 +295,55 @@ public class RevisionServiceImpl implements IRevisionService {
 
     private void updateCantidades(Producto p, RevisionRequest r) {
         if (r.cantidad() != null && r.cxb() != null && p.getCantidades() != null && !p.getCantidades().isEmpty()) {
-            p.getCantidades().stream()
-                    .filter(c -> c.getCantidad() == r.cantidad() && c.getCxb() == r.cxb())
-                    .findFirst()
-                    .ifPresent(cant -> {
-                        int revisionActual = Optional.of(cant.getCantRevision()).orElse(0);
-                        if (r.status()) {
-                            cant.setCantRevision(revisionActual + 1);
-                        } else {
-                            if (revisionActual > 0) {
-                                cant.setCantRevision(revisionActual - 1);
-                            } else {
-                                throw new DocumentNotFoundException("La revisión no puede ser menor que cero");
-                            }
-                        }
 
-                        if (r.obsCxb() != null && !r.obsCxb().isEmpty()) {
-                            String obs = Optional.ofNullable(cant.getObservacion()).orElse("");
-                            cant.setObservacion(obs.isEmpty() ? r.obsCxb() : obs + " | " + r.obsCxb());
-                        }
-                    });
+            Optional<ProductoCantidades> optCant = p.getCantidades().stream()
+                    .filter(c -> c.getCantidad() == r.cantidad() && c.getCxb() == r.cxb())
+                    .findFirst();
+
+            if (optCant.isPresent()) {
+                ProductoCantidades cant = optCant.get();
+
+                int revisionActual = Optional.of(cant.getCantRevision()).orElse(0);
+
+                if (r.status()) {
+                    cant.setCantidad(revisionActual + 1);
+                } else {
+                    if (revisionActual > 0) {
+                        cant.setCantidad(revisionActual - 1);
+                    } else {
+                        throw new DocumentNotFoundException("La revision no puede ser menor que cero");
+                    }
+                }
+
+                if (r.obsCxb() != null && !r.obsCxb().isEmpty()) {
+                    String obs = Optional.ofNullable(cant.getObservacion()).orElse("");
+                    cant.setObservacion(
+                            obs.isEmpty()
+                            ? r.obsCxb()
+                                    : obs + " | " +r.obsCxb()
+                    );
+                }
+
+            } else {
+                if (r.status() && r.cxbNov() > 0) {
+                    ProductoCantidades nueva = ProductoCantidades.builder()
+                            .cantidad(0)
+                            .cxb(r.cxbNov())
+                            .observacion("Cxb nuevo registrado " + r.cxbNov())
+                            .build();
+                    p.getCantidades().add(nueva);
+                }
+            }
+
+        }else if (p.getCantidades() == null || p.getCantidades().isEmpty()){
+            if (r.status() && r.cxbNov() > 0) {
+                ProductoCantidades nueva = ProductoCantidades.builder()
+                        .cantidad(0)
+                        .cxb(r.cxbNov())
+                        .observacion("Cxb nuevo registrado " + r.cxbNov())
+                        .build();
+                p.getCantidades().add(nueva);
+            }
         }
     }
 }

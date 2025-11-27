@@ -136,7 +136,7 @@ public class FileServiceImpl {
                     producto.setTramiteId(tramiteId);
                     producto.setContenedorId(contenedorId);
                     producto.setSecuencia(counter);
-                    producto.calcularTotal();
+                    producto.recalcularTotalPrincipal();
                     producto.generateId();
                     getProducts(producto);
 
@@ -154,32 +154,51 @@ public class FileServiceImpl {
                     } else {
                         Producto found = foundOpt.get();
                         log.info("Producto existente, se actualizarán los campos");
+                        int cxbNuevo = producto.getCxb();
+                        int bultosNuevos = producto.getBultos();
 
-                        if (found.getCantidades() == null ||  found.getCantidades().isEmpty()) {
-                            log.info("Lista de cantidades vacia creando una nueva");
-                            found.setCantidades(new  ArrayList<>());
-                            ProdcutoCantidades cantAnt = ProdcutoCantidades
-                                    .builder()
-                                    .cantidad(found.getBultos())
-                                    .cxb(found.getCxb())
-                                    .build();
-                            found.getCantidades().add(cantAnt);
+                        if (found.getCantidades() == null || found.getCantidades().isEmpty()) {
+                            if (Objects.equals(found.getCxb(), cxbNuevo)) {
+                                found.sumarBultosPrincipal(bultosNuevos);
+                            } else {
+                                found.setCantidades(new ArrayList<>());
 
-                            ProdcutoCantidades cantNueva = ProdcutoCantidades
-                                    .builder()
-                                    .cantidad(producto.getBultos())
-                                    .cxb(producto.getCxb())
-                                    .build();
-                            found.getCantidades().add(cantNueva);
-                            found.calcularTotal();
+                                ProductoCantidades cantPrincipal = ProductoCantidades.builder()
+                                        .cantidad(found.getBultos() != null ? found.getBultos() : 0)
+                                        .cxb(found.getCxb() != null ? found.getCxb() : 0)
+                                        .cantRevision(0)
+                                        .build();
+
+                                found.getCantidades().add(cantPrincipal);
+
+                                ProductoCantidades cantNueva = ProductoCantidades.builder()
+                                        .cantidad(bultosNuevos)
+                                        .cxb(cxbNuevo)
+                                        .cantRevision(0)
+                                        .build();
+
+                                found.getCantidades().add(cantNueva);
+
+                                found.recalcularTotalDesdeCantidades();
+                            }
                         } else {
-                            ProdcutoCantidades cantNueva = ProdcutoCantidades
-                                    .builder()
-                                    .cantidad(producto.getBultos())
-                                    .cxb(producto.getCxb())
-                                    .build();
-                            found.getCantidades().add(cantNueva);
-                            found.calcularTotal();
+                            ProductoCantidades existente = found.getCantidades().stream()
+                                    .filter(c -> c.getCxb() == cxbNuevo)
+                                    .findFirst()
+                                    .orElse(null);
+
+                            if (existente != null){
+                                existente.setCantidad(existente.getCantidad() + bultosNuevos);
+                            } else {
+                                ProductoCantidades cantNueva = ProductoCantidades.builder()
+                                        .cantidad(bultosNuevos)
+                                        .cxb(cxbNuevo)
+                                        .cantRevision(0)
+                                        .build();
+                                found.getCantidades().add(cantNueva);
+                            }
+
+                            found.recalcularTotalDesdeCantidades();
                         }
 
                         Producto p = productoRepository.save(found);
@@ -188,7 +207,6 @@ public class FileServiceImpl {
                         }
                         log.info("Producto actualizado: {}", p);
                     }
-
                 }
             } catch (ParseException e) {
                 log.error("Error al procesar la fila:  {}", e.getMessage());

@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -51,7 +52,7 @@ public class Producto implements Serializable {
     private String IEPNC;
     private int secuencia;
 
-    private List<ProdcutoCantidades> cantidades;
+    private List<ProductoCantidades> cantidades;
 
     //Datos Revision
     private Integer cantidadRevision;
@@ -73,44 +74,62 @@ public class Producto implements Serializable {
     private String usuarioMuestra;
     private Boolean statusMuestra;
 
-    public void calcularTotal() {
-
-        if (cantidades == null || cantidades.isEmpty()) {
-            if (this.bultos != null && this.cxb != null) {
-                this.total = this.bultos * this.cxb;
-            } else {
-                this.total = 0; // O maneja el caso de error como prefieras
-            }
-            return;
+    public void sumarBultosPrincipal(int bultosNuevos){
+        if (this.bultos == null){
+            this.bultos = 0;
         }
+        this.bultos += bultosNuevos;
+        recalcularTotalPrincipal();
+    }
 
-        boolean mismoCxb = cantidades.stream()
-                .map(ProdcutoCantidades::getCxb)
-                .distinct()
-                .count() == 1;
-
-        int totalBultos = cantidades.stream()
-                .mapToInt(ProdcutoCantidades::getCantidad)
-                .sum();
-
-        if (mismoCxb) {
-            int cxb = cantidades.get(0).getCxb();
-            this.setCxb(cxb);
-            this.setBultos(totalBultos);
-            this.setTotal(cxb * totalBultos);
+    public void recalcularTotalPrincipal(){
+        if (this.cxb != null && this.bultos != null){
+            this.total = this.cxb * this.bultos;
         } else {
-            int total = cantidades.stream()
-                    .mapToInt(pc -> pc.getCantidad() * pc.getCxb())
-                    .sum();
-
-            int maxCxb = cantidades.stream()
-                    .mapToInt(ProdcutoCantidades::getCxb)
-                    .max()
-                    .orElse(0);
-            this.setCxb(maxCxb);
-            this.setBultos(totalBultos);
-            this.setTotal(total);
+           total = 0;
         }
+    }
+
+    public void recalcularTotalDesdeCantidades() {
+        int totalBultos = 0;
+        int totalUnidades = 0;
+
+        if (cantidades != null ){
+            for (ProductoCantidades pc : cantidades) {
+                totalBultos += pc.getCantidad();
+                totalUnidades += pc.getCantidad() * pc.getCxb();
+            }
+
+            this.bultos = totalBultos;
+            this.total = totalUnidades;
+        }
+    }
+
+    /**
+     * Suma una cantidad a un cxb en la lista; si no existe, lo crea.
+     */
+    public void sumarCantidades(int bultos, int cxb){
+        if (cantidades == null){
+            cantidades = new ArrayList<>();
+        }
+
+        ProductoCantidades existente = cantidades.stream()
+                .filter(c -> c.getCxb() == cxb)
+                .findFirst()
+                .orElse(null);
+        if (existente == null){
+            existente = ProductoCantidades.builder()
+                    .cantidad(bultos)
+                    .cxb(cxb)
+                    .cantRevision(0)
+                    .build();
+            cantidades.add(existente);
+        } else {
+            existente.setCantidad(existente.getCantidad() + bultos);
+        }
+
+        //Recalcular el total despues de tocar el array
+        recalcularTotalPrincipal();
     }
 
     public void generateId(){
