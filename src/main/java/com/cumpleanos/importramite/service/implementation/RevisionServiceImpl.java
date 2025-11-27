@@ -323,6 +323,17 @@ public class RevisionServiceImpl implements IRevisionService {
                                     : obs + " | " +r.obsCxb()
                     );
                 }
+                if (r.cxbRevision() > 0) {
+                    if (cant.getCxbRevision() != 0) {
+                        String obs = Optional.ofNullable(cant.getObservacion()).orElse("");
+                        cant.setObservacion(
+                                obs.isEmpty()
+                                        ? "CXB modificado anterior " + cant.getCantRevision() + " nuevo " + r.cxbRevision()
+                                        : obs + " | " + "CXB modificado anterior " + cant.getCantRevision() + " nuevo " + r.cxbRevision()
+                        );
+                        cant.setCxbRevision(r.cxbRevision());
+                    }
+                }
 
             } else {
                 if (r.status() && r.cxbNov() > 0) {

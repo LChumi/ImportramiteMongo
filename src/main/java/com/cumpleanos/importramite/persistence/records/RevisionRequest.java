@@ -9,6 +9,7 @@ public record RevisionRequest (
         Integer cantidad,
         Integer cxb,
         String obsCxb,
+        Integer cxbRevision,
         Integer cxbNov
         )
 {}
