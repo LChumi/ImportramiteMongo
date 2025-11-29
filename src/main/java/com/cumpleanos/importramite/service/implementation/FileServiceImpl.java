@@ -150,7 +150,6 @@ public class FileServiceImpl {
                             throw new RuntimeException("Error al guardar el producto: " + producto);
                         }
                         productos.add(p.getBarcode());
-                        log.info("Producto guardado: {}", p);
                     } else {
                         Producto found = foundOpt.get();
                         log.info("Producto existente, se actualizarán los campos");

@@ -144,7 +144,7 @@ public class RevisionServiceImpl implements IRevisionService {
         if (p == null) {
             return new StatusResponse("Producto no encontrado", false);
         } else {
-            return new StatusResponse("Producto encontrado", true);
+            return new StatusResponse(p.getDescripcion(), true);
         }
     }
 
@@ -306,10 +306,10 @@ public class RevisionServiceImpl implements IRevisionService {
                 int revisionActual = Optional.of(cant.getCantRevision()).orElse(0);
 
                 if (r.status()) {
-                    cant.setCantidad(revisionActual + 1);
+                    cant.setCantRevision(revisionActual + 1);
                 } else {
                     if (revisionActual > 0) {
-                        cant.setCantidad(revisionActual - 1);
+                        cant.setCantRevision(revisionActual - 1);
                     } else {
                         throw new DocumentNotFoundException("La revision no puede ser menor que cero");
                     }
