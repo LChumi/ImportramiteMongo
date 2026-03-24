@@ -10,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("confiteria")
@@ -46,8 +44,8 @@ public class ConfiteriaController {
 
     @GetMapping("/obtener/reposicion/{reposicionId}")
     public ResponseEntity<List<ConfiteriaDetalle>> obtenerPorIdReposicion(@PathVariable String reposicionId) {
-        Optional<List<ConfiteriaDetalle>> detalle = detalleService.findByReposicionId(reposicionId);
-        return ResponseEntity.ok(detalle.orElse(new ArrayList<>()));
+        List<ConfiteriaDetalle> detalle = detalleService.findByReposicionId(reposicionId);
+        return ResponseEntity.ok(detalle);
     }
 
 }
