@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +23,8 @@ public class ReposicionConfiteriaServiceImpl extends GenericServiceImpl<Reposici
     }
 
     @Override
-    public Optional<List<ReposicionConfiteria>> findByFechaBetween(LocalDate fechaAfter, LocalDate fechaBefore) {
-        return repository.findByFechaBetween(fechaAfter, fechaBefore);
+    public List<ReposicionConfiteria> findByFechaBetween(LocalDate fechaAfter, LocalDate fechaBefore) {
+        List<ReposicionConfiteria> reposicion = repository.findByFechaBetween(fechaAfter, fechaBefore);
+        return reposicion;
     }
 }

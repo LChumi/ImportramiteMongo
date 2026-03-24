@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface ReposicionConfiteriaRepository extends MongoRepository<ReposicionConfiteria, String> {
 
-    Optional<List<ReposicionConfiteria>> findByFechaBetween(LocalDate fechaAfter, LocalDate fechaBefore);
+    List<ReposicionConfiteria> findByFechaBetween(LocalDate fechaAfter, LocalDate fechaBefore);
 
 }

@@ -4,9 +4,8 @@ import com.cumpleanos.importramite.persistence.model.confiteria.ConfiteriaDetall
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ConfiteriaDetalleRepository extends MongoRepository<ConfiteriaDetalle, String> {
 
-    Optional<List<ConfiteriaDetalle>> findByReposicionId(String reposicionId);
+    List<ConfiteriaDetalle> findByReposicionId(String reposicionId);
 }

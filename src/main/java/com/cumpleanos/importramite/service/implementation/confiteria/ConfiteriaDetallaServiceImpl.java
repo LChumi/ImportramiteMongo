@@ -9,7 +9,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,14 +16,23 @@ public class ConfiteriaDetallaServiceImpl extends GenericServiceImpl<ConfiteriaD
 
     private final ConfiteriaDetalleRepository repository;
 
-
     @Override
     public CrudRepository<ConfiteriaDetalle, String> getRepository() {
         return repository;
     }
 
     @Override
-    public Optional<List<ConfiteriaDetalle>> findByReposicionId(String reposisicionId) {
-        return repository.findByReposicionId(reposisicionId);
+    public List<ConfiteriaDetalle> findByReposicionId(String reposisicionId) {
+        List<ConfiteriaDetalle> detalle = repository.findByReposicionId(reposisicionId);
+        return detalle;
+    }
+
+    @Override
+    public List<ConfiteriaDetalle> saveList(List<ConfiteriaDetalle> confiteriaDetalles, String reposicionId) {
+        for (ConfiteriaDetalle item :  confiteriaDetalles) {
+            item.setReposicionId(reposicionId);
+            repository.save(item);
+        }
+        return confiteriaDetalles;
     }
 }

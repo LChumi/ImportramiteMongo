@@ -8,5 +8,7 @@ import java.util.Optional;
 
 public interface IConfiteriaDetalleService extends IGenericService<ConfiteriaDetalle, String> {
 
-    Optional<List<ConfiteriaDetalle>> findByReposicionId(String reposisicionId);
+    List<ConfiteriaDetalle> findByReposicionId(String reposisicionId);
+
+    List<ConfiteriaDetalle> saveList(List<ConfiteriaDetalle> confiteriaDetalles, String reposicionId);
 }
