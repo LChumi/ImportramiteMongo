@@ -2,8 +2,8 @@ package com.cumpleanos.importramite.presentation.controller.confiteria;
 
 import com.cumpleanos.importramite.persistence.model.confiteria.ConfiteriaDetalle;
 import com.cumpleanos.importramite.persistence.model.confiteria.ReposicionConfiteria;
+import com.cumpleanos.importramite.persistence.records.ReposicionRequest;
 import com.cumpleanos.importramite.service.interfaces.confiteria.IConfiteriaDetalleService;
-import com.cumpleanos.importramite.service.interfaces.confiteria.IReposicionConfiteriaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +18,10 @@ import java.util.List;
 public class ConfiteriaController {
 
     private final IConfiteriaDetalleService detalleService;
-    private final IReposicionConfiteriaService reposicionService;
 
-    @PostMapping("/crear/reposicion")
-    public ResponseEntity<ReposicionConfiteria> saveReposicion(@RequestBody ReposicionConfiteria reposicionConfiteria) {
-        ReposicionConfiteria repo = reposicionService.save(reposicionConfiteria);
-        return ResponseEntity.ok(repo);
-    }
-
-    @PostMapping("/crear/detalles/{reposicionId}")
-    public ResponseEntity<List<ConfiteriaDetalle>> saveDetalles(@RequestBody List<ConfiteriaDetalle> confiteriaDetalles, @PathVariable String reposicionId) {
-        List<ConfiteriaDetalle> detalles = detalleService.saveList(confiteriaDetalles, reposicionId);
+    @PostMapping("/crear/detalles")
+    public ResponseEntity<List<ConfiteriaDetalle>> saveDetalles(@RequestBody ReposicionRequest request) {
+        List<ConfiteriaDetalle> detalles = detalleService.saveList(request);
         return ResponseEntity.ok(detalles);
     }
 
@@ -37,7 +30,7 @@ public class ConfiteriaController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin) {
 
-        List<ReposicionConfiteria> reposiciones = reposicionService.findByFechaBetween(fechaInicio, fechaFin);
+        List<ReposicionConfiteria> reposiciones = detalleService.findByFechaBetween(fechaInicio, fechaFin);
         return ResponseEntity.ok(reposiciones);
     }
 
