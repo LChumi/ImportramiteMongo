@@ -21,6 +21,7 @@ import static com.cumpleanos.importramite.utils.ExcelUtils.createHeaderStyle;
 public class ExelConfiteriaService {
 
     private static final String EMPRESA = "Importadora Cumpleaños";
+    private static final String TITULO  = "Pedido";
 
     private static final String[] COLUMNAS = {
             "CODIGO_BARRA",
@@ -57,7 +58,7 @@ public class ExelConfiteriaService {
 
             // --- TÍTULO (fila 2) ---------------------------------------------
             rowNum = crearFilaEncabezado(sheet, rowNum, totalCols,
-                    ("Pedido " + proveedor).toUpperCase(), styleTitulo, 14);
+                    TITULO, styleTitulo, 14);
 
             // --- FECHA (fila 3) ----------------------------------------------
             String fecha = "Fecha: " + LocalDate.now()
