@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("confiteria")
 @RequiredArgsConstructor
 public class ConfiteriaController {
@@ -55,7 +56,6 @@ public class ConfiteriaController {
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al generar el reporte en Excel: " + e.getMessage());
         }
-
     }
 
 }

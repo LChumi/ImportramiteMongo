@@ -43,6 +43,7 @@ public class ConfiteriaDetallaServiceImpl extends GenericServiceImpl<ConfiteriaD
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<ConfiteriaDetalle> saveList(ReposicionRequest request) {
+        request.repo().setFecha(LocalDate.now());
         ReposicionConfiteria repo = reposicionRepository.save(request.repo());
         for (ConfiteriaDetalle item : request.detalles()) {
             item.setReposicionId(repo.getId());

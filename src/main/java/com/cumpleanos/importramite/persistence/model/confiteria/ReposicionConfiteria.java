@@ -21,6 +21,5 @@ public class ReposicionConfiteria {
     private LocalDate fecha;
     private String usuarioSolicitante;
     private String proveedor;
-    private String observaciones;
     private Boolean estado;
 }
