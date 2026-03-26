@@ -30,4 +30,5 @@ public class ConfiteriaDetalle {
     private Long stockDisp;
     private Long stockReal;
     private Double pvp;
+    private int pedido;
 }

@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static com.cumpleanos.importramite.utils.ExcelUtils.createHeaderStyle;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -62,7 +64,7 @@ public class ExcelService {
         for (int i = 0; i < columnas.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(columnas[i]);
-            cell.setCellStyle(getHeaderCellStyle(workbook));
+            cell.setCellStyle(createHeaderStyle(workbook));
         }
 
         //Llenar los datos
@@ -91,20 +93,20 @@ public class ExcelService {
             Row tramiteRow = sheet.createRow(rowNum++);
             Cell tramiteCell = tramiteRow.createCell(0);
             tramiteCell.setCellValue("Trámite: " + tramite.getId());
-            tramiteCell.setCellStyle(getHeaderCellStyle(workbook));
+            tramiteCell.setCellStyle(createHeaderStyle(workbook));
 
             for (String contenedor : tramite.getContenedoresIds()) {
                 Row contenedorRow = sheet.createRow(rowNum++);
                 Cell contenedorCell = contenedorRow.createCell(1);
                 contenedorCell.setCellValue("Contenedor: " + contenedor);
-                contenedorCell.setCellStyle(getHeaderCellStyle(workbook));
+                contenedorCell.setCellStyle(createHeaderStyle(workbook));
 
                 // Agregar encabezados de columnas
                 Row headerRow = sheet.createRow(rowNum++);
                 for (int i = 0; i < columnas.length; i++) {
                     Cell cell = headerRow.createCell(i);
                     cell.setCellValue(columnas[i]);
-                    cell.setCellStyle(getHeaderCellStyle(workbook));
+                    cell.setCellStyle(createHeaderStyle(workbook));
                 }
 
                 List<Producto> productos = productoRepository.findByTramiteIdAndContenedorId(tramite.getId(), contenedor).orElseThrow(() -> new ExcelNotCreateException("No se encontraron productos para el trámite: " + tramite.getId() + " y el contenedor: " + contenedor));
@@ -181,21 +183,6 @@ public class ExcelService {
         }
 
         return rowNum;
-    }
-
-    private CellStyle getHeaderCellStyle(Workbook workbook) {
-        CellStyle style = workbook.createCellStyle();
-        Font font = workbook.createFont();
-        font.setBold(true);
-        font.setColor(IndexedColors.WHITE.getIndex()); // Texto en blanco
-        style.setFont(font);
-        style.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex()); // Fondo azul
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        return style;
     }
 
     private CellStyle observacionStyle(Sheet sheet, String observacion) {
