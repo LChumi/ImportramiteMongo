@@ -21,6 +21,7 @@ public class ConfiteriaDetallaServiceImpl extends GenericServiceImpl<ConfiteriaD
 
     private final ConfiteriaDetalleRepository repository;
     private final ReposicionConfiteriaRepository reposicionRepository;
+    private final ExelConfiteriaService excelService;
 
     @Override
     public CrudRepository<ConfiteriaDetalle, String> getRepository() {
@@ -57,5 +58,16 @@ public class ConfiteriaDetallaServiceImpl extends GenericServiceImpl<ConfiteriaD
     @Transactional(readOnly = true)
     public List<ReposicionConfiteria> findByFechaBetween(LocalDate fechaAfter, LocalDate fechaBefore) {
         return reposicionRepository.findByFechaBetween(fechaAfter, fechaBefore);
+    }
+
+    @Override
+    public byte[] getExcelConfiteria(String reposisicionId) {
+        ReposicionConfiteria repo = reposicionRepository.findById(reposisicionId).orElseThrow(() -> new RuntimeException(reposisicionId + " no encontrado"));
+
+        List<ConfiteriaDetalle> detalles = repository.findByReposicionId(repo.getId());
+
+        ReposicionRequest request = new ReposicionRequest(repo, detalles);
+
+        return excelService.generarExcelConfiteria(request);
     }
 }

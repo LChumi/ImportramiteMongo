@@ -4,11 +4,13 @@ import com.cumpleanos.importramite.persistence.model.confiteria.ConfiteriaDetall
 import com.cumpleanos.importramite.persistence.model.confiteria.ReposicionConfiteria;
 import com.cumpleanos.importramite.persistence.records.ReposicionRequest;
 import com.cumpleanos.importramite.service.interfaces.confiteria.IConfiteriaDetalleService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,6 +41,21 @@ public class ConfiteriaController {
     public ResponseEntity<List<ConfiteriaDetalle>> obtenerPorIdReposicion(@PathVariable String reposicionId) {
         List<ConfiteriaDetalle> detalle = detalleService.findByReposicionId(reposicionId);
         return ResponseEntity.ok(detalle);
+    }
+
+    @GetMapping("/obtenerExcel")
+    public void getExcel(@RequestParam String reposicionId, HttpServletResponse response) throws IOException {
+        try {
+            byte[] excelBytes = detalleService.getExcelConfiteria(reposicionId);
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=report.xlsx");
+            response.setContentLength(excelBytes.length);
+            response.getOutputStream().write(excelBytes);
+            response.getOutputStream().flush();
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al generar el reporte en Excel: " + e.getMessage());
+        }
+
     }
 
 }

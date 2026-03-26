@@ -15,4 +15,6 @@ public interface IConfiteriaDetalleService extends IGenericService<ConfiteriaDet
     List<ConfiteriaDetalle> saveList(ReposicionRequest request);
 
     List<ReposicionConfiteria> findByFechaBetween(LocalDate fechaAfter, LocalDate fechaBefore);
+
+    byte[] getExcelConfiteria(String reposisicionId);
 }
