@@ -8,7 +8,9 @@ import com.cumpleanos.importramite.persistence.records.MoveMenuItemRequest;
 import com.cumpleanos.importramite.persistence.records.UpsertMenuItemRequest;
 import com.cumpleanos.importramite.persistence.repository.MenuRepository;
 import com.cumpleanos.importramite.persistence.repository.UsuarioRepository;
+import com.cumpleanos.importramite.service.interfaces.IMenuService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Iterator;
@@ -17,7 +19,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class MenuService {
+public class MenuService extends GenericServiceImpl<Menu,String> implements IMenuService {
 
     private final UsuarioRepository usuarioRepo;
     private final MenuRepository menuRepo;
@@ -119,4 +121,8 @@ public class MenuService {
         menuRepo.save(menu);
     }
 
+    @Override
+    public CrudRepository<Menu, String> getRepository() {
+        return menuRepo;
+    }
 }

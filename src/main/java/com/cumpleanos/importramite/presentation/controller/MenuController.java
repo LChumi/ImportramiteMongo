@@ -5,7 +5,7 @@ import com.cumpleanos.importramite.persistence.model.MenuItem;
 import com.cumpleanos.importramite.persistence.records.DeleteMenuItemRequest;
 import com.cumpleanos.importramite.persistence.records.MoveMenuItemRequest;
 import com.cumpleanos.importramite.persistence.records.UpsertMenuItemRequest;
-import com.cumpleanos.importramite.service.implementation.MenuService;
+import com.cumpleanos.importramite.service.interfaces.IMenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MenuController {
 
-    private final MenuService menuService;
+    private final IMenuService menuService;
 
     @GetMapping("/menu/{user}/usuario")
     public ResponseEntity<List<MenuItem>> getMenu(@PathVariable String user) {
