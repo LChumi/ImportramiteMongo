@@ -9,6 +9,6 @@ public class MenuItem {
     private String id;
     private String label;
     private String icon;
-    private List<String> routerLink;
+    private String routerLink;
     private List<MenuItem> items;
 }

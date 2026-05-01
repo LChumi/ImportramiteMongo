@@ -4,6 +4,7 @@ import com.cumpleanos.importramite.persistence.model.Menu;
 import com.cumpleanos.importramite.persistence.model.MenuItem;
 import com.cumpleanos.importramite.persistence.records.DeleteMenuItemRequest;
 import com.cumpleanos.importramite.persistence.records.MoveMenuItemRequest;
+import com.cumpleanos.importramite.persistence.records.UpdateMenuRolesRequest;
 import com.cumpleanos.importramite.persistence.records.UpsertMenuItemRequest;
 import com.cumpleanos.importramite.service.interfaces.IMenuService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class MenuController {
 
     private final IMenuService menuService;
 
-    @GetMapping("/menu/{user}/usuario")
+    @GetMapping("/get/{user}/usuario")
     public ResponseEntity<List<MenuItem>> getMenu(@PathVariable String user) {
         List<MenuItem> menus = menuService.getMenu(user);
         return ResponseEntity.ok(menus);
@@ -40,8 +41,24 @@ public class MenuController {
         menuService.moveItem(req);
     }
 
-    @PostMapping
-    public Menu create(@RequestBody Menu menu) {
-        return menuService.save(menu);
+    @PostMapping("/save")
+    public ResponseEntity<Menu> save(@RequestBody Menu menu) {
+        Menu m = menuService.save(menu);
+        return ResponseEntity.ok(m);
+    }
+
+    @PutMapping("/roles")
+    public void updateRoles(@RequestBody UpdateMenuRolesRequest req) {
+        menuService.updateRoles(req);
+    }
+
+    @PostMapping("/{menuId}/role/{role}")
+    public void addRole(@PathVariable String menuId, @PathVariable String role) {
+        menuService.addRole(menuId, role);
+    }
+
+    @DeleteMapping("/{menuId}/role/{role}")
+    public void removeRole(@PathVariable String menuId, @PathVariable String role) {
+        menuService.removeRole(menuId, role);
     }
 }

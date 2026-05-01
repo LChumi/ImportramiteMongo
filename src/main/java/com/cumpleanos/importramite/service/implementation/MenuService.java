@@ -5,6 +5,7 @@ import com.cumpleanos.importramite.persistence.model.MenuItem;
 import com.cumpleanos.importramite.persistence.model.Usuario;
 import com.cumpleanos.importramite.persistence.records.DeleteMenuItemRequest;
 import com.cumpleanos.importramite.persistence.records.MoveMenuItemRequest;
+import com.cumpleanos.importramite.persistence.records.UpdateMenuRolesRequest;
 import com.cumpleanos.importramite.persistence.records.UpsertMenuItemRequest;
 import com.cumpleanos.importramite.persistence.repository.MenuRepository;
 import com.cumpleanos.importramite.persistence.repository.UsuarioRepository;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -122,7 +124,59 @@ public class MenuService extends GenericServiceImpl<Menu,String> implements IMen
     }
 
     @Override
+    public void updateRoles(UpdateMenuRolesRequest req) {
+        Menu menu = menuRepo.findById(req.menuId()).orElseThrow();
+
+        menu.setRolesPermitidos(req.roles());
+
+        menuRepo.save(menu);
+    }
+
+    @Override
+    public void addRole(String menuId, String role) {
+        Menu menu = menuRepo.findById(menuId).orElseThrow();
+
+        if (menu.getRolesPermitidos() == null) {
+            menu.setRolesPermitidos(new ArrayList<>());
+        }
+
+        if (!menu.getRolesPermitidos().contains(role)) {
+            menu.getRolesPermitidos().add(role);
+        }
+
+        menuRepo.save(menu);
+    }
+
+    @Override
+    public void removeRole(String menuId, String role) {
+        Menu menu = menuRepo.findById(menuId).orElseThrow();
+
+        if (menu.getRolesPermitidos() != null) {
+            menu.getRolesPermitidos().remove(role);
+        }
+
+        menuRepo.save(menu);
+    }
+
+    @Override
+    public Menu save(Menu menu) {
+        assignId(menu.getItems());
+        return super.save(menu);
+    }
+
+    @Override
     public CrudRepository<Menu, String> getRepository() {
         return menuRepo;
+    }
+
+    private void assignId(List<MenuItem> items) {
+        if (items == null) return;
+
+        for (MenuItem item : items) {
+            if (item.getId() == null) {
+                item.setId(UUID.randomUUID().toString());
+            }
+            assignId(item.getItems());
+        }
     }
 }

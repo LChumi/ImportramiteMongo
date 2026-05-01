@@ -1,4 +1,9 @@
 package com.cumpleanos.importramite.persistence.records;
 
-public record UpdateMenuRolesRequest() {
+import java.util.List;
+
+public record UpdateMenuRolesRequest(
+        String menuId,
+        List<String> roles
+) {
 }
