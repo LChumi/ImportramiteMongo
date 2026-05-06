@@ -24,9 +24,13 @@ public class UsuarioServiceImpl extends GenericServiceImpl<Usuario,String> imple
 
     @Override
     public Usuario upsertUsuario(Usuario usuario) {
-        return repository.findByIdUsuario(usuario.getIdUsuario()).orElse(
-                repository.save(usuario)
-        );
+
+        return repository.findByIdUsuario(usuario.getIdUsuario())
+                .map(existing -> {
+                    existing.setNombre(usuario.getNombre());
+                    return repository.save(existing);
+                })
+                .orElseGet(() -> repository.save(usuario));
     }
 
     @Override

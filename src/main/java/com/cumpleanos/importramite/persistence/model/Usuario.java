@@ -2,6 +2,7 @@ package com.cumpleanos.importramite.persistence.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class Usuario {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String idUsuario;
     private String nombre;
 
