@@ -50,7 +50,7 @@ public class ProductoObservacionServiceImpl extends GenericServiceImpl<ProductoO
             obs.setDiferencia(p.getDiferencia());
             return repository.save(obs);
         } else {
-            // insertar nuevo
+            p.setFecha(LocalDate.now());
             return repository.save(p);
         }
     }
@@ -65,7 +65,7 @@ public class ProductoObservacionServiceImpl extends GenericServiceImpl<ProductoO
         ProductoObservacion found = repository.findById(request.idProducto()).orElseThrow(
                 () -> new DocumentNotFoundException("No se encontro el producto")
         );
-
+        request.correccion().setFecha(LocalDate.now());
         found.setCorreccion(request.correccion());
         return repository.save(found);
     }
