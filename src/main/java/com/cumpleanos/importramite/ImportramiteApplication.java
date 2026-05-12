@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @OpenAPIDefinition(
 		info = @Info(
-				title = "Revision de Tramites", description = "Documentación de Tramites WEB API v1 MongoDB"
+				title = "MongoDB API", description ="Gestion servicios MongoDB WEB API v1"
 		))
 @EnableFeignClients
 public class ImportramiteApplication {
