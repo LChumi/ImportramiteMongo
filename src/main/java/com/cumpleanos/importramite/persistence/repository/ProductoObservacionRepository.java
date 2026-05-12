@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ProductoObservacionRepository extends MongoRepository<ProductoObservacion, String> {
 
-    List<ProductoObservacion> findByIdBodega(Long idBodega);
+    List<ProductoObservacion> findByIdBodegaOrderByFechaDesc(Long idBodega);
 
     Optional<ProductoObservacion> findByItemAndIdBodega(String item, Long idBodega);
 }
