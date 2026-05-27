@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("observacion")
 @RequiredArgsConstructor
-@Tag(name = "Producto Observacio", description = "Documentacion API Observaciones de productos")
+@Tag(name = "Producto Observacion", description = "Documentacion API Observaciones de productos")
 public class ProductoObservacionController {
 
     private final IProductoObservacionService service;

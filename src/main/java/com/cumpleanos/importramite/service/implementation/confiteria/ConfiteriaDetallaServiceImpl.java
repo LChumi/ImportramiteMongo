@@ -58,7 +58,7 @@ public class ConfiteriaDetallaServiceImpl extends GenericServiceImpl<ConfiteriaD
     @Override
     @Transactional(readOnly = true)
     public List<ReposicionConfiteria> findByFechaBetween(LocalDate fechaAfter, LocalDate fechaBefore) {
-        return reposicionRepository.findByFechaBetween(fechaAfter, fechaBefore);
+        return reposicionRepository.findByFechaRange(fechaAfter, fechaBefore);
     }
 
     @Override
