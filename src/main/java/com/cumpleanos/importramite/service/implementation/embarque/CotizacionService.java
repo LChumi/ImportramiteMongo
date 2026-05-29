@@ -5,7 +5,10 @@ import com.cumpleanos.importramite.persistence.model.embarques.OpcionFlete;
 import com.cumpleanos.importramite.persistence.model.embarques.OpcionMasBarataResponse;
 import com.cumpleanos.importramite.persistence.model.embarques.SalidaBuque;
 import com.cumpleanos.importramite.persistence.repository.embarques.SalidaBuqueRepository;
+import com.cumpleanos.importramite.service.implementation.GenericServiceImpl;
+import com.cumpleanos.importramite.service.interfaces.embarque.ISalidaBuqueService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,9 +16,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CotizacionService {
+public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> implements ISalidaBuqueService {
 
     private final SalidaBuqueRepository buqueRepository;
+
+    @Override
+    public CrudRepository<SalidaBuque, String> getRepository() {
+        return buqueRepository;
+    }
 
     public OpcionMasBarataResponse obtenerMejorOpcion(String procesoCotizacionId){
         List<SalidaBuque> salidas = buqueRepository.findByProcesoCotizacionId(procesoCotizacionId);
