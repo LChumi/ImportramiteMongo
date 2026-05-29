@@ -14,9 +14,9 @@ public class TramiteEmbarque {
     private String id;
     private String ordenLlegada;         // "AAA"
     private String empresaId;
-    private String nTramite;             // "2026-1012"
+    private String numeroTramite;             // "2026-1012"
     private String proveedorId;
-    private String nBl;                  // "Q01765"
+    private String numeroBl;                  // "Q01765"
     private String cantidadContenedores; // "3 X 40 HQ"
     private String fleteValidadoId;      // → FleteValidado escogido
 
