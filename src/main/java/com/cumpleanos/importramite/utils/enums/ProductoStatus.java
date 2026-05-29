@@ -1,4 +1,4 @@
-package com.cumpleanos.importramite.utils;
+package com.cumpleanos.importramite.utils.enums;
 
 public enum ProductoStatus {
     AGREGADO,

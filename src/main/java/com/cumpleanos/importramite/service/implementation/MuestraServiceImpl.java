@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.cumpleanos.importramite.utils.ProductoStatus.*;
+import static com.cumpleanos.importramite.utils.enums.ProductoStatus.*;
 import static com.cumpleanos.importramite.utils.StringUtils.historial;
 
 @Slf4j
