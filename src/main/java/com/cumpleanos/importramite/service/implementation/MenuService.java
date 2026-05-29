@@ -28,7 +28,14 @@ public class MenuService extends GenericServiceImpl<Menu,String> implements IMen
 
     public List<MenuItem> getMenu(String idUsuario) {
 
-        Usuario user = usuarioRepo.findByIdUsuario(idUsuario).orElseThrow();
+        if (idUsuario == null || idUsuario.isBlank()) {
+            throw new IllegalArgumentException("El idUsuario es obligatorio");
+        }
+
+        Usuario user = usuarioRepo.findByIdUsuario(idUsuario)
+                .orElseThrow(() ->
+                        new RuntimeException("Usuario no encontrado con id: " + idUsuario)
+                );
 
         List<Menu> menus = menuRepo.findByRolesPermitidos(user.getRoles());
 

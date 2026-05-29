@@ -45,6 +45,7 @@ public class FileServiceImpl {
     private final EmailRepository emailRepository;
 
     public Tramite readExcelFile(MultipartFile file, String tramiteId, LocalDate fechaLlegada, String contenedorId) {
+        log.info("Leyendo archivo Excel...");
         List<String> productoList = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = WorkbookFactory.create(inputStream);
@@ -116,6 +117,7 @@ public class FileServiceImpl {
     }
 
     private List<String> mapRowsToProducts(Sheet sheet, FormulaEvaluator evaluator, String tramiteId, String contenedorId) {
+        log.info("Guardando productos de excel en la base de datos tramite: {}...", tramiteId);
         List<String> productos = new ArrayList<>();
         Iterator<Row> rowIterator = sheet.iterator();
 
