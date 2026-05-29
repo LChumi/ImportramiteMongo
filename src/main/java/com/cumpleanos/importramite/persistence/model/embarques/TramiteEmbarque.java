@@ -1,5 +1,6 @@
 package com.cumpleanos.importramite.persistence.model.embarques;
 
+import com.cumpleanos.importramite.utils.enums.EstadoTramite;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -37,4 +38,6 @@ public class TramiteEmbarque {
 
     private LocalDateTime creadoEn;
     private LocalDateTime actualizadoEn;
+
+    private EstadoTramite estado;
 }

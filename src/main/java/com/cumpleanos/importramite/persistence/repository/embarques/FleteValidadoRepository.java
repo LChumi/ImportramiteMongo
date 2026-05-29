@@ -11,4 +11,6 @@ public interface FleteValidadoRepository extends MongoRepository<FleteValidado, 
     List<FleteValidado> findBySalidaBuqueId(String salidaBuqueId);
 
     List<FleteValidado> findByEstado(EstadoFlete estado);
+
+    List<FleteValidado> findByProcesoCotizacionIdAndEstado(String procesoCotizacionId, EstadoFlete estado);
 }

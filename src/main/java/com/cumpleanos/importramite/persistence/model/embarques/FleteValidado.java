@@ -15,6 +15,8 @@ public class FleteValidado {
     @Id
     private String id;
 
+    private String procesoCotizacionId;
+
     private String salidaBuqueId;
     private String consignatarioId;
     private String nombreConsignatario;

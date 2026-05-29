@@ -1,46 +1,106 @@
 package com.cumpleanos.importramite.service.implementation.embarque;
 
-import com.cumpleanos.importramite.persistence.model.embarques.CotizacionConsignatario;
-import com.cumpleanos.importramite.persistence.model.embarques.FleteValidado;
-import com.cumpleanos.importramite.persistence.model.embarques.OpcionFlete;
-import com.cumpleanos.importramite.persistence.model.embarques.SalidaBuque;
+import com.cumpleanos.importramite.persistence.model.embarques.*;
 import com.cumpleanos.importramite.persistence.repository.embarques.FleteValidadoRepository;
+import com.cumpleanos.importramite.persistence.repository.embarques.ProcesoCotizacionRepository;
+import com.cumpleanos.importramite.persistence.repository.embarques.TramiteEmbarqueRepository;
 import com.cumpleanos.importramite.utils.enums.EstadoFlete;
+import com.cumpleanos.importramite.utils.enums.EstadoProceso;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class FleteValidadoService {
 
     private final FleteValidadoRepository repository;
+    private final ProcesoCotizacionRepository procesoRepository;
 
-    public FleteValidado validar (SalidaBuque salida, CotizacionConsignatario consignatario, OpcionFlete opcion, String usuario){
-        FleteValidado entity = new FleteValidado();
+    //Validar nuevo Flete
+    public FleteValidado validarFlete(ProcesoCotizacion proceso, SalidaBuque salida, CotizacionConsignatario consignatario, OpcionFlete opcion, String usuario){
+        List<FleteValidado> vigentes = repository.findByProcesoCotizacionIdAndEstado(proceso.getId(), EstadoFlete.VIGENTE);
 
-        entity.setSalidaBuqueId(salida.getId());
-        entity.setConsignatarioId(consignatario.getConsignatarioId());
-        entity.setNombreConsignatario(consignatario.getNombreConsignatario());
-        entity.setPuertoEmbarqueNombre(salida.getPuertoEmbarqueNombre());
-        entity.setPuertoDestino(opcion.getPuertoDestino());
-        entity.setTipoContenedor(opcion.getTipoContenedor());
-        entity.setEspacioM3(opcion.getEspacioM3());
+        //Anular anteriores
+        for (FleteValidado actual : vigentes) {
+            actual.setEstado(EstadoFlete.ANULADO);
+            actual.setMotivoAnulacion("REEMPLAZADO POR NUEVA OPCION");
+            repository.save(actual);
+        }
 
-        entity.setFlete(opcion.getFlete());
-        entity.setThc(opcion.getThc());
-        entity.setImo(opcion.getImo());
+        //Crear Nuevo
+        FleteValidado nuevo = new FleteValidado();
+        nuevo.setProcesoCotizacionId(
+                proceso.getId());
 
-        entity.setGastosBlTotal(opcion.getSubtotalGastos());
-        entity.setHandlingContenedorTotal(opcion.getHandlingContenedor());
+        nuevo.setSalidaBuqueId(
+                salida.getId());
 
-        entity.setTotal(opcion.getTotal());
-        entity.setEstado(EstadoFlete.VIGENTE);
-        entity.setValidadoPor(usuario);
+        nuevo.setConsignatarioId(
+                consignatario.getConsignatarioId());
 
-        entity.setFechaValidacion(LocalDateTime.now());
+        nuevo.setNombreConsignatario(
+                consignatario.getNombreConsignatario());
 
-        return repository.save(entity);
+        nuevo.setPuertoEmbarqueNombre(
+                salida.getPuertoEmbarqueNombre());
+
+        nuevo.setPuertoDestino(
+                opcion.getPuertoDestino());
+
+        nuevo.setTipoContenedor(
+                opcion.getTipoContenedor());
+
+        nuevo.setEspacioM3(
+                opcion.getEspacioM3());
+
+        nuevo.setFlete(
+                opcion.getFlete());
+
+        nuevo.setThc(
+                opcion.getThc());
+
+        nuevo.setImo(
+                opcion.getImo());
+
+        nuevo.setGastosBlTotal(
+                opcion.getSubtotalGastos());
+
+        nuevo.setHandlingContenedorTotal(
+                opcion.getHandlingContenedor());
+
+        nuevo.setTotal(
+                opcion.getTotal());
+
+        nuevo.setEstado(
+                EstadoFlete.VIGENTE);
+
+        nuevo.setValidadoPor(usuario);
+
+        nuevo.setFechaValidacion(
+                LocalDateTime.now());
+
+        FleteValidado guardado =
+                repository.save(nuevo);
+
+        // FINALIZAR PROCESO
+        proceso.setEstado(
+                EstadoProceso.FINALIZADO);
+
+        procesoRepository.save(proceso);
+
+        return guardado;
     }
+
+    //Anular flete
+    public void anularFlete(String fleteId, String motivo){
+        FleteValidado flete = repository.findById(fleteId).orElseThrow();
+        flete.setEstado(EstadoFlete.ANULADO);
+        flete.setMotivoAnulacion(motivo);
+        repository.save(flete);
+    }
+
+
 }
