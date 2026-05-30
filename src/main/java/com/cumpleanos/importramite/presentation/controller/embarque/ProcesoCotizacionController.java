@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("proceso-contizacion")
@@ -17,6 +19,12 @@ public class ProcesoCotizacionController {
     @PostMapping("/crear")
     public ResponseEntity<ProcesoCotizacion> saveProcesoCotizacion(@RequestBody ProcesoCotizacion procesoCotizacion) {
         ProcesoCotizacion pc = service.save(procesoCotizacion);
+        return ResponseEntity.ok(pc);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<ProcesoCotizacion>> listProcesoCotizacion(){
+        List<ProcesoCotizacion> pc = service.findAll();
         return ResponseEntity.ok(pc);
     }
 }
