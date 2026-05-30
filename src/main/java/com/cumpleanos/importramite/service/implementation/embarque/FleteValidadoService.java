@@ -3,7 +3,6 @@ package com.cumpleanos.importramite.service.implementation.embarque;
 import com.cumpleanos.importramite.persistence.model.embarques.*;
 import com.cumpleanos.importramite.persistence.repository.embarques.FleteValidadoRepository;
 import com.cumpleanos.importramite.persistence.repository.embarques.ProcesoCotizacionRepository;
-import com.cumpleanos.importramite.persistence.repository.embarques.TramiteEmbarqueRepository;
 import com.cumpleanos.importramite.utils.enums.EstadoFlete;
 import com.cumpleanos.importramite.utils.enums.EstadoProceso;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ public class FleteValidadoService {
     private final ProcesoCotizacionRepository procesoRepository;
 
     //Validar nuevo Flete
-    public FleteValidado validarFlete(ProcesoCotizacion proceso, SalidaBuque salida, CotizacionConsignatario consignatario, OpcionFlete opcion, String usuario){
+    public FleteValidado validarFlete(ProcesoCotizacion proceso, SalidaBuque salida, CotizacionConsignatario consignatario, OpcionFlete opcion, String usuario) {
         List<FleteValidado> vigentes = repository.findByProcesoCotizacionIdAndEstado(proceso.getId(), EstadoFlete.VIGENTE);
 
         //Anular anteriores
@@ -32,62 +31,27 @@ public class FleteValidadoService {
 
         //Crear Nuevo
         FleteValidado nuevo = new FleteValidado();
-        nuevo.setProcesoCotizacionId(
-                proceso.getId());
-
-        nuevo.setSalidaBuqueId(
-                salida.getId());
-
-        nuevo.setConsignatarioId(
-                consignatario.getConsignatarioId());
-
-        nuevo.setNombreConsignatario(
-                consignatario.getNombreConsignatario());
-
-        nuevo.setPuertoEmbarqueNombre(
-                salida.getPuertoEmbarqueNombre());
-
-        nuevo.setPuertoDestino(
-                opcion.getPuertoDestino());
-
-        nuevo.setTipoContenedor(
-                opcion.getTipoContenedor());
-
-        nuevo.setEspacioM3(
-                opcion.getEspacioM3());
-
-        nuevo.setFlete(
-                opcion.getFlete());
-
-        nuevo.setThc(
-                opcion.getThc());
-
-        nuevo.setImo(
-                opcion.getImo());
-
-        nuevo.setGastosBlTotal(
-                opcion.getSubtotalGastos());
-
-        nuevo.setHandlingContenedorTotal(
-                opcion.getHandlingContenedor());
-
-        nuevo.setTotal(
-                opcion.getTotal());
-
-        nuevo.setEstado(
-                EstadoFlete.VIGENTE);
-
+        nuevo.setProcesoCotizacionId(proceso.getId());
+        nuevo.setSalidaBuqueId(salida.getId());
+        nuevo.setConsignatarioId(consignatario.getConsignatarioId());
+        nuevo.setNombreConsignatario(consignatario.getNombreConsignatario());
+        nuevo.setPuertoEmbarqueNombre(salida.getPuertoEmbarqueNombre());
+        nuevo.setPuertoDestino(opcion.getPuertoDestino());
+        nuevo.setTipoContenedor(opcion.getTipoContenedor());
+        nuevo.setEspacioM3(opcion.getEspacioM3());
+        nuevo.setFlete(opcion.getFlete());
+        nuevo.setThc(opcion.getThc());
+        nuevo.setImo(opcion.getImo());
+        nuevo.setGastosBlTotal(opcion.getSubtotalGastos());
+        nuevo.setHandlingContenedorTotal(opcion.getHandlingContenedor());
+        nuevo.setTotal(opcion.getTotal());
+        nuevo.setEstado(EstadoFlete.VIGENTE);
         nuevo.setValidadoPor(usuario);
-
-        nuevo.setFechaValidacion(
-                LocalDateTime.now());
-
-        FleteValidado guardado =
-                repository.save(nuevo);
+        nuevo.setFechaValidacion(LocalDateTime.now());
+        FleteValidado guardado = repository.save(nuevo);
 
         // FINALIZAR PROCESO
-        proceso.setEstado(
-                EstadoProceso.FINALIZADO);
+        proceso.setEstado(EstadoProceso.FINALIZADO);
 
         procesoRepository.save(proceso);
 
@@ -95,7 +59,7 @@ public class FleteValidadoService {
     }
 
     //Anular flete
-    public void anularFlete(String fleteId, String motivo){
+    public void anularFlete(String fleteId, String motivo) {
         FleteValidado flete = repository.findById(fleteId).orElseThrow();
         flete.setEstado(EstadoFlete.ANULADO);
         flete.setMotivoAnulacion(motivo);
