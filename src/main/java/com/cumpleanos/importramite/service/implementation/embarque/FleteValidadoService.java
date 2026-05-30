@@ -19,8 +19,8 @@ public class FleteValidadoService {
     private final ProcesoCotizacionRepository procesoRepository;
 
     //Validar nuevo Flete
-    public FleteValidado validarFlete(ProcesoCotizacion proceso, SalidaBuque salida, CotizacionConsignatario consignatario, OpcionFlete opcion, String usuario) {
-        List<FleteValidado> vigentes = repository.findByProcesoCotizacionIdAndEstado(proceso.getId(), EstadoFlete.VIGENTE);
+    public FleteValidado validarFlete(FleteValidacionRequest r) {
+        List<FleteValidado> vigentes = repository.findByProcesoCotizacionIdAndEstado(r.proceso().getId(), EstadoFlete.VIGENTE);
 
         //Anular anteriores
         for (FleteValidado actual : vigentes) {
@@ -31,40 +31,39 @@ public class FleteValidadoService {
 
         //Crear Nuevo
         FleteValidado nuevo = new FleteValidado();
-        nuevo.setProcesoCotizacionId(proceso.getId());
-        nuevo.setSalidaBuqueId(salida.getId());
-        nuevo.setConsignatarioId(consignatario.getConsignatarioId());
-        nuevo.setNombreConsignatario(consignatario.getNombreConsignatario());
-        nuevo.setPuertoEmbarqueNombre(salida.getPuertoEmbarqueNombre());
-        nuevo.setPuertoDestino(opcion.getPuertoDestino());
-        nuevo.setTipoContenedor(opcion.getTipoContenedor());
-        nuevo.setEspacioM3(opcion.getEspacioM3());
-        nuevo.setFlete(opcion.getFlete());
-        nuevo.setThc(opcion.getThc());
-        nuevo.setImo(opcion.getImo());
-        nuevo.setGastosBlTotal(opcion.getSubtotalGastos());
-        nuevo.setHandlingContenedorTotal(opcion.getHandlingContenedor());
-        nuevo.setTotal(opcion.getTotal());
+        nuevo.setProcesoCotizacionId(r.proceso().getId());
+        nuevo.setSalidaBuqueId(r.salida().getId());
+        nuevo.setConsignatarioId(r.consignatario().getConsignatarioId());
+        nuevo.setNombreConsignatario(r.consignatario().getNombreConsignatario());
+        nuevo.setPuertoEmbarqueNombre(r.salida().getPuertoEmbarqueNombre());
+        nuevo.setPuertoDestino(r.opcion().getPuertoDestino());
+        nuevo.setTipoContenedor(r.opcion().getTipoContenedor());
+        nuevo.setEspacioM3(r.opcion().getEspacioM3());
+        nuevo.setFlete(r.opcion().getFlete());
+        nuevo.setThc(r.opcion().getThc());
+        nuevo.setImo(r.opcion().getImo());
+        nuevo.setGastosBlTotal(r.opcion().getSubtotalGastos());
+        nuevo.setHandlingContenedorTotal(r.opcion().getHandlingContenedor());
+        nuevo.setTotal(r.opcion().getTotal());
         nuevo.setEstado(EstadoFlete.VIGENTE);
-        nuevo.setValidadoPor(usuario);
+        nuevo.setValidadoPor(r.usuario());
         nuevo.setFechaValidacion(LocalDateTime.now());
         FleteValidado guardado = repository.save(nuevo);
 
         // FINALIZAR PROCESO
-        proceso.setEstado(EstadoProceso.FINALIZADO);
+        r.proceso().setEstado(EstadoProceso.FINALIZADO);
 
-        procesoRepository.save(proceso);
+        procesoRepository.save(r.proceso());
 
         return guardado;
     }
 
     //Anular flete
-    public void anularFlete(String fleteId, String motivo) {
-        FleteValidado flete = repository.findById(fleteId).orElseThrow();
+    public void anularFlete(FleteAnularRequest r) {
+        FleteValidado flete = repository.findById(r.fleteId()).orElseThrow();
         flete.setEstado(EstadoFlete.ANULADO);
-        flete.setMotivoAnulacion(motivo);
+        flete.setMotivoAnulacion(r.motivo());
         repository.save(flete);
     }
-
 
 }
