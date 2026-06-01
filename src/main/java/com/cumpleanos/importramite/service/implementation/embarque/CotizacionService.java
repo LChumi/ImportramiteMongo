@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -74,5 +75,79 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
         found.setDiasLibres(s.getDiasLibres());
         found.setActualizadoEn(LocalDateTime.now());
         return buqueRepository.save(found);
+    }
+
+    @Override
+    public SalidaBuque agregarCotizacion(String idBuque, CotizacionConsignatario cotizacion) {
+        SalidaBuque buque = buqueRepository.findById(idBuque).orElseThrow( () -> new DocumentNotFoundException("Buque no encontrado con id: " + idBuque));
+
+        buque.getCotizaciones().add(cotizacion);
+        return buqueRepository.save(buque);
+    }
+
+    @Override
+    public SalidaBuque agregarOpcion(String idBuque, String cotizacionId, OpcionFlete opcion) {
+        SalidaBuque buque = buqueRepository.findById(idBuque).orElseThrow( () -> new DocumentNotFoundException("Buque no encontrado con id: " + idBuque));
+
+        CotizacionConsignatario cotizacion = buque.getCotizaciones()
+                .stream()
+                .filter(c -> c.getId().equals(cotizacionId))
+                .findFirst()
+                .orElseThrow( () -> new DocumentNotFoundException("Cotizacion no encontrada con id: " + cotizacionId));
+        cotizacion.getOpciones().add(opcion);
+        return buqueRepository.save(buque);
+    }
+
+    @Override
+    public SalidaBuque actualizarOpcion(String idBuque, String cotizacionId, String opcionId, OpcionFlete opcionActualizada) {
+        SalidaBuque buque = buqueRepository.findById(idBuque)
+                .orElseThrow(() -> new DocumentNotFoundException("Buque no encontrado: " + idBuque));
+
+        CotizacionConsignatario cotizacion = buque.getCotizaciones().stream()
+                .filter(c -> c.getId().equals(cotizacionId))
+                .findFirst()
+                .orElseThrow(() -> new DocumentNotFoundException("Cotizacion no encontrada: " + cotizacionId));
+
+        List<OpcionFlete> opciones = cotizacion.getOpciones();
+        int idx = IntStream.range(0, opciones.size())
+                .filter(i -> opciones.get(i).getId().equals(opcionId))
+                .findFirst()
+                .orElseThrow(() -> new DocumentNotFoundException("Opcion no encontrada: " + opcionId));
+
+        // Preservar el id original
+        opcionActualizada.setId(opcionId);
+        opciones.set(idx, opcionActualizada);
+
+        buque.setActualizadoEn(LocalDateTime.now());
+        return buqueRepository.save(buque);
+    }
+
+    @Override
+    public SalidaBuque eliminarOpcion(String idBuque, String cotizacionId, String opcionId) {
+        SalidaBuque buque = buqueRepository.findById(idBuque)
+                .orElseThrow(() -> new DocumentNotFoundException("Buque no encontrado: " + idBuque));
+
+        CotizacionConsignatario cotizacion = buque.getCotizaciones().stream()
+                .filter(c -> c.getId().equals(cotizacionId))
+                .findFirst()
+                .orElseThrow(() -> new DocumentNotFoundException("Cotizacion no encontrada: " + cotizacionId));
+
+        boolean removed = cotizacion.getOpciones().removeIf(o -> o.getId().equals(opcionId));
+        if (!removed) throw new DocumentNotFoundException("Opcion no encontrada: " + opcionId);
+
+        buque.setActualizadoEn(LocalDateTime.now());
+        return buqueRepository.save(buque);
+    }
+
+    @Override
+    public SalidaBuque eliminarCotizacion(String idBuque, String cotizacionId) {
+        SalidaBuque buque = buqueRepository.findById(idBuque)
+                .orElseThrow(() -> new DocumentNotFoundException("Buque no encontrado: " + idBuque));
+
+        boolean removed = buque.getCotizaciones().removeIf(c -> c.getId().equals(cotizacionId));
+        if (!removed) throw new DocumentNotFoundException("Cotizacion no encontrada: " + cotizacionId);
+
+        buque.setActualizadoEn(LocalDateTime.now());
+        return buqueRepository.save(buque);
     }
 }
