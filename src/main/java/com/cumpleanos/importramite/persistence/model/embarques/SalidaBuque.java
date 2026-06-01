@@ -39,4 +39,5 @@ public class SalidaBuque {
     private Boolean activo = true;
 
     private LocalDateTime creadoEn;
+    private LocalDateTime actualizadoEn;
 }
