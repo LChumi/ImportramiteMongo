@@ -10,6 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +29,10 @@ public class ProcesoCotizacionServiceImp extends GenericServiceImpl<ProcesoCotiz
         p.setCreadoEn(LocalDateTime.now());
         p.setEstado(EstadoProceso.BORRADOR);
         return super.save(p);
+    }
+
+    @Override
+    public List<ProcesoCotizacion> findAll() {
+        return repository.findAllByOrderByCreadoEn();
     }
 }
