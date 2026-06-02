@@ -4,9 +4,12 @@ import com.cumpleanos.importramite.persistence.model.embarques.ProcesoCotizacion
 import com.cumpleanos.importramite.persistence.repository.embarques.ProcesoCotizacionRepository;
 import com.cumpleanos.importramite.service.implementation.GenericServiceImpl;
 import com.cumpleanos.importramite.service.interfaces.embarque.IProcesoCotizacionService;
+import com.cumpleanos.importramite.utils.enums.EstadoProceso;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -18,5 +21,12 @@ public class ProcesoCotizacionServiceImp extends GenericServiceImpl<ProcesoCotiz
     @Override
     public CrudRepository<ProcesoCotizacion, String> getRepository() {
         return repository;
+    }
+
+    @Override
+    public ProcesoCotizacion save(ProcesoCotizacion p) {
+        p.setCreadoEn(LocalDateTime.now());
+        p.setEstado(EstadoProceso.BORRADOR);
+        return super.save(p);
     }
 }

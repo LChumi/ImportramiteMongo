@@ -17,14 +17,20 @@ public class ProcesoCotizacionController {
     private final IProcesoCotizacionService service;
 
     @PostMapping("/crear")
-    public ResponseEntity<ProcesoCotizacion> saveProcesoCotizacion(@RequestBody ProcesoCotizacion procesoCotizacion) {
-        ProcesoCotizacion pc = service.save(procesoCotizacion);
+    public ResponseEntity<ProcesoCotizacion> saveProcesoCotizacion(@RequestBody ProcesoCotizacion p) {
+        ProcesoCotizacion pc = service.save(p);
         return ResponseEntity.ok(pc);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<ProcesoCotizacion>> listProcesoCotizacion(){
+    public ResponseEntity<List<ProcesoCotizacion>> listProcesoCotizacion() {
         List<ProcesoCotizacion> pc = service.findAll();
+        return ResponseEntity.ok(pc);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProcesoCotizacion> getProcesoCotizacion(@PathVariable String id) {
+        ProcesoCotizacion pc = service.findById(id);
         return ResponseEntity.ok(pc);
     }
 }
