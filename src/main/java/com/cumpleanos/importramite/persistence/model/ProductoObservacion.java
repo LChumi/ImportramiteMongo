@@ -1,5 +1,6 @@
 package com.cumpleanos.importramite.persistence.model;
 
+import com.cumpleanos.importramite.persistence.records.HistorialObservacion;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -18,7 +21,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Document(collection = "producto_observacion")
 @CompoundIndex(name = "producto_unique_bodega_idx", def = "{'item' : 1, 'idBodega': 1}", unique = true)
-public class ProductoObservacion implements Comparable<ProductoObservacion> {
+public class ProductoObservacion {
 
     @Id
     private String id;
@@ -43,10 +46,6 @@ public class ProductoObservacion implements Comparable<ProductoObservacion> {
 
     private ProductoCorreccion correccion;
 
-    @Override
-    public int compareTo(ProductoObservacion o) {
-        if (o == null || o.getFecha() == null) return -1;
-        if (this.fecha == null) return 1;
-        return o.getFecha().compareTo(this.fecha); // orden descendente
-    }
+    private List<HistorialObservacion> historial = new ArrayList<>();
+
 }

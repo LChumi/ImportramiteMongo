@@ -2,6 +2,7 @@ package com.cumpleanos.importramite.service.implementation;
 
 import com.cumpleanos.importramite.persistence.model.ProductoObservacion;
 import com.cumpleanos.importramite.persistence.records.CorreccionRequest;
+import com.cumpleanos.importramite.persistence.records.HistorialObservacion;
 import com.cumpleanos.importramite.persistence.repository.ProductoObservacionRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.service.interfaces.IProductoObservacionService;
@@ -40,6 +41,17 @@ public class ProductoObservacionServiceImpl extends GenericServiceImpl<ProductoO
 
         if (existente.isPresent()) {
             ProductoObservacion obs = existente.get();
+            if (obs.getCorreccion() != null) {
+                obs.getHistorial().add(
+                        new HistorialObservacion(
+                                obs.getCorreccion().getFecha(),
+                                obs.getDetalle(),
+                                obs.getCorreccion().getDetalle(),
+                                obs.getUsuario(),
+                                obs.getCorreccion().getUsuario()
+                        )
+                );
+            }
             // actualizar campos necesarios
             obs.setFecha(LocalDate.now()); // actualiza fecha
             obs.setStock(p.getStock());
@@ -48,6 +60,7 @@ public class ProductoObservacionServiceImpl extends GenericServiceImpl<ProductoO
             obs.setUsuario(p.getUsuario());
             obs.setDetalle(p.getDetalle());
             obs.setDiferencia(p.getDiferencia());
+            obs.setCorreccion(null);
             return repository.save(obs);
         } else {
             p.setFecha(LocalDate.now());
