@@ -8,15 +8,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ConsignatarioServiceImpl extends GenericServiceImpl<Consignatario, String> implements IConsignatarioService {
 
     private final ConsignatarioRepository repository;
 
-
     @Override
     public CrudRepository<Consignatario, String> getRepository() {
         return repository;
+    }
+
+    @Override
+    public List<Consignatario> findAll() {
+        return repository.findAllByOrderByNombre();
     }
 }

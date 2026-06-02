@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PuertoEmbarqueServiceImpl extends GenericServiceImpl<PuertoEmbarque, String> implements IPuertoEmbarqueService {
@@ -17,5 +19,10 @@ public class PuertoEmbarqueServiceImpl extends GenericServiceImpl<PuertoEmbarque
     @Override
     public CrudRepository<PuertoEmbarque, String> getRepository() {
         return repository;
+    }
+
+    @Override
+    public List<PuertoEmbarque> findAll() {
+        return repository.findAllByOrderByNombre();
     }
 }
