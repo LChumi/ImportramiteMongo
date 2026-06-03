@@ -1,6 +1,5 @@
 package com.cumpleanos.importramite.presentation.controller.embarque;
 
-import com.cumpleanos.importramite.persistence.model.embarques.CotizacionConsignatario;
 import com.cumpleanos.importramite.persistence.model.embarques.OpcionFlete;
 import com.cumpleanos.importramite.persistence.model.embarques.OpcionMasBarataResponse;
 import com.cumpleanos.importramite.persistence.model.embarques.SalidaBuque;
@@ -48,11 +47,6 @@ public class SalidaBuqueController {
         return ResponseEntity.ok(service.obtenerMejorOpcion(cotizacionId));
     }
 
-    @PutMapping("/add-cotizacion/{idBuque}")
-    public ResponseEntity<SalidaBuque> agregarCotizacion(@PathVariable String idBuque, @RequestBody CotizacionConsignatario cotizacion) {
-        return ResponseEntity.ok(service.agregarCotizacion(idBuque, cotizacion));
-    }
-
     @PutMapping("/add-opcion/{idBuque}/{cotizacionId}")
     public ResponseEntity<SalidaBuque> agregarOpcion(@PathVariable String idBuque, @PathVariable String cotizacionId, @RequestBody OpcionFlete opcion) {
         return ResponseEntity.ok(service.agregarOpcion(idBuque, cotizacionId, opcion));
@@ -74,12 +68,4 @@ public class SalidaBuqueController {
             @PathVariable String opcionId) {
         return ResponseEntity.ok(service.eliminarOpcion(idBuque, cotizacionId, opcionId));
     }
-
-    @DeleteMapping("/{idBuque}/cotizaciones/{cotizacionId}")
-    public ResponseEntity<SalidaBuque> eliminarCotizacion(
-            @PathVariable String idBuque,
-            @PathVariable String cotizacionId) {
-        return ResponseEntity.ok(service.eliminarCotizacion(idBuque, cotizacionId));
-    }
-
 }

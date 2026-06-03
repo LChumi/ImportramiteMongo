@@ -31,7 +31,7 @@ public class SalidaBuque {
     private Integer diasLibres;
 
     // Todos los consignatarios con sus precios para esta ventana
-    private List<CotizacionConsignatario> cotizaciones = new ArrayList<>();
+    private CotizacionConsignatario cotizacion;
 
     private Boolean activo = true;
 

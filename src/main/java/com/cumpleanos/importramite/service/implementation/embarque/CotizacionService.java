@@ -39,8 +39,7 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
         BigDecimal menor = null;
 
         for (SalidaBuque salida : salidas) {
-            for (CotizacionConsignatario consignatario: salida.getCotizaciones()){
-                for (OpcionFlete opcion : consignatario.getOpciones()){
+                for (OpcionFlete opcion : salida.getCotizacion().getOpciones()){
 
                     BigDecimal total = opcion.getTotal();
 
@@ -51,11 +50,10 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
                     if (menor == null || total.compareTo(menor) < 0){
                         menor = total;
                         mejorOpcion = opcion;
-                        mejorConsignatario = consignatario.getNombreConsignatario();
+                        mejorConsignatario = salida.getCotizacion().getNombreConsignatario();
                         mejorPuerto = salida.getPuertoEmbarqueNombre();
                     }
                 }
-            }
         }
         if (mejorOpcion == null) {
             return null;
@@ -85,41 +83,35 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
     }
 
     @Override
-    public SalidaBuque agregarCotizacion(String idBuque, CotizacionConsignatario cotizacion) {
-        SalidaBuque buque = buqueRepository.findById(idBuque).orElseThrow( () -> new DocumentNotFoundException("Buque no encontrado con id: " + idBuque));
-
-        buque.getCotizaciones().add(cotizacion);
-        return buqueRepository.save(buque);
-    }
-
-    @Override
     public SalidaBuque agregarOpcion(String idBuque, String cotizacionId, OpcionFlete opcion) {
-        SalidaBuque buque = buqueRepository.findById(idBuque).orElseThrow( () -> new DocumentNotFoundException("Buque no encontrado con id: " + idBuque));
+        SalidaBuque buque = buqueRepository.findById(idBuque)
+                .orElseThrow(() -> new DocumentNotFoundException("Buque no encontrado con id: " + idBuque));
 
-        CotizacionConsignatario cotizacion = buque.getCotizaciones()
-                .stream()
-                .filter(c -> c.getId().equals(cotizacionId))
-                .findFirst()
-                .orElseThrow( () -> new DocumentNotFoundException("Cotizacion no encontrada con id: " + cotizacionId));
+        CotizacionConsignatario cotizacion = buque.getCotizacion();
+        if (cotizacion == null || !cotizacion.getId().equals(cotizacionId)) {
+            throw new DocumentNotFoundException("Cotización no encontrada con id: " + cotizacionId);
+        }
+
         cotizacion.getOpciones().add(opcion);
         return buqueRepository.save(buque);
     }
+
 
     @Override
     public SalidaBuque actualizarOpcion(String idBuque, String cotizacionId, String opcionId, OpcionFlete opcionActualizada) {
         SalidaBuque buque = buqueRepository.findById(idBuque)
                 .orElseThrow(() -> new DocumentNotFoundException("Buque no encontrado: " + idBuque));
 
-        CotizacionConsignatario cotizacion = buque.getCotizaciones().stream()
-                .filter(c -> c.getId().equals(cotizacionId))
-                .findFirst()
-                .orElseThrow(() -> new DocumentNotFoundException("Cotizacion no encontrada: " + cotizacionId));
+        CotizacionConsignatario cotizacion = buque.getCotizacion();
+        if (cotizacion == null || !cotizacion.getId().equals(cotizacionId)) {
+            throw new DocumentNotFoundException("Cotización no encontrada: " + cotizacionId);
+        }
 
         List<OpcionFlete> opciones = cotizacion.getOpciones();
         int idx = IntStream.range(0, opciones.size())
                 .filter(i -> opciones.get(i).getId().equals(opcionId))
                 .findFirst()
-                .orElseThrow(() -> new DocumentNotFoundException("Opcion no encontrada: " + opcionId));
+                .orElseThrow(() -> new DocumentNotFoundException("Opción no encontrada: " + opcionId));
 
         // Preservar el id original
         opcionActualizada.setId(opcionId);
@@ -134,25 +126,15 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
         SalidaBuque buque = buqueRepository.findById(idBuque)
                 .orElseThrow(() -> new DocumentNotFoundException("Buque no encontrado: " + idBuque));
 
-        CotizacionConsignatario cotizacion = buque.getCotizaciones().stream()
-                .filter(c -> c.getId().equals(cotizacionId))
-                .findFirst()
-                .orElseThrow(() -> new DocumentNotFoundException("Cotizacion no encontrada: " + cotizacionId));
+        CotizacionConsignatario cotizacion = buque.getCotizacion();
+        if (cotizacion == null || !cotizacion.getId().equals(cotizacionId)) {
+            throw new DocumentNotFoundException("Cotización no encontrada: " + cotizacionId);
+        }
 
         boolean removed = cotizacion.getOpciones().removeIf(o -> o.getId().equals(opcionId));
-        if (!removed) throw new DocumentNotFoundException("Opcion no encontrada: " + opcionId);
-
-        buque.setActualizadoEn(LocalDateTime.now());
-        return buqueRepository.save(buque);
-    }
-
-    @Override
-    public SalidaBuque eliminarCotizacion(String idBuque, String cotizacionId) {
-        SalidaBuque buque = buqueRepository.findById(idBuque)
-                .orElseThrow(() -> new DocumentNotFoundException("Buque no encontrado: " + idBuque));
-
-        boolean removed = buque.getCotizaciones().removeIf(c -> c.getId().equals(cotizacionId));
-        if (!removed) throw new DocumentNotFoundException("Cotizacion no encontrada: " + cotizacionId);
+        if (!removed) {
+            throw new DocumentNotFoundException("Opción no encontrada: " + opcionId);
+        }
 
         buque.setActualizadoEn(LocalDateTime.now());
         return buqueRepository.save(buque);
