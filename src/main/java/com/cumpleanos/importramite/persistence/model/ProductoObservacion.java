@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Document(collection = "producto_observacion")
 @CompoundIndex(name = "producto_unique_bodega_idx", def = "{'item' : 1, 'idBodega': 1}", unique = true)
 public class ProductoObservacion {
