@@ -23,15 +23,12 @@ public class SalidaBuque {
     // RELACION CENTRAL
     private String procesoCotizacionId;
 
-    private String puertoEmbarqueId;     // referencia a PuertoEmbarque
     private String puertoEmbarqueNombre; // "NINGBO" (desnormalizado)
 
     private LocalDate fechaDesde;
     private LocalDate fechaHasta;
 
     private Integer diasLibres;
-    private String naviera;              // "INARPI", "OOCL"
-    private String tipoServicio;         // "T. DIRECTO", "TRANSBORDO"
 
     // Todos los consignatarios con sus precios para esta ventana
     private List<CotizacionConsignatario> cotizaciones = new ArrayList<>();

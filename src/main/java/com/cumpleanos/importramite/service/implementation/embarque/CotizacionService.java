@@ -44,6 +44,10 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
 
                     BigDecimal total = opcion.getTotal();
 
+                    if (total == null) {
+                        continue;
+                    }
+
                     if (menor == null || total.compareTo(menor) < 0){
                         menor = total;
                         mejorOpcion = opcion;
@@ -52,6 +56,9 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
                     }
                 }
             }
+        }
+        if (mejorOpcion == null) {
+            return null;
         }
 
         return OpcionMasBarataResponse.builder()

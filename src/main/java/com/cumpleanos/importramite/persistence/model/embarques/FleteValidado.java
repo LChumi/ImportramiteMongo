@@ -18,7 +18,6 @@ public class FleteValidado {
     private String procesoCotizacionId;
 
     private String salidaBuqueId;
-    private String consignatarioId;
     private String nombreConsignatario;
     private String puertoEmbarqueNombre; // "NINGBO"
     private TipoContenedor tipoContenedor;       // "40HQ"

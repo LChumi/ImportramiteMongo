@@ -33,8 +33,7 @@ public class FleteValidadoService {
         FleteValidado nuevo = new FleteValidado();
         nuevo.setProcesoCotizacionId(r.proceso().getId());
         nuevo.setSalidaBuqueId(r.salida().getId());
-        nuevo.setConsignatarioId(r.consignatario().getConsignatarioId());
-        nuevo.setNombreConsignatario(r.consignatario().getNombreConsignatario());
+        nuevo.setNombreConsignatario(r.consignatario());
         nuevo.setPuertoEmbarqueNombre(r.salida().getPuertoEmbarqueNombre());
         nuevo.setPuertoDestino(r.opcion().getPuertoDestino());
         nuevo.setTipoContenedor(r.opcion().getTipoContenedor());
