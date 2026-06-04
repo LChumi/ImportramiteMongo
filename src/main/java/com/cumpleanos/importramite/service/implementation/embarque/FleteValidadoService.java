@@ -50,6 +50,7 @@ public class FleteValidadoService {
         nuevo.setEstado(EstadoFlete.VIGENTE);
         nuevo.setValidadoPor(r.usuario());
         nuevo.setFechaValidacion(LocalDateTime.now());
+        nuevo.setNumeroBl(r.opcion().getNumeroBl());
         FleteValidado guardado = repository.save(nuevo);
 
         // FINALIZAR PROCESO
