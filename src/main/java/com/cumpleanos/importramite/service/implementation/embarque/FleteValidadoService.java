@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +59,7 @@ public class FleteValidadoService {
 
         procesoRepository.save(r.proceso());
 
-        crearTramite(guardado, r.proceso(), r.salida());
+        crearOActualizarTramite(guardado, r.proceso(), r.salida());
         return guardado;
     }
 
@@ -70,24 +71,56 @@ public class FleteValidadoService {
         repository.save(flete);
     }
 
-    private void crearTramite(FleteValidado f, ProcesoCotizacion p, SalidaBuque b){
-        TramiteEmbarque t = new TramiteEmbarque();
-        t.setOrdenLlegada("AAA");
-        t.setEmpresaId(p.getEmpresaId());
-        t.setNumeroTramite(p.getNumeroReferencia());
-        t.setProveedorId(p.getProveedorId());
-        t.setNumeroBl(f.getNumeroBl());
-        t.setFleteValidadoId(f.getId());
+    private void crearOActualizarTramite(FleteValidado f, ProcesoCotizacion p, SalidaBuque b) {
 
-        t.setFechaEmbarque(b.getFechaDesde());
-        t.setFechaArribo(b.getFechaHasta());
-        t.setDiasLibres(b.getDiasLibres());
-        t.setPuertoSalida(f.getPuertoEmbarqueNombre());
-        t.setPuertoLlegada(f.getPuertoDestino());
+        Optional<TramiteEmbarque> tramiteOpt =
+                tramiteRepository.findByNumeroTramite(p.getNumeroReferencia());
 
-        t.setCreadoEn(LocalDateTime.now());
-        t.setEstado(EstadoTramite.EMBARCADO);
-        tramiteRepository.save(t);
+        if (tramiteOpt.isPresent()) {
+
+            TramiteEmbarque t = tramiteOpt.get();
+
+            // Marcar el flete anterior como reemplazado
+            FleteValidado fAnterior = repository.findById(t.getFleteValidadoId())
+                    .orElseThrow();
+
+            fAnterior.setFleteReemplazadoPorId(f.getId());
+            repository.save(fAnterior);
+
+            // Actualizar trámite
+            t.setFleteValidadoId(f.getId());
+            t.setNumeroBl(f.getNumeroBl());
+            t.setFechaEmbarque(b.getFechaDesde());
+            t.setFechaArribo(b.getFechaHasta());
+            t.setDiasLibres(b.getDiasLibres());
+            t.setPuertoSalida(f.getPuertoEmbarqueNombre());
+            t.setPuertoLlegada(f.getPuertoDestino());
+            t.setActualizadoEn(LocalDateTime.now());
+
+            tramiteRepository.save(t);
+
+        } else {
+
+            TramiteEmbarque t = new TramiteEmbarque();
+
+            t.setOrdenLlegada("AAA");
+            t.setEmpresaId(p.getEmpresaId());
+            t.setNumeroTramite(p.getNumeroReferencia());
+            t.setProveedorId(p.getProveedorId());
+            t.setNumeroBl(f.getNumeroBl());
+            t.setFleteValidadoId(f.getId());
+
+            t.setFechaEmbarque(b.getFechaDesde());
+            t.setFechaArribo(b.getFechaHasta());
+            t.setDiasLibres(b.getDiasLibres());
+            t.setPuertoSalida(f.getPuertoEmbarqueNombre());
+            t.setPuertoLlegada(f.getPuertoDestino());
+
+            t.setCreadoEn(LocalDateTime.now());
+            t.setEstado(EstadoTramite.EMBARCADO);
+
+            tramiteRepository.save(t);
+        }
     }
 
 }

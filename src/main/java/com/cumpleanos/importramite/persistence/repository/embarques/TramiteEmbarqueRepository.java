@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface TramiteEmbarqueRepository extends MongoRepository<TramiteEmbarque, String> {
 
-    Optional<TramiteEmbarque> findByNumeroBl(String numeroBl);
+    Optional<TramiteEmbarque> findByNumeroTramite(String numeroTramite);
 }

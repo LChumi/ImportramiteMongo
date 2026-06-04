@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,41 +22,6 @@ public class TramiteEmbarqueService {
 
     public List<TramiteEmbarque> findAll(){
         return repository.findAll();
-    }
-
-    //CrearTramite desde flete Validado
-    public TramiteEmbarque crearDesdeFlete(String fleteValidadoId, String numeroBl, String proveedorId){
-        FleteValidado flete = fleteRepository.findById(fleteValidadoId).orElseThrow();
-
-        if (flete.getEstado() != EstadoFlete.VIGENTE){
-            throw new RuntimeException("Flete no vigente");
-        }
-
-        TramiteEmbarque tramite = new TramiteEmbarque();
-
-        tramite.setNumeroBl(numeroBl);
-
-        tramite.setProveedorId(proveedorId);
-
-        tramite.setFleteValidadoId(
-                flete.getId());
-
-        tramite.setPuertoSalida(
-                flete.getPuertoEmbarqueNombre());
-
-        tramite.setPuertoLlegada(
-                flete.getPuertoDestino());
-
-        tramite.setDiasLibres(
-                0);
-
-        tramite.setEstado(
-                EstadoTramite.BORRADOR);
-
-        tramite.setCreadoEn(
-                LocalDateTime.now());
-
-        return repository.save(tramite);
     }
 
     public void ReemplazarFeleteTramite(String tramiteId, String nuevoFleteId){
@@ -70,5 +36,10 @@ public class TramiteEmbarqueService {
         tramite.setFleteValidadoId(nuevo.getId());
         tramite.setActualizadoEn(LocalDateTime.now());
         repository.save(tramite);
+    }
+
+    public Boolean existeTramite(String numeoTramite){
+        Optional<TramiteEmbarque> found = repository.findByNumeroTramite(numeoTramite);
+        return found.isPresent();
     }
 }

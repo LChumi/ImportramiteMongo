@@ -22,16 +22,15 @@ public class TramiteEmbarqueController {
         return ResponseEntity.ok(tes);
     }
 
-    @GetMapping("/crear-desde-flete/{flete}/{bl}/{proveedor}")
-    public ResponseEntity<TramiteEmbarque> crearDesdeFlete(@PathVariable String flete,@PathVariable String bl,@PathVariable String proveedor){
-        TramiteEmbarque te = service.crearDesdeFlete(flete,bl,proveedor);
-        return ResponseEntity.ok(te);
-    }
-
     @GetMapping("/reemplazar/{tramite}/{fleteNuevo}")
     public ResponseEntity<Void> ReemplazarFeleteTramite(@PathVariable String tramite,@PathVariable String fleteNuevo){
         service.ReemplazarFeleteTramite(tramite,fleteNuevo);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/exist/numeroTramite")
+    public ResponseEntity<Boolean> existeTramite(@RequestParam String numeroTramite){
+        return ResponseEntity.ok(service.existeTramite(numeroTramite));
     }
 
 }
