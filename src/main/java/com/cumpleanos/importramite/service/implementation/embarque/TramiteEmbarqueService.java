@@ -51,6 +51,12 @@ public class TramiteEmbarqueService {
         found.setPuertoLlegada(t.getPuertoLlegada());
         found.setActualizadoEn(LocalDateTime.now());
         found.setEstado(t.getEstado());
+        found.setSolicitudNEcuapass(t.getSolicitudNEcuapass());
+        found.setFechaSolicitudEcuapass(t.getFechaSolicitudEcuapass());
+        found.setIdentificar(t.getIdentificar());
+        found.setSolicitudNIntertek(t.getSolicitudNIntertek());
+        found.setPreLiquidacion(t.getPreLiquidacion());
+        found.setPolizaNChub(t.getPolizaNChub());
         return repository.save(found);
     }
 
