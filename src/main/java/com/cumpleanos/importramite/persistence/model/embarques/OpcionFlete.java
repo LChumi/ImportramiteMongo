@@ -24,6 +24,7 @@ public class OpcionFlete {
 
     private BigDecimal gastosBl = BigDecimal.ZERO;
     private BigDecimal handlingContenedor = BigDecimal.ZERO;
+    private String numerBl;
 
     private BigDecimal porcentajeIva = new BigDecimal("0.15");
 

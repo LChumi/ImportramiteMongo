@@ -3,8 +3,10 @@ package com.cumpleanos.importramite.service.implementation.embarque;
 import com.cumpleanos.importramite.persistence.model.embarques.*;
 import com.cumpleanos.importramite.persistence.repository.embarques.FleteValidadoRepository;
 import com.cumpleanos.importramite.persistence.repository.embarques.ProcesoCotizacionRepository;
+import com.cumpleanos.importramite.persistence.repository.embarques.TramiteEmbarqueRepository;
 import com.cumpleanos.importramite.utils.enums.EstadoFlete;
 import com.cumpleanos.importramite.utils.enums.EstadoProceso;
+import com.cumpleanos.importramite.utils.enums.EstadoTramite;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class FleteValidadoService {
 
     private final FleteValidadoRepository repository;
     private final ProcesoCotizacionRepository procesoRepository;
+    private final TramiteEmbarqueRepository tramiteRepository;
 
     //Validar nuevo Flete
     public FleteValidado validarFlete(FleteValidacionRequest r) {
@@ -54,6 +57,7 @@ public class FleteValidadoService {
 
         procesoRepository.save(r.proceso());
 
+        crearTramite(guardado, r.proceso(), r.salida());
         return guardado;
     }
 
@@ -63,6 +67,25 @@ public class FleteValidadoService {
         flete.setEstado(EstadoFlete.ANULADO);
         flete.setMotivoAnulacion(r.motivo());
         repository.save(flete);
+    }
+
+    private void crearTramite(FleteValidado f, ProcesoCotizacion p, SalidaBuque b){
+        TramiteEmbarque t = new TramiteEmbarque();
+        t.setOrdenLlegada("AAA");
+        t.setEmpresaId(p.getEmpresaId());
+        t.setNumeroTramite(p.getNumeroReferencia());
+        t.setProveedorId(p.getProveedorId());
+        t.setNumeroBl(f.getNumeroBl());
+        t.setFleteValidadoId(f.getId());
+
+        t.setFechaEmbarque(b.getFechaDesde());
+        t.setFechaArribo(b.getFechaHasta());
+        t.setDiasLibres(b.getDiasLibres());
+        t.setPuertoSalida(f.getPuertoEmbarqueNombre());
+        t.setPuertoLlegada(f.getPuertoDestino());
+
+        t.setCreadoEn(LocalDateTime.now());
+        t.setEstado(EstadoTramite.EMBARCADO);
     }
 
 }
