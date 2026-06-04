@@ -86,6 +86,7 @@ public class FleteValidadoService {
 
         t.setCreadoEn(LocalDateTime.now());
         t.setEstado(EstadoTramite.EMBARCADO);
+        tramiteRepository.save(t);
     }
 
 }
