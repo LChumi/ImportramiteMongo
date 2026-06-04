@@ -35,6 +35,7 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
 
         String mejorConsignatario = null;
         String mejorPuerto = null;
+        String idBuque = null;
 
         BigDecimal menor = null;
 
@@ -52,6 +53,7 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
                         mejorOpcion = opcion;
                         mejorConsignatario = salida.getCotizacion().getNombreConsignatario();
                         mejorPuerto = salida.getPuertoEmbarqueNombre();
+                        idBuque = salida.getId();
                     }
                 }
         }
@@ -64,6 +66,7 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
                 .puerto(mejorPuerto)
                 .opcion(mejorOpcion)
                 .total(menor)
+                .idBuque(idBuque)
                 .build();
     }
 

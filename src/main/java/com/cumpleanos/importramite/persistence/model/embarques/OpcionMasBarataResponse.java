@@ -11,5 +11,6 @@ public class OpcionMasBarataResponse {
     private String consignatario;
     private String puerto;
     private OpcionFlete opcion;
+    private String idBuque;
     private BigDecimal total;
 }
