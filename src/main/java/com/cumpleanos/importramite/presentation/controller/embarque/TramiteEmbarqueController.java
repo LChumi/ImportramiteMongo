@@ -22,6 +22,12 @@ public class TramiteEmbarqueController {
         return ResponseEntity.ok(tes);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<TramiteEmbarque> updateTramiteEmbarque(@PathVariable String id, @RequestBody TramiteEmbarque tramiteEmbarque){
+        TramiteEmbarque updatedTramiteEmbarque = service.update(id, tramiteEmbarque);
+        return ResponseEntity.ok(updatedTramiteEmbarque);
+    }
+
     @GetMapping("/reemplazar/{tramite}/{fleteNuevo}")
     public ResponseEntity<Void> ReemplazarFeleteTramite(@PathVariable String tramite,@PathVariable String fleteNuevo){
         service.ReemplazarFeleteTramite(tramite,fleteNuevo);

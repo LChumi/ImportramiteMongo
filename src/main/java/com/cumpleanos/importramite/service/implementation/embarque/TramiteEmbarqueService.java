@@ -1,9 +1,11 @@
 package com.cumpleanos.importramite.service.implementation.embarque;
 
+import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.model.embarques.FleteValidado;
 import com.cumpleanos.importramite.persistence.model.embarques.TramiteEmbarque;
 import com.cumpleanos.importramite.persistence.repository.embarques.FleteValidadoRepository;
 import com.cumpleanos.importramite.persistence.repository.embarques.TramiteEmbarqueRepository;
+import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.utils.enums.EstadoFlete;
 import com.cumpleanos.importramite.utils.enums.EstadoTramite;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,20 @@ public class TramiteEmbarqueService {
         tramite.setFleteValidadoId(nuevo.getId());
         tramite.setActualizadoEn(LocalDateTime.now());
         repository.save(tramite);
+    }
+
+    public TramiteEmbarque update (String id, TramiteEmbarque t){
+        TramiteEmbarque found = repository.findById(id).orElseThrow(() -> new DocumentNotFoundException("No existe Tramite registrado"));
+        found.setProveedorId(t.getProveedorId());
+        found.setNumeroBl(t.getNumeroBl());
+        found.setFechaEmbarque(t.getFechaEmbarque());
+        found.setFechaArribo(t.getFechaArribo());
+        found.setDiasLibres(t.getDiasLibres());
+        found.setPuertoSalida(t.getPuertoSalida());
+        found.setPuertoLlegada(t.getPuertoLlegada());
+        found.setActualizadoEn(LocalDateTime.now());
+        found.setEstado(t.getEstado());
+        return repository.save(found);
     }
 
     public Boolean existeTramite(String numeoTramite){
