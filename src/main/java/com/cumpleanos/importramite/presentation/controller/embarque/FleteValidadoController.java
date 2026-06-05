@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("flete")
@@ -20,6 +22,12 @@ public class FleteValidadoController {
     ResponseEntity<FleteValidado> saveFleteValidado(@RequestBody FleteValidacionRequest request){
         FleteValidado fl = service.validarFlete(request);
         return ResponseEntity.ok(fl);
+    }
+
+    @GetMapping("/list")
+    ResponseEntity<List<FleteValidado>> listFletesValidados(){
+        List<FleteValidado> lista = service.getAll();
+        return ResponseEntity.ok(lista);
     }
 
     @PutMapping("/anular")

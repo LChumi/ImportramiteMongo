@@ -20,6 +20,7 @@ public class TramiteEmbarque {
     private String numeroBl;                  // "Q01765"
     private String cantidadContenedores; // "3 X 40 HQ"
     private String fleteValidadoId;      // → FleteValidado escogido
+    private String consignatario;
 
     // Logística
     private LocalDate fechaEmbarque;

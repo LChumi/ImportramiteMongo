@@ -71,6 +71,11 @@ public class FleteValidadoService {
         repository.save(flete);
     }
 
+    //list
+    public List<FleteValidado> getAll(){
+        return repository.findAll();
+    }
+
     private void crearOActualizarTramite(FleteValidado f, ProcesoCotizacion p, SalidaBuque b, String observacion) {
 
         Optional<TramiteEmbarque> tramiteOpt =
@@ -91,6 +96,7 @@ public class FleteValidadoService {
             // Actualizar trámite
             t.setFleteValidadoId(f.getId());
             t.setNumeroBl(f.getNumeroBl());
+            t.setConsignatario(f.getNombreConsignatario());
             t.setFechaEmbarque(b.getFechaDesde());
             t.setFechaArribo(b.getFechaHasta());
             t.setDiasLibres(b.getDiasLibres());
@@ -106,6 +112,7 @@ public class FleteValidadoService {
 
             t.setOrdenLlegada("AAA");
             t.setEmpresaId(p.getEmpresaId());
+            t.setConsignatario(f.getNombreConsignatario());
             t.setNumeroTramite(p.getNumeroReferencia());
             t.setProveedorId(p.getProveedorId());
             t.setNumeroBl(f.getNumeroBl());
