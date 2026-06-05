@@ -72,7 +72,7 @@ public class FleteValidadoService {
     }
 
     //list
-    public List<FleteValidado> getAll(){
+    public List<FleteValidado> getAll() {
         return repository.findAll();
     }
 

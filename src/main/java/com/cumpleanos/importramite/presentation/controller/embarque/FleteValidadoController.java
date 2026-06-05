@@ -19,19 +19,19 @@ public class FleteValidadoController {
     private final FleteValidadoService service;
 
     @PostMapping("/save")
-    ResponseEntity<FleteValidado> saveFleteValidado(@RequestBody FleteValidacionRequest request){
+    ResponseEntity<FleteValidado> saveFleteValidado(@RequestBody FleteValidacionRequest request) {
         FleteValidado fl = service.validarFlete(request);
         return ResponseEntity.ok(fl);
     }
 
     @GetMapping("/list")
-    ResponseEntity<List<FleteValidado>> listFletesValidados(){
+    ResponseEntity<List<FleteValidado>> listFletesValidados() {
         List<FleteValidado> lista = service.getAll();
         return ResponseEntity.ok(lista);
     }
 
     @PutMapping("/anular")
-    ResponseEntity<Void> anularFlete(@RequestBody FleteAnularRequest r ){
+    ResponseEntity<Void> anularFlete(@RequestBody FleteAnularRequest r) {
         service.anularFlete(r);
         return ResponseEntity.ok().build();
     }

@@ -28,10 +28,10 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
         return buqueRepository;
     }
 
-    public OpcionMasBarataResponse obtenerMejorOpcion(String procesoCotizacionId){
+    public OpcionMasBarataResponse obtenerMejorOpcion(String procesoCotizacionId) {
         List<SalidaBuque> salidas = buqueRepository.findByProcesoCotizacionId(procesoCotizacionId);
 
-        OpcionFlete mejorOpcion = null ;
+        OpcionFlete mejorOpcion = null;
 
         String mejorConsignatario = null;
         String mejorPuerto = null;
@@ -40,22 +40,22 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
         BigDecimal menor = null;
 
         for (SalidaBuque salida : salidas) {
-                for (OpcionFlete opcion : salida.getCotizacion().getOpciones()){
+            for (OpcionFlete opcion : salida.getCotizacion().getOpciones()) {
 
-                    BigDecimal total = opcion.getTotal();
+                BigDecimal total = opcion.getTotal();
 
-                    if (total == null) {
-                        continue;
-                    }
-
-                    if (menor == null || total.compareTo(menor) < 0){
-                        menor = total;
-                        mejorOpcion = opcion;
-                        mejorConsignatario = salida.getCotizacion().getNombreConsignatario();
-                        mejorPuerto = salida.getPuertoEmbarqueNombre();
-                        idBuque = salida.getId();
-                    }
+                if (total == null) {
+                    continue;
                 }
+
+                if (menor == null || total.compareTo(menor) < 0) {
+                    menor = total;
+                    mejorOpcion = opcion;
+                    mejorConsignatario = salida.getCotizacion().getNombreConsignatario();
+                    mejorPuerto = salida.getPuertoEmbarqueNombre();
+                    idBuque = salida.getId();
+                }
+            }
         }
         if (mejorOpcion == null) {
             return null;
@@ -77,7 +77,7 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
 
     @Override
     public SalidaBuque update(String id, SalidaBuque s) {
-        SalidaBuque found = buqueRepository.findById(id).orElseThrow( () -> new DocumentNotFoundException("Buque no encontrado con id: " + id));
+        SalidaBuque found = buqueRepository.findById(id).orElseThrow(() -> new DocumentNotFoundException("Buque no encontrado con id: " + id));
         found.setFechaDesde(s.getFechaDesde());
         found.setFechaHasta(s.getFechaHasta());
         found.setDiasLibres(s.getDiasLibres());

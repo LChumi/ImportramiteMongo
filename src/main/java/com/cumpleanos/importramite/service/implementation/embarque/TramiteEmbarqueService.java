@@ -1,13 +1,11 @@
 package com.cumpleanos.importramite.service.implementation.embarque;
 
-import com.cumpleanos.importramite.persistence.model.Tramite;
 import com.cumpleanos.importramite.persistence.model.embarques.FleteValidado;
 import com.cumpleanos.importramite.persistence.model.embarques.TramiteEmbarque;
 import com.cumpleanos.importramite.persistence.repository.embarques.FleteValidadoRepository;
 import com.cumpleanos.importramite.persistence.repository.embarques.TramiteEmbarqueRepository;
 import com.cumpleanos.importramite.service.exception.DocumentNotFoundException;
 import com.cumpleanos.importramite.utils.enums.EstadoFlete;
-import com.cumpleanos.importramite.utils.enums.EstadoTramite;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,16 +20,16 @@ public class TramiteEmbarqueService {
     private final TramiteEmbarqueRepository repository;
     private final FleteValidadoRepository fleteRepository;
 
-    public List<TramiteEmbarque> findAll(){
+    public List<TramiteEmbarque> findAll() {
         return repository.findAll();
     }
 
-    public void ReemplazarFeleteTramite(String tramiteId, String nuevoFleteId){
+    public void ReemplazarFeleteTramite(String tramiteId, String nuevoFleteId) {
         TramiteEmbarque tramite = repository.findById(tramiteId).orElseThrow();
 
         FleteValidado nuevo = fleteRepository.findById(nuevoFleteId).orElseThrow();
 
-        if (nuevo.getEstado() != EstadoFlete.VIGENTE){
+        if (nuevo.getEstado() != EstadoFlete.VIGENTE) {
             throw new RuntimeException("Flete no vigente");
         }
 
@@ -40,7 +38,7 @@ public class TramiteEmbarqueService {
         repository.save(tramite);
     }
 
-    public TramiteEmbarque update (String id, TramiteEmbarque t){
+    public TramiteEmbarque update(String id, TramiteEmbarque t) {
         TramiteEmbarque found = repository.findById(id).orElseThrow(() -> new DocumentNotFoundException("No existe Tramite registrado"));
         found.setProveedorId(t.getProveedorId());
         found.setNumeroBl(t.getNumeroBl());
@@ -60,7 +58,7 @@ public class TramiteEmbarqueService {
         return repository.save(found);
     }
 
-    public Boolean existeTramite(String numeoTramite){
+    public Boolean existeTramite(String numeoTramite) {
         Optional<TramiteEmbarque> found = repository.findByNumeroTramite(numeoTramite);
         return found.isPresent();
     }

@@ -17,13 +17,13 @@ public class PuertoEmbarqueController {
     private final IPuertoEmbarqueService service;
 
     @PostMapping("/save")
-    public ResponseEntity<PuertoEmbarque> savePuertoEmbarque(@RequestBody PuertoEmbarque puertoEmbarque){
+    public ResponseEntity<PuertoEmbarque> savePuertoEmbarque(@RequestBody PuertoEmbarque puertoEmbarque) {
         PuertoEmbarque pe = service.save(puertoEmbarque);
         return ResponseEntity.ok(pe);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<PuertoEmbarque>> listPuertosEmbarque(){
+    public ResponseEntity<List<PuertoEmbarque>> listPuertosEmbarque() {
         List<PuertoEmbarque> pes = service.findAll();
         return ResponseEntity.ok(pes);
     }

@@ -19,25 +19,25 @@ public class SalidaBuqueController {
     private final ISalidaBuqueService service;
 
     @PostMapping("/save")
-    public ResponseEntity<SalidaBuque> saveSalidaBuque(@RequestBody SalidaBuque salidaBuque){
+    public ResponseEntity<SalidaBuque> saveSalidaBuque(@RequestBody SalidaBuque salidaBuque) {
         SalidaBuque sb = service.save(salidaBuque);
         return ResponseEntity.ok(sb);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<SalidaBuque>> listSalidaBuque(){
+    public ResponseEntity<List<SalidaBuque>> listSalidaBuque() {
         List<SalidaBuque> sb = service.findAll();
         return ResponseEntity.ok(sb);
     }
 
     @GetMapping("/list-by-cotizacion/{idCotizacion}")
-    public ResponseEntity<List<SalidaBuque>> listSalidaBuqueByCotizacion(@PathVariable String idCotizacion){
+    public ResponseEntity<List<SalidaBuque>> listSalidaBuqueByCotizacion(@PathVariable String idCotizacion) {
         List<SalidaBuque> sbs = service.getByProcesoCotizacionId(idCotizacion);
         return ResponseEntity.ok(sbs);
     }
 
     @PutMapping("/update-buque/{id}")
-    public ResponseEntity<SalidaBuque> updateBuque (@PathVariable String id, @RequestBody SalidaBuque buque){
+    public ResponseEntity<SalidaBuque> updateBuque(@PathVariable String id, @RequestBody SalidaBuque buque) {
         SalidaBuque updatedBuque = service.update(id, buque);
         return ResponseEntity.ok(updatedBuque);
     }

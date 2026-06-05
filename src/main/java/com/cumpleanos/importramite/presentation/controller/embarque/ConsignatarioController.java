@@ -17,13 +17,13 @@ public class ConsignatarioController {
     private final IConsignatarioService service;
 
     @PostMapping("/save")
-    public ResponseEntity<Consignatario> saveConsignatario(@RequestBody Consignatario consignatario){
+    public ResponseEntity<Consignatario> saveConsignatario(@RequestBody Consignatario consignatario) {
         Consignatario c = service.save(consignatario);
         return ResponseEntity.ok(c);
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<Consignatario>> listConsignatarios(){
+    public ResponseEntity<List<Consignatario>> listConsignatarios() {
         List<Consignatario> cs = service.findAll();
         return ResponseEntity.ok(cs);
     }
