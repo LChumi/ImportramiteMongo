@@ -59,7 +59,7 @@ public class FleteValidadoService {
 
         procesoRepository.save(r.proceso());
 
-        crearOActualizarTramite(guardado, r.proceso(), r.salida());
+        crearOActualizarTramite(guardado, r.proceso(), r.salida(), r.observacion());
         return guardado;
     }
 
@@ -71,7 +71,7 @@ public class FleteValidadoService {
         repository.save(flete);
     }
 
-    private void crearOActualizarTramite(FleteValidado f, ProcesoCotizacion p, SalidaBuque b) {
+    private void crearOActualizarTramite(FleteValidado f, ProcesoCotizacion p, SalidaBuque b, String observacion) {
 
         Optional<TramiteEmbarque> tramiteOpt =
                 tramiteRepository.findByNumeroTramite(p.getNumeroReferencia());
@@ -85,6 +85,7 @@ public class FleteValidadoService {
                     .orElseThrow();
 
             fAnterior.setFleteReemplazadoPorId(f.getId());
+            fAnterior.setMotivoAnulacion(observacion);
             repository.save(fAnterior);
 
             // Actualizar trámite

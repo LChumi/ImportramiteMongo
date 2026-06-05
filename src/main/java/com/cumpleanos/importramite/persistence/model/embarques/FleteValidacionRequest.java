@@ -5,6 +5,7 @@ public record FleteValidacionRequest(
         SalidaBuque salida,
         String consignatario,
         OpcionFlete opcion,
-        String usuario
+        String usuario,
+        String observacion
 ) {
 }
