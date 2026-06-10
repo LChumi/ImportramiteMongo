@@ -33,4 +33,9 @@ public class ProcesoCotizacionController {
         ProcesoCotizacion pc = service.findById(id);
         return ResponseEntity.ok(pc);
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ProcesoCotizacion> update(@PathVariable String id, @RequestBody ProcesoCotizacion pc){
+        return ResponseEntity.ok(service.update(id, pc));
+    }
 }
