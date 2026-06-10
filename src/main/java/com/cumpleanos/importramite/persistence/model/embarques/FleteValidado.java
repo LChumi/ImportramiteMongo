@@ -24,7 +24,7 @@ public class FleteValidado {
     private String puertoDestino;        // "GUAYAQUIL"
     private Integer espacioM3;           // 64
     private String numeroBl;
-    private Integer nContenedores;
+    private Integer contenedores;
 
     // Valores congelados al momento de validar
     private BigDecimal flete;

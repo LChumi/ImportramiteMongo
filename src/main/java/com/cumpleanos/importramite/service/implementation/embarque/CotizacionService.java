@@ -99,7 +99,6 @@ public class CotizacionService extends GenericServiceImpl<SalidaBuque, String> i
         return buqueRepository.save(buque);
     }
 
-
     @Override
     public SalidaBuque actualizarOpcion(String idBuque, String cotizacionId, String opcionId, OpcionFlete opcionActualizada) {
         SalidaBuque buque = buqueRepository.findById(idBuque)

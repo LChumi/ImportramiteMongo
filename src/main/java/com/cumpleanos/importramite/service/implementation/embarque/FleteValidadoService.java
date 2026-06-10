@@ -52,7 +52,7 @@ public class FleteValidadoService {
         nuevo.setValidadoPor(r.usuario());
         nuevo.setFechaValidacion(LocalDateTime.now());
         nuevo.setNumeroBl(r.opcion().getNumeroBl());
-        nuevo.setNContenedores(r.opcion().getNContenedores());
+        nuevo.setContenedores(r.opcion().getContenedores());
         FleteValidado guardado = repository.save(nuevo);
 
         // FINALIZAR PROCESO
@@ -82,7 +82,7 @@ public class FleteValidadoService {
         Optional<TramiteEmbarque> tramiteOpt =
                 tramiteRepository.findByNumeroTramite(p.getNumeroReferencia());
 
-        String cantidaContenedores = f.getNContenedores() + " X " + f.getTipoContenedor();
+        String cantidaContenedores = f.getContenedores() + " X " + f.getTipoContenedor();
 
         if (tramiteOpt.isPresent()) {
 

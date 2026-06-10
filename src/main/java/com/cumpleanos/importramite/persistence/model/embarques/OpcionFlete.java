@@ -10,14 +10,13 @@ import java.util.UUID;
 
 @Data
 public class OpcionFlete {
-
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String id = UUID.randomUUID().toString();
 
     private TipoContenedor tipoContenedor;   // "GYE - 40HQ", "POSORJA - 40HQ", "40NORD"
     private Integer espacioM3;       // 64, 55
     private String puertoDestino;    // "GUAYAQUIL", "POSORJA"
-    private Integer nContenedores;
+    private Integer contenedores;
 
     private BigDecimal flete = BigDecimal.ZERO;
     private BigDecimal thc = BigDecimal.ZERO;
