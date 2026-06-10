@@ -33,6 +33,6 @@ public class ProcesoCotizacionServiceImp extends GenericServiceImpl<ProcesoCotiz
 
     @Override
     public List<ProcesoCotizacion> findAll() {
-        return repository.findAllByOrderByCreadoEn();
+        return repository.findAllByOrderByCreadoEnDesc();
     }
 }

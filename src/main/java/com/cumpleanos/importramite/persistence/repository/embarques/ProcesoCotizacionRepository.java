@@ -10,5 +10,5 @@ public interface ProcesoCotizacionRepository extends MongoRepository<ProcesoCoti
 
     Optional<ProcesoCotizacion> findByNumeroReferencia(String numeroReferencia);
 
-    List<ProcesoCotizacion> findAllByOrderByCreadoEn();
+    List<ProcesoCotizacion> findAllByOrderByCreadoEnDesc();
 }

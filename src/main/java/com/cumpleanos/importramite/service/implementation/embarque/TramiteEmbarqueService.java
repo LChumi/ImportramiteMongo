@@ -21,7 +21,7 @@ public class TramiteEmbarqueService {
     private final FleteValidadoRepository fleteRepository;
 
     public List<TramiteEmbarque> findAll() {
-        return repository.findAll();
+        return repository.findAllByOrderByFechaEmbarqueDesc();
     }
 
     public void ReemplazarFleteTramite(String tramiteId, String nuevoFleteId) {
