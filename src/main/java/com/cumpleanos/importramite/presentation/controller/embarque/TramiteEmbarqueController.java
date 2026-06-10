@@ -30,7 +30,7 @@ public class TramiteEmbarqueController {
 
     @GetMapping("/reemplazar/{tramite}/{fleteNuevo}")
     public ResponseEntity<Void> ReemplazarFeleteTramite(@PathVariable String tramite, @PathVariable String fleteNuevo) {
-        service.ReemplazarFeleteTramite(tramite, fleteNuevo);
+        service.ReemplazarFleteTramite(tramite, fleteNuevo);
         return ResponseEntity.ok().build();
     }
 

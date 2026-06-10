@@ -24,7 +24,7 @@ public class TramiteEmbarqueService {
         return repository.findAll();
     }
 
-    public void ReemplazarFeleteTramite(String tramiteId, String nuevoFleteId) {
+    public void ReemplazarFleteTramite(String tramiteId, String nuevoFleteId) {
         TramiteEmbarque tramite = repository.findById(tramiteId).orElseThrow();
 
         FleteValidado nuevo = fleteRepository.findById(nuevoFleteId).orElseThrow();

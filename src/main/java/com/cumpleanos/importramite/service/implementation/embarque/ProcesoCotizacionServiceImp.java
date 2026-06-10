@@ -27,7 +27,7 @@ public class ProcesoCotizacionServiceImp extends GenericServiceImpl<ProcesoCotiz
     @Override
     public ProcesoCotizacion save(ProcesoCotizacion p) {
         p.setCreadoEn(LocalDateTime.now());
-        p.setEstado(EstadoProceso.BORRADOR);
+        p.setEstado(EstadoProceso.EN_VALIDACION);
         return super.save(p);
     }
 
