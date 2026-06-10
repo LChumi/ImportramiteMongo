@@ -41,4 +41,6 @@ public class TramiteEmbarque {
     private LocalDateTime actualizadoEn;
 
     private EstadoTramite estado;
+
+    private Boolean certificadoOrigen;
 }

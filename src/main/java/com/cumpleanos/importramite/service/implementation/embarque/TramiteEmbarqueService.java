@@ -55,6 +55,7 @@ public class TramiteEmbarqueService {
         found.setSolicitudNIntertek(t.getSolicitudNIntertek());
         found.setPreLiquidacion(t.getPreLiquidacion());
         found.setPolizaNChub(t.getPolizaNChub());
+        found.setCertificadoOrigen(t.getCertificadoOrigen());
         return repository.save(found);
     }
 
