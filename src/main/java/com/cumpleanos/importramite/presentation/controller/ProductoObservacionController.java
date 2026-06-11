@@ -2,6 +2,10 @@ package com.cumpleanos.importramite.presentation.controller;
 
 import com.cumpleanos.importramite.persistence.model.ProductoObservacion;
 import com.cumpleanos.importramite.persistence.records.CorreccionRequest;
+import com.cumpleanos.importramite.persistence.records.ObservacionPorBodegaDTO;
+import com.cumpleanos.importramite.persistence.records.ObservacionPorMesDTO;
+import com.cumpleanos.importramite.persistence.records.ObservacionResumenDTO;
+import com.cumpleanos.importramite.service.implementation.ObservacionService;
 import com.cumpleanos.importramite.service.interfaces.IProductoObservacionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,6 +24,7 @@ import java.util.List;
 public class ProductoObservacionController {
 
     private final IProductoObservacionService service;
+    private final ObservacionService dashboardService;
 
     @Operation(summary = "Guardar", description = "Guardar Observacion de Producto")
     @PostMapping("/guardar")
@@ -38,6 +43,32 @@ public class ProductoObservacionController {
     @PutMapping("/agregar-correccion")
     public ResponseEntity<ProductoObservacion> agregarCorreccion(@RequestBody CorreccionRequest request) {
         return ResponseEntity.ok(service.addCorrection(request));
+    }
+
+    //DASHBOARD
+
+    @GetMapping("/dashboard/resumen")
+    public ResponseEntity<ObservacionResumenDTO> resumen(@RequestParam Long bodega) {
+        return ResponseEntity.ok(dashboardService.getResumen(bodega));
+    }
+
+    @GetMapping("/dashboard/por-bodega")
+    public ResponseEntity<List<ObservacionPorBodegaDTO>> porBodega() {
+        return ResponseEntity.ok(dashboardService.getPorBodega());
+    }
+
+    @GetMapping("/dashboard/por-mes")
+    public ResponseEntity<List<ObservacionPorMesDTO>> porMes(
+            @RequestParam Long bodega,
+            @RequestParam(defaultValue = "2026") int anio) {
+        return ResponseEntity.ok(dashboardService.getPorMes(bodega, anio));
+    }
+
+    @GetMapping("/dashboard/top-productos")
+    public ResponseEntity<?> topProductos(
+            @RequestParam Long bodega,
+            @RequestParam(defaultValue = "10") int limite) {
+        return ResponseEntity.ok(dashboardService.getTopProductos(bodega, limite));
     }
 
 }
