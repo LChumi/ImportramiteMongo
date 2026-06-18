@@ -100,7 +100,6 @@ public class ReporteService {
     private Map<String, Object> construirParametros(MedianetPOS m) {
         String fecha = convertirFecha(m.getResponse().fecha());
         String hora = convertirHora(m.getResponse().hora());
-        String referenciaAnulada = m.getRequest().referencia();
         String tipoDiferido = "";
         String targetaTruncada = m.getResponse().tarjetaTruncada();
         switch (m.getRequest().codigoDiferido()) {
@@ -109,14 +108,32 @@ public class ReporteService {
             default -> tipoDiferido ="";
         }
 
+        String referenciaAnulada = "";
+        String referencia = m.getResponse().referencia();
+
+        if ("03".equals(m.getRequest().tipoTransaccion())) {
+            // La anulada es igual a la referencia original
+            referenciaAnulada = referencia;
+
+            // La referencia se incrementa en 1
+            try {
+                int refNum = Integer.parseInt(referencia);
+                referencia = String.format("%06d", refNum + 1);
+                // Resultado: "000215"
+            } catch (NumberFormatException e) {
+                referencia = referencia; // se deja tal cual
+            }
+        }
+
         Map<String, Object> parametros = new HashMap<>();
         parametros.put("empresa", m.getEmpresa());
         parametros.put("direccion", m.getDireccion());
         parametros.put("telefono", m.getTelefono());
         parametros.put("mid", m.getRequest().mid());
+        parametros.put("mid2", m.getResponse().mid());
         parametros.put("tid", m.getRequest().tid());
         parametros.put("ruc", m.getRuc());
-        parametros.put("referencia", m.getResponse().referencia());
+        parametros.put("referencia", referencia);
         parametros.put("numeroAutorizacion", m.getResponse().numeroAutorizacion());
         parametros.put("lote", m.getResponse().lote());
         parametros.put("tarifaStr", "BASE CONSUMO TARIFA 15:");
