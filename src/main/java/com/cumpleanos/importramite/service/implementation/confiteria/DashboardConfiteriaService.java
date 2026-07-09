@@ -163,7 +163,7 @@ public class DashboardConfiteriaService {
                 ),
 
                 Aggregation.project()
-                        .and("cliNombre").as("proveedor")
+                        .and("reposicion.proveedor").as("proveedor")
                         .and("reposicionId").as("reposicionId")
                         .and("pedido").as("pedido")
                         .andExpression("pedido * pvp").as("valor"),
