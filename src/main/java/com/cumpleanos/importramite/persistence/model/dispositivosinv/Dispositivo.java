@@ -26,7 +26,7 @@ public class Dispositivo {
     private EstadoDispositivo estadoActual;
     private String ubicacion;
 
-    private boolean activo = true;
+    private boolean activo;
     private String creadoPor;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

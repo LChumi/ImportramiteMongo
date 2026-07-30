@@ -15,6 +15,4 @@ public interface PrestamoRepository extends MongoRepository<Prestamo, String> {
     List<Prestamo> findBySerialDispositivoOrderByFechaEntregaDesc(String serialDispositivo);
 
     List<Prestamo> findByEstado(EstadoPrestamo estado);
-
-    List<Prestamo> findByResponsableAndEstado(String responsable, EstadoPrestamo estado);
 }
