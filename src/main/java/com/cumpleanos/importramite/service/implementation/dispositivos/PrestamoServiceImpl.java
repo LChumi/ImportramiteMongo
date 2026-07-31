@@ -11,7 +11,6 @@ import com.cumpleanos.importramite.service.interfaces.dispositivos.IPrestamoServ
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -45,9 +44,8 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, String> im
 
         prestamo.setSerialDispositivo(dispositivo.getSerial());
         prestamo.setEstado(EstadoPrestamo.ENTREGADO);
-        prestamo.setFechaEntrega(prestamo.getFechaEntrega() != null ? prestamo.getFechaEntrega() : LocalDate.now());
+        prestamo.setFechaEntrega(prestamo.getFechaEntrega() != null ? prestamo.getFechaEntrega() : LocalDateTime.now());
         prestamo.setFechaDevolucion(null);
-        // fechaEsperadaDevolucion queda como venga: puede ser null si es indefinido
         prestamo.setCreatedAt(LocalDateTime.now());
 
         Prestamo guardado = prestamoRepository.save(prestamo);
@@ -67,7 +65,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, String> im
             throw new IllegalStateException("Este préstamo ya fue devuelto");
         }
 
-        prestamo.setFechaDevolucion(LocalDate.now());
+        prestamo.setFechaDevolucion(LocalDateTime.now());
         prestamo.setEstado(EstadoPrestamo.DEVUELTO);
         if (observaciones != null) prestamo.setObservaciones(observaciones);
         prestamo.setUpdatedAt(LocalDateTime.now());

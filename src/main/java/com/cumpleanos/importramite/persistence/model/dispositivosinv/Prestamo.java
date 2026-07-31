@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -23,8 +22,8 @@ public class Prestamo {
 
     private String responsable;
 
-    private LocalDate fechaEntrega;
-    private LocalDate fechaDevolucion;
+    private LocalDateTime fechaEntrega;
+    private LocalDateTime fechaDevolucion;
 
     private EstadoPrestamo estado;
     private String observaciones;
