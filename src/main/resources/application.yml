@@ -2,6 +2,8 @@ server:
   port: 7572
 
 spring:
+  jackson:
+    time-zone: America/Guayaquil
   application:
     name: Import-tramite
 
