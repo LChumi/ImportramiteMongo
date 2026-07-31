@@ -54,4 +54,10 @@ public class DispositivoController {
         dispositivoService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/actualizar")
+    public ResponseEntity<Dispositivo> actualizar(@RequestBody Dispositivo dispositivo, @PathVariable String id) {
+        return ResponseEntity.ok(dispositivoService.actualizar(id,  dispositivo));
+    }
+
 }

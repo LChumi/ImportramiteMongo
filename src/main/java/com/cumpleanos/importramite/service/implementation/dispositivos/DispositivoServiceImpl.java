@@ -54,4 +54,17 @@ public class DispositivoServiceImpl extends GenericServiceImpl<Dispositivo, Stri
         d.setUpdatedAt(LocalDateTime.now());
         return dispositivoRepository.save(d);
     }
+
+    @Override
+    public Dispositivo actualizar(String dispositivoId, Dispositivo dispositivo) {
+        Dispositivo f =  findById(dispositivoId);
+        if (f == null) throw new IllegalArgumentException("Dispositivo no encontrado");
+        f.setMarca(dispositivo.getMarca());
+        f.setSerial(dispositivo.getSerial());
+        f.setModelo(dispositivo.getModelo());
+        f.setUbicacion(dispositivo.getUbicacion());
+        f.setFechaCompra(f.getFechaCompra());
+        f.setActivo(dispositivo.isActivo());
+        return  dispositivoRepository.save(f);
+    }
 }

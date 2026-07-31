@@ -15,4 +15,6 @@ public interface IDispositivoService extends IGenericService<Dispositivo, String
     List<Dispositivo> disponiblesPorMarca(String marca);
 
     Dispositivo cambiarEstado(String dispositivoId, EstadoDispositivo nuevoEstado);
+
+    Dispositivo actualizar(String dispositivoId, Dispositivo dispositivo);
 }
