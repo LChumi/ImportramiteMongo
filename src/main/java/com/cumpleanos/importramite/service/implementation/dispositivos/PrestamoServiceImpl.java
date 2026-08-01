@@ -58,7 +58,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, String> im
     }
 
     @Override
-    public Prestamo devolver(String prestamoId, EstadoDispositivo estadoFinalDispositivo, String observaciones) {
+    public Prestamo devolver(String prestamoId, EstadoDispositivo estadoFinalDispositivo, String observaciones, String username) {
         Prestamo prestamo = findById(prestamoId);
         if (prestamo == null) throw new IllegalArgumentException("Préstamo no encontrado");
         if (prestamo.getFechaDevolucion() != null) {
@@ -67,7 +67,8 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, String> im
 
         prestamo.setFechaDevolucion(LocalDateTime.now());
         prestamo.setEstado(EstadoPrestamo.DEVUELTO);
-        if (observaciones != null) prestamo.setObservaciones(observaciones);
+        prestamo.setObservacionDevolucion(observaciones);
+        prestamo.setModificadoPor(username);
         prestamo.setUpdatedAt(LocalDateTime.now());
         Prestamo actualizado = prestamoRepository.save(prestamo);
 

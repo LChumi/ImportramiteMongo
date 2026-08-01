@@ -26,8 +26,10 @@ public class PrestamoController {
     public ResponseEntity<Prestamo> devolver(
             @PathVariable String id,
             @RequestParam EstadoDispositivo estadoFinal,
-            @RequestParam(required = false) String observaciones) {
-        return ResponseEntity.ok(prestamoService.devolver(id, estadoFinal, observaciones));
+            @RequestParam(required = false) String observaciones,
+            @RequestParam(required = false) String username
+    ) {
+        return ResponseEntity.ok(prestamoService.devolver(id, estadoFinal, observaciones, username));
     }
 
     @GetMapping("/activos")

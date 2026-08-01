@@ -27,6 +27,7 @@ public class Prestamo {
 
     private EstadoPrestamo estado;
     private String observaciones;
+    private String observacionDevolucion;
 
     private String creadoPor;
     private String modificadoPor;

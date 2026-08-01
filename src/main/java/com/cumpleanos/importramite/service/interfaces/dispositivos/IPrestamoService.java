@@ -11,7 +11,7 @@ public interface IPrestamoService extends IGenericService<Prestamo, String> {
 
     Prestamo entregar(Prestamo prestamo); // fechaEsperadaDevolucion puede venir null
 
-    Prestamo devolver(String prestamoId, EstadoDispositivo estadoFinalDispositivo, String observaciones);
+    Prestamo devolver(String prestamoId, EstadoDispositivo estadoFinalDispositivo, String observaciones, String username);
 
     Optional<Prestamo> ocupadoPor(String dispositivoId); // quién lo tiene ahora, si aplica
 
