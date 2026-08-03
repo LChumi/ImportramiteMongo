@@ -1,11 +1,13 @@
 package com.cumpleanos.importramite.service.implementation.reports;
 
 import com.cumpleanos.importramite.persistence.model.pos.MedianetPOS;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class ReporteService {
 
@@ -100,12 +103,22 @@ public class ReporteService {
     private Map<String, Object> construirParametros(MedianetPOS m) {
         String fecha = convertirFecha(m.getResponse().fecha());
         String hora = convertirHora(m.getResponse().hora());
-        String tipoDiferido = "";
+        String tipoDiferido;
+        String interes = null;
+        String granTotal = null;
         String targetaTruncada = m.getResponse().tarjetaTruncada();
         switch (m.getRequest().codigoDiferido()) {
             case "01" -> tipoDiferido = "CON INTERES";
             case "04" -> tipoDiferido = "SIN INTERESES";
             default -> tipoDiferido ="";
+        }
+
+        if (m.getResponse().interes() != null) {
+            BigDecimal interesBD = parseValor(m.getResponse().interes(), 2);
+            BigDecimal granTotalBD = BigDecimal.valueOf(m.getRequest().total())
+                    .add(interesBD);
+            interes = interesBD.toString();
+            granTotal = granTotalBD.toString();
         }
 
         String referenciaAnulada = "";
@@ -121,7 +134,7 @@ public class ReporteService {
                 referencia = String.format("%06d", refNum + 1);
                 // Resultado: "000215"
             } catch (NumberFormatException e) {
-                referencia = referencia; // se deja tal cual
+                log.error("Error al convertir formato: {}", e.getMessage());
             }
         }
 
@@ -138,13 +151,13 @@ public class ReporteService {
         parametros.put("lote", m.getResponse().lote());
         parametros.put("tarifaStr", "BASE CONSUMO TARIFA 15:");
         parametros.put("ivaStr", "IVA 15%:");
-        parametros.put("subtotal", String.valueOf(m.getRequest().subtotal()));
+        parametros.put("subtotal", String.format("%.2f", m.getRequest().subtotal()));
         parametros.put("subtotal0", "0.00");
-        parametros.put("iva", String.valueOf(m.getRequest().iva()));
-        parametros.put("redPos", m.getRed());
+        parametros.put("iva", String.format("%.2f",m.getRequest().iva()));
+        parametros.put("redPos", m.getRed().trim());
         parametros.put("plazo", m.getRequest().plazo());
         parametros.put("fechaVencimiento", m.getResponse().fechaVencimiento());
-        parametros.put("total", String.valueOf(m.getRequest().total()));
+        parametros.put("total", String.format("%.2f", m.getRequest().total()));
         parametros.put("grupoTarjeta", m.getResponse().grupoTarjeta());
         parametros.put("tarjetaTruncada", targetaTruncada);
         parametros.put("fecha", fecha);
@@ -152,6 +165,8 @@ public class ReporteService {
         parametros.put("ciudad", m.getCiudad());
         parametros.put("aid", m.getResponse().aid());
         parametros.put("tipoDiferido", tipoDiferido);
+        parametros.put("interes", interes);
+        parametros.put("granTotal", granTotal);
         parametros.put("referenciaAnulada", referenciaAnulada);
         parametros.put("nombreTarjetahabiente", m.getResponse().nombreTarjetahabiente());
         return parametros;
@@ -171,12 +186,24 @@ public class ReporteService {
         return hora.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
-    private JasperReport compilarReporte(String recurso) throws JRException {
-        InputStream in = getClass().getClassLoader().getResourceAsStream(recurso);
-        if (in == null){
-            throw new JRException("No se pudo encontrar el recurso: " + recurso);
+    public BigDecimal parseValor(String valor, int decimales) {
+        if (valor == null || valor.isEmpty()) {
+            return BigDecimal.ZERO;
         }
-        return JasperCompileManager.compileReport(in); //COMPILAR USADO CON JRXML
-    }
+        // Elimina ceros a la izquierda
+        StringBuilder limpio = new StringBuilder(valor.replaceFirst("^0+(?!$)", ""));
 
+        // Si la longitud es menor que los decimales, rellena
+        while (limpio.length() <= decimales) {
+            limpio.insert(0, "0");
+        }
+
+        // Parte entera y parte decimal
+        int index = limpio.length() - decimales;
+        String parteEntera = limpio.substring(0, index);
+        String parteDecimal = limpio.substring(index);
+
+        String resultado = parteEntera + "." + parteDecimal;
+        return new BigDecimal(resultado);
+    }
 }
