@@ -12,7 +12,7 @@ public interface PrestamoRepository extends MongoRepository<Prestamo, String> {
     // El préstamo "abierto" de un dispositivo es el que no tiene fechaDevolucion
     Optional<Prestamo> findByDispositivoIdAndFechaDevolucionIsNull(String dispositivoId);
 
-    List<Prestamo> findBySerialDispositivoOrderByFechaEntregaDesc(String serialDispositivo);
+    List<Prestamo> findBySerialDispositivoOrderByFechaDevolucionDesc(String serialDispositivo);
 
     List<Prestamo> findByEstado(EstadoPrestamo estado);
 }

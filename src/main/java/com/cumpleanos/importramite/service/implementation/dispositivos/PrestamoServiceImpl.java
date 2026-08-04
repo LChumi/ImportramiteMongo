@@ -88,7 +88,7 @@ public class PrestamoServiceImpl extends GenericServiceImpl<Prestamo, String> im
 
     @Override
     public List<Prestamo> historialPorSerial(String serial) {
-        return prestamoRepository.findBySerialDispositivoOrderByFechaEntregaDesc(serial);
+        return prestamoRepository.findBySerialDispositivoOrderByFechaDevolucionDesc(serial);
     }
 
     @Override
